@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   id="svg2"
+   viewBox="0 0 1229.5272 744.09448"
+   height="210mm"
+   width="347mm">
+  <defs
+     id="defs4">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3479">
+      <path
+         d="m 0,0 959.76,0 0,540 L 0,540 0,0 Z"
+         id="path3481" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3489">
+      <path
+         d="M 0,0 960,0 960,540 0,540 0,0 Z"
+         id="path3491" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3499">
+      <path
+         d="m 87.78081,218.4657 0,-135.1233 201.20549,0 0,135.1233 -201.20549,0 z M 1.430154e-5,540 959.76,540 959.76,0 1.430154e-5,0 l 0,540 z"
+         id="path3501" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3505">
+      <path
+         d="M 1.430154e-5,0 959.76001,0 l 0,540 -959.75999569846,0 0,-540 z"
+         id="path3507" />
+    </clipPath>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask3511">
+      <image
+         width="1"
+         height="1"
+         preserveAspectRatio="none"
+         xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img0.png"
+         id="image3513" />
+    </mask>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3521">
+      <path
+         d="M 0,0 960,0 960,540 0,540 0,0 Z"
+         id="path3523" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3535">
+      <path
+         d="m 97.80821,231.1232 0,-135.1233 201.20549,0 0,135.1233 -201.20549,0 z M 1.430154e-5,540 959.76,540 959.76,0 1.430154e-5,0 l 0,540 z"
+         id="path3537" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3541">
+      <path
+         d="M 1.430154e-5,0 959.76001,0 l 0,540 -959.75999569846,0 0,-540 z"
+         id="path3543" />
+    </clipPath>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask3547">
+      <image
+         width="1"
+         height="1"
+         preserveAspectRatio="none"
+         xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img2.png"
+         id="image3549" />
+    </mask>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3557">
+      <path
+         d="M 0,0 960,0 960,540 0,540 0,0 Z"
+         id="path3559" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3571">
+      <path
+         d="m 107.8356,241.7259 0,-135.1233 201.2055,0 0,135.1233 -201.2055,0 z M 1.430154e-5,540 959.76,540 959.76,0 1.430154e-5,0 l 0,540 z"
+         id="path3573" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3577">
+      <path
+         d="M 1.430154e-5,0 959.76001,0 l 0,540 -959.75999569846,0 0,-540 z"
+         id="path3579" />
+    </clipPath>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask3583">
+      <image
+         width="1"
+         height="1"
+         preserveAspectRatio="none"
+         xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img4.png"
+         id="image3585" />
+    </mask>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3593">
+      <path
+         d="M 0,0 960,0 960,540 0,540 0,0 Z"
+         id="path3595" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3607">
+      <path
+         d="m 117.863,254.3834 0,-135.1233 201.2055,0 0,135.1233 -201.2055,0 z M 1.430154e-5,540 959.76,540 959.76,0 1.430154e-5,0 l 0,540 z"
+         id="path3609" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3613">
+      <path
+         d="M 1.430154e-5,0 959.76001,0 l 0,540 -959.75999569846,0 0,-540 z"
+         id="path3615" />
+    </clipPath>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask3619">
+      <image
+         width="1"
+         height="1"
+         preserveAspectRatio="none"
+         xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img6.png"
+         id="image3621" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask3627">
+      <image
+         width="1"
+         height="1"
+         preserveAspectRatio="none"
+         xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img8.png"
+         id="image3629" />
+    </mask>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3637">
+      <path
+         d="M 0,0 960,0 960,540 0,540 0,0 Z"
+         id="path3639" />
+    </clipPath>
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-308.26772)"
+     id="layer1">
+    <g
+       id="g3471"
+       transform="matrix(1.25,0,0,-1.25,17.14286,1021.2908)">
+      <g
+         id="g3473" />
+      <g
+         id="g3475">
+        <g
+           id="g3477"
+           clip-path="url(#clipPath3479)">
+          <path
+             d="m 0,0 959.76,0 0,540 L 0,540 0,0 Z"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3483" />
+        </g>
+      </g>
+      <g
+         id="g3485">
+        <g
+           id="g3487"
+           clip-path="url(#clipPath3489)">
+          <path
+             d="M 0,0 960,0 960,540 0,540 0,0 Z"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3493" />
+        </g>
+      </g>
+      <g
+         id="g3495">
+        <g
+           id="g3497"
+           clip-path="url(#clipPath3499)">
+          <g
+             id="g3503"
+             clip-path="url(#clipPath3505)">
+            <g
+               id="g3509"
+               transform="matrix(210.48,0,0,144.48,81.12,76.56)">
+              <image
+                 width="1"
+                 height="1"
+                 preserveAspectRatio="none"
+                 transform="matrix(1,0,0,-1,0,1)"
+                 xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img1.png"
+                 mask="url(#mask3511)"
+                 id="image3515" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3517">
+        <g
+           id="g3519"
+           clip-path="url(#clipPath3521)">
+          <path
+             d="m 87.78079,83.3424 201.2055,0 0,135.1233 -201.2055,0 0,-135.1233 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3525" />
+          <g
+             id="g3527"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,87.78079,218.4657)">
+            <path
+               d="m 0,0 2555310,0 0,1716066 L 0,1716066 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3529" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3531">
+        <g
+           id="g3533"
+           clip-path="url(#clipPath3535)">
+          <g
+             id="g3539"
+             clip-path="url(#clipPath3541)">
+            <g
+               id="g3545"
+               transform="matrix(210.48,0,0,144.24,90.96,89.28)">
+              <image
+                 width="1"
+                 height="1"
+                 preserveAspectRatio="none"
+                 transform="matrix(1,0,0,-1,0,1)"
+                 xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img3.png"
+                 mask="url(#mask3547)"
+                 id="image3551" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3553">
+        <g
+           id="g3555"
+           clip-path="url(#clipPath3557)">
+          <path
+             d="m 97.80819,95.9999 201.2055,0 0,135.1233 -201.2055,0 0,-135.1233 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3561" />
+          <g
+             id="g3563"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,97.80819,231.1232)">
+            <path
+               d="m 0,0 2555310,0 0,1716066 L 0,1716066 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3565" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3567">
+        <g
+           id="g3569"
+           clip-path="url(#clipPath3571)">
+          <g
+             id="g3575"
+             clip-path="url(#clipPath3577)">
+            <g
+               id="g3581"
+               transform="matrix(210.48,0,0,144.48,101.04,99.84)">
+              <image
+                 width="1"
+                 height="1"
+                 preserveAspectRatio="none"
+                 transform="matrix(1,0,0,-1,0,1)"
+                 xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img5.png"
+                 mask="url(#mask3583)"
+                 id="image3587" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3589">
+        <g
+           id="g3591"
+           clip-path="url(#clipPath3593)">
+          <path
+             d="m 107.8356,106.6026 201.2055,0 0,135.1233 -201.2055,0 0,-135.1233 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3597" />
+          <g
+             id="g3599"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,107.8356,241.7259)">
+            <path
+               d="m 0,0 2555310,0 0,1716066 L 0,1716066 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3601" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3603">
+        <g
+           id="g3605"
+           clip-path="url(#clipPath3607)">
+          <g
+             id="g3611"
+             clip-path="url(#clipPath3613)">
+            <g
+               id="g3617"
+               transform="matrix(210.48,0,0,144.24,111.12,112.56)">
+              <image
+                 width="1"
+                 height="1"
+                 preserveAspectRatio="none"
+                 transform="matrix(1,0,0,-1,0,1)"
+                 xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img7.png"
+                 mask="url(#mask3619)"
+                 id="image3623" />
+            </g>
+            <g
+               id="g3625"
+               transform="matrix(217.68,0,0,113.76,107.52,122.88)">
+              <image
+                 width="1"
+                 height="1"
+                 preserveAspectRatio="none"
+                 transform="matrix(1,0,0,-1,0,1)"
+                 xlink:href="file:///Users/francesco/public_git/Digital-Methods-Sydney/ws-201812/img/workflow_img9.png"
+                 mask="url(#mask3627)"
+                 id="image3631" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3633">
+        <g
+           id="g3635"
+           clip-path="url(#clipPath3637)">
+          <path
+             d="m 117.863,119.2601 201.2055,0 0,135.1233 -201.2055,0 0,-135.1233 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3641" />
+          <g
+             id="g3643"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,117.863,254.3834)">
+            <path
+               d="m 0,0 2555310,0 0,1716066 L 0,1716066 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3645" />
+          </g>
+          <g
+             id="g3647"
+             transform="matrix(0.24,0,0,0.24,154.7757,-344.88)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:133.33329773px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3649">
+              <tspan
+                 x="0 84.373314 165.14662 219.78661 301.49326 383.19989 446.77322 481.67987 530.58655"
+                 y="0"
+                 id="tspan3651">Corpus /</tspan>
+            </text>
+          </g>
+          <g
+             id="g3653"
+             transform="matrix(0.24,0,0,0.24,132.7157,-383.76)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:133.33329773px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3655">
+              <tspan
+                 x="0 97.399979 178.13329 241.66661 323.46658 447.3999 522.39984 604.19983 651.06653"
+                 y="0"
+                 id="tspan3657">Documents</tspan>
+            </text>
+          </g>
+          <path
+             d="m 123.9452,349.9909 175.0685,0 0,106.6667 -175.0685,0 0,-106.6667 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3659" />
+          <g
+             id="g3661"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,123.9452,456.6576)">
+            <path
+               d="m 0,0 2223370,0 0,1354667 L 0,1354667 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3663" />
+          </g>
+          <g
+             id="g3665"
+             transform="matrix(0.24,0,0,0.24,141.9944,-145.2)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3667">
+              <tspan
+                 x="0 48.23 102.46 155.09 190.52 251.95 307.67999 333.20999 359.23999 432.17001 487.89999 523.33002"
+                 y="0"
+                 id="tspan3669">Textual Data</tspan>
+            </text>
+          </g>
+          <path
+             d="m 416.3835,349.991 175.0685,0 0,106.6667 -175.0685,0 0,-106.6667 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3671" />
+          <g
+             id="g3673"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,416.3835,456.6577)">
+            <path
+               d="m 0,0 2223370,0 0,1354667 L 0,1354667 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3675" />
+          </g>
+          <g
+             id="g3677"
+             transform="matrix(0.24,0,0,0.24,454.8078,-145.2)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3679">
+              <tspan
+                 x="0 55.209999 80.720001 142.23 192.74001 218.75 266.95999 321.17001 373.78"
+                 y="0"
+                 id="tspan3681">Tidy Text</tspan>
+            </text>
+          </g>
+          <path
+             d="m 708.8219,349.991 175.0685,0 0,106.6667 -175.0685,0 0,-106.6667 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3683" />
+          <g
+             id="g3685"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,708.8219,456.6577)">
+            <path
+               d="m 0,0 2223370,0 0,1354667 L 0,1354667 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3687" />
+          </g>
+          <g
+             id="g3689"
+             transform="matrix(0.24,0,0,0.24,725.5436,-130.8)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3691">
+              <tspan
+                 x="0 54.689999 116.18 209.37 302.56 358.25 398.84 424.32999 472.22 528.51001"
+                 y="0"
+                 id="tspan3693">Summarised</tspan>
+            </text>
+          </g>
+          <g
+             id="g3695"
+             transform="matrix(0.24,0,0,0.24,773.4936,-158.88)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3697">
+              <tspan
+                 x="0 48.23 102.46 155.09"
+                 y="0"
+                 id="tspan3699">Text</tspan>
+            </text>
+          </g>
+          <path
+             d="m 708.8219,120.831 175.0685,0 0,106.6667 -175.0685,0 0,-106.6667 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3701" />
+          <g
+             id="g3703"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,708.8219,227.4977)">
+            <path
+               d="m 0,0 2223370,0 0,1354667 L 0,1354667 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3705" />
+          </g>
+          <g
+             id="g3707"
+             transform="matrix(0.24,0,0,0.24,722.6936,-374.4)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3709">
+              <tspan
+                 x="0 48.23 108.66 170.09 195.62 243.05 269.07999 362.31 422.73999 484.17001 540.40002 565.92999"
+                 y="0"
+                 id="tspan3711">Topic models</tspan>
+            </text>
+          </g>
+          <path
+             d="m 426.4109,120.831 175.0685,0 0,106.6667 -175.0685,0 0,-106.6667 z"
+             style="fill:#5087ec;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3713" />
+          <g
+             id="g3715"
+             transform="matrix(7.874016e-5,0,0,-7.874016e-5,426.4109,227.4977)">
+            <path
+               d="m 0,0 2223370,0 0,1354667 L 0,1354667 0,0 Z"
+               style="fill:none;stroke:#2f528f;stroke-width:12700;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+               id="path3717" />
+          </g>
+          <g
+             id="g3719"
+             transform="matrix(0.24,0,0,0.24,451.4427,-360)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3721">
+              <tspan
+                 x="0 72.919998 133.34 180.75999 242.17999 335.39999 391.62 453.04001"
+                 y="0"
+                 id="tspan3723">Document</tspan>
+            </text>
+          </g>
+          <g
+             id="g3725"
+             transform="matrix(0.24,0,0,0.24,568.6926,-360)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3727">
+              <tspan
+                 x="0"
+                 y="0"
+                 id="tspan3729">-</tspan>
+            </text>
+          </g>
+          <g
+             id="g3731"
+             transform="matrix(0.24,0,0,0.24,447.7577,-388.08)">
+            <text
+               transform="matrix(1,0,0,-1,0,2250)"
+               style="font-variant:normal;font-weight:normal;font-size:100px;font-family:'Open Sans';-inkscape-font-specification:OpenSans;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+               id="text3733">
+              <tspan
+                 x="0 35.419998 91.639999 132.25999 225.48 251.5 341.62 397.34 432.76001 473.38 498.89999"
+                 y="0"
+                 id="tspan3735">term Matrix</tspan>
+            </text>
+          </g>
+          <path
+             d="m 220.9657,254.3834 1e-4,83.1076 -5,0 -1e-4,-83.1076 5,0 z m 5.0001,80.6076 -7.5,15 -7.5,-15 15,0 z"
+             style="fill:#4472c4;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3737" />
+          <path
+             d="m 301.4856,400.5411 102.4042,0.2525 -0.0123,5 -102.4042,-0.2525 0.0123,-5 z m 99.9165,-4.7536 14.9814,7.5369 -15.0184,7.463 0.037,-14.9999 z"
+             style="fill:#4472c4;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3739" />
+          <path
+             d="m 506.4178,349.7077 10e-5,-106.0845 -5,0 -10e-5,106.0845 5,0 z m 5.0001,-103.5845 -7.5,-15 -7.5,15 15,0 z"
+             style="fill:#4472c4;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3741" />
+          <path
+             d="m 593.9239,400.5411 102.4042,0.2525 -0.0123,5 -102.4042,-0.2525 0.0123,-5 z m 99.9165,-4.7536 14.9815,7.5369 -15.0185,7.463 0.037,-14.9999 z"
+             style="fill:#4472c4;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3743" />
+          <path
+             d="m 601.4794,176.6642 94.8424,0 0,-5 -94.8424,0 0,5 z m 92.3425,5 15,-7.5 -15,-7.5 0,15 z"
+             style="fill:#4472c4;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             id="path3745" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

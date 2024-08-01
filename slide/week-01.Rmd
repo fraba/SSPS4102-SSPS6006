@@ -1,0 +1,920 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 01</br>Introduction and overview"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', out.width = "45%", fig.width = 6,
+                      fig.align="center")
+
+library(tidyverse)
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and  recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Your teacher
+	
+Francesco Bailo (francesco.bailo@sydney.edu.au)
+
+I am a Lecturer in the School of Social and Political Sciences, University of Sydney. I am interested in researching forms of political engagement and political talk on social media. I researched the emergence and dynamics of online communities, the role between news organisations and social media, and the interdependence between social media activists and news organisations. I have engaged with and applied quantitative research methods developing expertise in quantitative text analysis (NLP) and network analysis.
+
+This year I am teaching GOVT6139, SSPS4102 & SSPS6006.
+
+---
+
+## Today's class
+
+
+| Time (tentative)  | Content                                                                                        |
+|---------------|------------------------------------------------------------------------------------------------|
+| 11:00 - 11:40 | Unit's introduction and overview: Textbook and texts; Content; Learning goals; How to do this  |
+| 11:40 - 12:00 | Getting started with R and RStudio                                                             |
+| 12:00 - 12:15 | Individual quiz/tutorial Part 1                                                                |
+| 12:15 - 12:45 | Stats: Data & Datasets, Variables, Mean                                                        |
+| 12:45 - 13:00 | Break                                                                                          |
+| 13:00 - 13:15 | Individual quiz/tutorial Part 2                                                                |
+| 13:15 - 14:00 | Group problem set (if we have time)                                                            |
+
+---
+
+## Zoom for in-class support 
+
+If you want to share you screen the from the class (e.g., to get help on your installation or code), join this meeting
+
+.center[https://uni-sydney.zoom.us/j/86005279457]
+
+---
+
+## Let's get to know the class!
+
+.center[<img src = '../img/menti_week_01.png' width = '25%'>
+
+OR 
+
+[menti.com/alxaxo6y7vsb](https://www.menti.com/alxaxo6y7vsb) 
+
+OR
+
+Menti link from Canvas
+]
+
+
+---
+
+<div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden;'><iframe sandbox='allow-scripts allow-same-origin allow-presentation' allowfullscreen='true' allowtransparency='true' frameborder='0' height='315' src='https://www.mentimeter.com/app/presentation/alxn5hhgcc5xqs5jqu4aifxkgxzibj8t/embed' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' width='420'></iframe></div>
+
+
+---
+class: inverse, center, middle
+
+# Get started with SSPS[4102|6006]
+
+---
+
+# What you need to take this unit (1/2)
+
+* No prior knowledge of statistics
+
+--
+
+* No coding experience
+
+--
+
+* Minimal maths background
+
+--
+
+* Install <img src="https://www.r-project.org/logo/Rlogo.svg" style="width: 8%" />
+  * `r emo::ji("backhand index pointing right")` https://rstudio-education.github.io/hopr/starting.html
+
+--
+
+* Install <img src="https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-flat.svg" style="width: 18%" /> 
+  * also `r emo::ji("backhand index pointing right")` https://rstudio-education.github.io/hopr/starting.html
+
+--
+
+* Bring your laptop to class
+
+---
+
+# What you need to take this unit  (2/2)
+
+*  **Every week**: 
+
+    * do the readings, 
+    
+    * complete any [to-do (check "Syllabus" in Canvas)](https://canvas.sydney.edu.au/courses/49127/assignments/syllabus),
+    
+    * come to class, 
+    
+    * engage with the in-class tasks.
+
+---
+
+# Some tips
+
+
+* Ask questions sooner than later.
+
+--
+
+* All seminar slides are available from Canvas before class:
+
+  * Keep them open on your laptop in class to 
+
+      * copy/paste code in RStudio; and
+
+      * follow links.
+
+---
+
+## Textbook(s)
+
+Llaudet, E., & Imai, K. (2022). _Data analysis for social science: A friendly and practical introduction_. Princeton University Press. https://press.princeton.edu/books/hardcover/9780691199429/data-analysis-for-social-science (DASS) 
+
+.pull-left[
+
+This book is highly accessible and will introduce you to both R and important concepts for data analysis. 
+
+]
+
+.pull-right[
+.center[<img src="https://pup-assets.imgix.net/onix/images/9780691199429.jpg" style="width: 80%" />]
+]
+
+---
+
+## Textbook(s)
+
+Imai, K. (2017). _Quantitative social science: An introduction. Princeton University Press_. https://press.princeton.edu/books/paperback/9780691175461/quantitative-social-science (QSS)
+
+.pull-left[
+
+This book assumes some prior knowledge, moves at a faster pace than DASS and covers more than just the fundamentals.
+
+]
+
+.pull-right[
+.center[<img src="https://pup-assets.imgix.net/onix/images/9780691167039.jpg" style="width: 80%" />]
+]
+
+---
+
+In case you are interested, here a thread from Elena LLaudet (one of the two authors...)
+
+.center[
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">DSS or QSS? <br><br>That is the question (answered in this tweet).<br><br>Both are introductory books to quantitative methods in the social sciences written by Kosuke Imai <a href="https://twitter.com/Harvard?ref_src=twsrc%5Etfw">@Harvard</a> (alone or with co-authors).<br><br>Which one is a better fit for you or for your class?<br><br>A quick 🧵... <a href="https://t.co/RugQgm7Prx">pic.twitter.com/RugQgm7Prx</a></p>&mdash; Elena Llaudet (@ellaudet) <a href="https://twitter.com/ellaudet/status/1583184029796352002?ref_src=twsrc%5Etfw">October 20, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+]
+
+
+---
+
+## Which one did you pick?
+
+.center[<img src = '../img/menti_week_01.png' width = '25%'>
+
+OR 
+
+[menti.com/alxaxo6y7vsb](https://www.menti.com/alxaxo6y7vsb) 
+
+OR
+
+Menti link from Canvas
+]
+
+
+---
+
+<div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden;'><iframe sandbox='allow-scripts allow-same-origin allow-presentation' allowfullscreen='true' allowtransparency='true' frameborder='0' height='315' src='https://www.mentimeter.com/app/presentation/alxn5hhgcc5xqs5jqu4aifxkgxzibj8t/embed' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' width='420'></iframe></div>
+
+
+---
+
+## Other texts (1/2)
+
+- Blanchard, A., & Taddeo, M. (2023). The ethics of artificial intelligence for intelligence analysis: A review of the key challenges with recommendations. _Digital Society_, _2_(1), 12.
+- boyd, d. & Crawford, K. (2012). Critical questions for big data. _Information, Communication & Society_, 15(5), 662–679.
+- Cairo, A. (2012). _The Functional Art: An introduction to information graphics and visualization_. New Riders. (**FA**)
+- Cairo, A. (2016). _The Truthful Art: Data, Charts, and Maps for Communication_. Pearson Education. (**TA**)
+- Floridi, L. (2012). Big data and their epistemological challenge. Philosophy & Technology, 25(4), 435–437. 
+- Fuller, S. (2023, dicembre 18). Is data surfacing the future of empirical social research? _Impact of Social Sciences_.
+- Grolemund, G. (2014). _Hands-on programming with R_. O’Reilly. https://rstudio-education.github.io/hopr/ (**HOPR**)
+
+---
+
+## Other texts (2/2)
+
+- Holster, J. D. (2022). _Introduction to R for data science: A LISA 2020 guidebook_. (**I2RDS**)
+- Hvitfeldt, E., & Silge, J. (2021). _Supervised machine learning for text analysis in R_. Chapman and Hall/CRC. (**SML4TA**)
+- James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). _An introduction to statistical learning: With applications in R_. Springer. (**I2SL**)
+- Lantz, B. (2023). _Machine learning with R_. Packt Publishing. (**MLwR**)
+- Moraga, P. (2023). _Spatial statistics for data science: Theory and practice with R_. Chapman and Hall/CRC. (**SS4DS**)
+- Timans, R., Wouters, P., & Heilbron, J. (2019). Mixed methods research: What it is and what it could be. _Theory and Society_, _48_(2), 193–216.
+- Xie, Y., Allaire, J. J., & Grolemund, G. (2019). _R Markdown: The definitive guide_. CRC Press. https://bookdown.org/yihui/rmarkdown/ (**RMD**)
+- Wickham, H., & Grolemund, G. (2017). _R for data science_. O’Reilly.(**R4DS**)
+  
+---
+
+class: inverse, center, middle
+
+# Content
+
+---
+
+# Content
+
+This unit will introduce you (gently!) to 
+
+1. computer programming with R, a language for [statistical computing](https://en.wikipedia.org/wiki/Computational_statistics).
+
+2. concepts for data analysis and its practice using R.
+
+## Learning goal in a nutshell
+
+To analyse data different kinds of data (multivariate but also textual, network and spatial) to
+
+1. Measure;
+
+2. Explain; 
+
+3. Predict.
+
+---
+
+# How to learn data analysis + coding (1/2)
+
+* The challenge in this unit is that on top of learning data analysis concepts, you also need to learn to code with R... 
+
+* but this is an opportunity:<sup>1</sup> data analysis concepts are always and immediately applied to data using R.
+
+.center[<img src="../img/coding-with-fire.gif" style="width: 60%" />]
+
+.footnote[
+[1] Of course, it is! This is very much a *feature* of the unit, not a *bug*!
+]
+
+---
+
+# How to learn data analysis + coding (2/2)
+
+Focus on
+
+1. understanding (and communicating your understanding) of all the data analysis concepts;
+
+2. understanding how to apply these concepts to your data with R;
+
+3. developing a *functional* understanding of R - don' try to understand everything R does (or does not) for you! 
+
+<center>
+
+```{r, echo = F}
+
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR] 
+  
+  node [shape = oval]        
+  nod1 [label = 'Deep\\nunderstanding']
+  nod2 [label = 'Functional\\nunderstanding']
+  nod3 [label =  'Communicating\\nand reporting']
+  
+  node [shape = egg]        
+  nod4 [label = 'Data analysis\\nconcepts']
+  nod5 [label = 'R']
+  
+  node [shape = diamond]  
+  nod6 [label = 'Data']
+  
+  
+  # edge definitions with the node IDs
+  nod1 -> nod4
+  nod2 -> nod5
+  nod4 -> nod6
+  nod5 -> nod6
+  nod6 -> nod3
+  }", 
+  width = 800, height = 300)
+
+```
+
+</center>
+
+---
+
+## Weekly schedule (1/2)
+
+| Week | Topic                                        | Readings                                                                                                                                                                                                                                                                                                                 | Extra/Reference Readings                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| :--: | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  01  | Overview and Introduction to R               | DASS Ch1 or QSS Ch1                                                                                                                                                                                                                                                                                                      | HOPR [Ch1](https://rstudio-education.github.io/hopr/project-1-weighted-dice.html), [Ch2](https://rstudio-education.github.io/hopr/basics.html), [Ch3](https://rstudio-education.github.io/hopr/packages.html), [Ch5](https://rstudio-education.github.io/hopr/r-objects.html), [Ch6](https://rstudio-education.github.io/hopr/r-notation.html), [Ch7](https://rstudio-education.github.io/hopr/modify.html) & [Ch8](https://rstudio-education.github.io/hopr/environments.html) |
+|  02  | Causality                                    | DASS Ch2 or QSS Ch2                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  03  | Data visualisation with R                    | R4DS [Ch3](https://r4ds.had.co.nz/data-visualisation.html)                                                                                                                                                                                                                                                               | FA [Ch1](https://learning.oreilly.com/library/view/the-functional-art/9780133041187/ch01.html) & [Ch2](https://learning.oreilly.com/library/view/the-functional-art/9780133041187/ch02.html) & TA [Ch2](https://learning.oreilly.com/library/view/the-truthful-art/9780133440492/ch02.html)                                                                                                                                                                                     |
+|  04  | Measurement                                  | DASS Ch3 or QSS Ch3                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  05  | Data transformation and communication with R | R4DS [Ch5](https://r4ds.had.co.nz/transform.html), [Ch18](https://r4ds.had.co.nz/pipes.html) & [Ch27](https://r4ds.had.co.nz/r-markdown.html)                                                                                                                                                                            | RMD [Ch1](https://bookdown.org/yihui/rmarkdown/installation.html), [Ch2](https://bookdown.org/yihui/rmarkdown/basics.html) & [Ch3](https://bookdown.org/yihui/rmarkdown/documents.html)                                                                                                                                                                                                                                                                                         |
+|  06  | Prediction                                   | DASS Ch4 or QSS Ch4                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  07  | Probability                                  | DASS Ch6 or QSS Ch6                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  08  | Uncertainty                                  | DASS Ch7 or QSS Ch7                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+---
+## Weekly schedule (2/2)
+
+| Week | Topic                                        | Readings                                                                                                                                                                                                                                                                                                                 | Extra/Reference Readings                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| :--: | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  09  | Machine Learning                             | MLwR Ch1, Ch3 & Ch6                                                                                                                                                                                                                                                                                                      | I2SL [Ch4](https://link.springer.com/chapter/10.1007/978-1-0716-1418-1_4)                                                                                                                                                                                                                                                                                                                                                                                                       |
+|  10  | Textual Data: Natural Language Features      | SML4TA Part1 ([Ch1](https://smltar.com/language), [Ch2](https://smltar.com/tokenization), [Ch3](https://smltar.com/stopwords), [Ch4](https://smltar.com/stemming) & [Ch5](https://smltar.com/embeddings))                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  11  | Textual Data: Machine Learning Methods       | SML4TA Part 2 ([Overview](https://smltar.com/mloverview), [Ch6](https://smltar.com/mlregression) & [Ch7](https://smltar.com/mlclassification))                                                                                                                                                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  12  | Network and Spatial data                     | I2RDS [Ch7](https://bookdown.org/jdholster1/idsr/network-analysis.html) &  SS4DS [Ch2](https://www.paulamoraga.com/book-spatial/spatial-data-in-r.html) & [Ch3](https://www.paulamoraga.com/book-spatial/the-sf-package-for-spatial-vector-data.html)                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|  13  | Ethical Considerations and Future Trends     | Blanchard & Taddeo ([2023](https://link.springer.com/article/10.1007/s44206-023-00036-4)) & Fuller ([2023](https://blogs.lse.ac.uk/impactofsocialsciences/2023/12/18/is-data-surfacing-the-future-of-empirical-social-research/)) & Timans et al. ([2019](https://link.springer.com/article/10.1007/s11186-019-09345-5)) | boyd & Crawford (2012) & Floridi ([2012](https://doi.org/10.1007/s13347-012-0093-4))                                                                                                                                                                                                                                                                                                                                                                                            |
+
+---
+
+## Canvas
+
+Remember, all announcements will come to you via Canvas - not email. So keep an eye on it (or check your notifications settings, so that you get an email alert everytime there's a new announcement - see [here](https://community.canvaslms.com/t5/Student-Guide/How-do-I-manage-my-Canvas-notification-settings-as-a-student/ta-p/434)).   
+
+### Let's take a quick tour!
+
+.center[https://canvas.sydney.edu.au/courses/59609]
+
+.center[<img src = 'https://media.giphy.com/media/jhzBQquG4KjaU/giphy.gif'>]
+
+SSPS6006 folks, note that you have **an additional site** for everything related to assessments!
+
+.center[https://canvas.sydney.edu.au/courses/59683]
+
+
+---
+
+## Let's talk about... GenAI (1/4)
+
+
+.center[<img src = 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg' width = '20%'></img>]
+
+
+### Do you use it and how?
+
+.center[<img src = '../img/menti_week_01.png' width = '25%'>
+
+OR 
+
+[menti.com/alxaxo6y7vsb](https://www.menti.com/alxaxo6y7vsb)
+
+]
+
+
+---
+
+<div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden;'><iframe sandbox='allow-scripts allow-same-origin allow-presentation' allowfullscreen='true' allowtransparency='true' frameborder='0' height='315' src='https://www.mentimeter.com/app/presentation/alxn5hhgcc5xqs5jqu4aifxkgxzibj8t/embed' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' width='420'></iframe></div>
+
+
+---
+
+## Let's talk about... GenAI (2/3)
+
+
+## Can I use it in this unit? Yes! In fact, we have our very own ChatGPT-powered R coach...
+
+You can use GenAI to get help to
+
+- use software (including R),
+- summarise, structure or restructure texts,
+- identify relevant ideas, works, authors, data and methods, 
+- brainstorm ideas.
+
+but their output must not be included in your submission.
+
+
+---
+
+## Let's talk about... Cogniti (3/3)
+
+A ChatGPT-powered R coach is available 24/7 for you on Canvas.
+
+- You can ask it R-related questions.
+
+- You can copy/paste your code in the chat to get help debugging your code ...
+
+- but you won't be able to ask it to generate code for you. 
+
+
+---
+class: inverse, center, middle
+
+# Queries about the course?
+
+---
+
+## General course queries:
+
+1. Bring to seminar
+
+2. Post in Canvas (in "General" channel) 
+
+## Assignment queries:
+
+1. Bring to seminar.
+
+2. Post in Canvas (SSPS6006 folks, refer to your other site)
+
+## Personal queries: 
+
+Email me (francesco.bailo@sydney.edu.au, add SSPS4102 or SSPS6006 to your email's subject) or book an apointment [here](https://outlook-sdf.office.com/bookwithme/user/846b379784f440f185dfc56ee6d18f1f@sydney.edu.au/meetingtype/K2mXXuHQhk2lATtqMzAObQ2?anonymous&ep=mlink).
+
+---
+
+### All queries and request about extensions (also simple extensions of five days or less) should be directed to special considerations
+
+=> https://www.sydney.edu.au/students/special-consideration.html
+
+.blockquote[
+
+- Deduction of 5% of the maximum mark for each calendar day after the due date.
+
+- After ten calendar days late, a mark of zero will be awarded.
+
+]
+
+### Also about participation
+
+> Students are expected to attend a minimum of 90 per cent of timetabled activities
+
+---
+
+## Academic Honesty & Plagiarism
+
+- If you use other peoples work, acknowledge it.
+
+- If you do use direct quotes, put it in quotation marks and acknowledge it.
+
+- Assignments are submitted to Turnitin. Turnitin will find copied work.
+
+- If Turnitin highlights issues, per Usyd policy the assignment will be referred to the Educational Integrity Officer who will assess.
+
+- Note University of Sydney policies on plagiarism do not distinguish between accidental and intentional plagiarism. 
+
+    * **Most student plagiarims is non-intentional**. Be careful and use a RMS!
+
+- Academic Honesty Education Module - https://canvas.sydney.edu.au/courses/15270
+
+- Policy - http://sydney.edu.au/policies/showdoc.aspx?recnum=PDOC2012/254&RendNum=0
+
+---
+
+## Need help? University of Sydney resources
+
+- University of Sydney Learning Hub
+
+    - Workshops and consultation on study skills, writing, referencing
+    
+    - https://www.sydney.edu.au/students/learning-hub-academic-language.html
+    
+- University of Sydney Library
+
+    - https://library.sydney.edu.au/study/student-support/
+    
+- Health and wellbeing
+
+     - https://sydney.edu.au/students/browse.html?category=support-andservices&topic=health-wellbeing-and-support-services
+     
+     - Counselling and mental health support, disability support, and other
+services
+
+- Many support services for students, do not hesitate to reach out!
+
+---
+
+class: inverse, center, middle
+
+# Why R?
+
+---
+
+# Why R?
+
+* Along with Python, R is the most popular language for data manipulation, analysis and reporting. 
+
+* R is more popular with *social* scientists while Python is more popular with *computer* scientists.
+
+* R is open-source [free software](https://en.wikipedia.org/wiki/Free_software). Everybody can use it and modify it. Its community is huge and constantly contributing new packages, features and documentation to the software. Likely, there is at least one package and a vignette to facilitate what you plan to do with your data. 
+
+* RStudio, an excellent [integrated development environment (IDE)](https://en.wikipedia.org/wiki/Integrated_development_environment) for R, is also free. 
+
+* R deals well with large, complex data sets.
+
+---
+
+# No-code / low-code software alternatives for data analysis (1/2)
+
+* **Spreadsheet (Excel et al)**: Easy to access (likely your university or employer will give you access to it) and effective and intuitive for manipulating tabular data but limited in 
+  * the type of analysis and visualisation they allow (e.g., no out-of-the-box linear regression `r emo::ji("sad")`);
+  * the "shape" of data they can read: it can only be a table with rows and columns (i.e, no [API](https://en.wikipedia.org/wiki/API) data);
+  * the size of the data they can read.
+  
+---
+
+# No-code / low-code software alternatives for data analysis (2/2)
+  
+* **SPSS**: Sophisticated and easy to learn (yet, not that easy) but expensive. It is virtually only used in academia. Some limitation in terms of analytical tool (e.g. network and text analysis with additionally purchased software) 
+
+* **Tableau**: Mostly focused on data visualisation. Very popular in the industry for business intelligence. Relatively expensive and limited in terms of analytical tool (e.g. no network or text analysis).
+
+* **Power BI**: Mostly focused on data visualisation. Popular in the industry for business intelligence but less popular than Tableau. Relatively expensive and limited in terms of analytical tool (e.g. no network or text analysis). 
+  
+---
+
+class: inverse, center, middle
+
+# Getting started with R (and RStudio)
+
+---
+
+## What is the relation between R and RStudio?
+
+**R** is the computer language that we use to set the instructions (our *code*). For example,
+
+```{r}
+x <- 42
+```
+
+is the R syntax to tell the computer to assign (`<-`) the numerical *value* `42` to the (variable) name `x`. The result of this line of code is either to change the value of `x` to `42` or to create a new variable in the current *environment*, name it `x` and assign to it the value `42`.
+
+---
+
+**RStudio** is an [integrated development environment (IDE)](https://en.wikipedia.org/wiki/Integrated_development_environment) to facilitate (among other tasks)
+
+* writing and debug R code (but other syntaxes such as Python are also supported), 
+* run it,
+* keep an eye on the objects (i.e. *data* and *values*) in my *environment*,
+* import datasets,
+* visualise plots,
+* navigate local files,
+* install packages.
+
+---
+
+## RStudio
+
+.pull-left[
+
+After launching RStudio, you should see four windows. Each windows has a number of tabs (like in a web browser). The most important tabs are:
+
+]
+
+.pull-right[
+
+.center[<img src="../img/rstudio-ui.svg" style="width: 100%" />]
+
+]
+
+1. **Upper-left window**: Your *code*. Each code file you have open appears in a different tab. 
+2. **Upper-right window**: All the objects - *data* (e.g. dataframes), *values* (of your *variables*) and *functions* loaded in your environment are listed here. 
+3. **Lower-right window**: Your local *files* and *plots* can be accessed from here. 
+4. **Lower-left window**:  The *console*. Your R code will execute here. Code output (including errors and messages) is visualised here.
+
+---
+
+
+class: inverse, center, middle
+
+# First steps into RStudio
+
+---
+
+## Running R code with RStudio (1/2)
+
+There are two ways to run R code with RStudio:
+
+1. You can execute lines from your **R source code** as they appear in the upper-left window:
+
+    a. To execute a single line of code place your cursor on that line and hit the "Run" toolbar button.
+    
+    b. To execute more than one line, select these line in your R source code and hit the "Run" toolbar button.
+  
+![](http://www.rstudio.com/images/docs/source_execute_line.png)
+
+---
+
+## Running R code with RStudio (2/2)
+
+2. You can enter your code in the **Console** and hit return.
+
+![](../img/execute-code-rstudio-console.gif)
+
+---
+
+class: inverse, center, middle
+
+# First steps into R
+
+---
+
+## Installing and loading packages
+
+One of the best features of R is its community of contributors and developers.
+
+There are 19,164 packages on the Comprehensive R Archive Network (CRAN), the main repository. But if we include other repositories, e.g. GitHub, the number of packages is significantly larger.
+
+No matter what you need to do, it is very likely that an R package out there can help you!
+
+If you have succesfully installed R, you can start adding new packages to your R installation simply using the function `install.packages()`.
+
+---
+
+For example, if you want to install ggplot2 you can 
+
+```{r, eval = F}
+install.packages('ggplot2')
+```
+
+Once you have installed your package you can load it with
+
+```{r, eval = F}
+library(ggplot2)
+```
+
+Note: this time without quotes!
+
+---
+
+class: inverse, center, middle
+
+# Let's start coding...
+
+---
+
+## Creating your first R object
+
+This R code
+
+```{r}
+hello <- "hi"
+```
+
+will do two things. 
+
+1. It will create a new *object* called `hello`;
+
+2. and it will assign to that object the value `"hi"`.
+
+If you run it, well done! You just created your first variable. 
+
+.center[<img src ="https://media.giphy.com/media/jJQC2puVZpTMO4vUs0/giphy.gif" width = '30%'></img>]
+
+---
+
+## Objects? What objects?
+
+R is an object-oriented programming language. 
+
+So everything in R, code or data, is some type of object. When you have an object in your environment (check your top-right window in RStudio) you can ask R to specify what type of object with the function `class()`. 
+
+```{r}
+class(hello)
+```
+
+---
+
+## Functions (1/2)
+
+Another very common and important type of object in R is the **function**.
+
+Yes, a function is also an object!
+
+```{r}
+class(class)
+```
+
+While programming in R, you will eventually create your own functions. More commonly you will use functions available in R base or in one of the packages you have loaded in your session.
+
+You can use a function with
+
+```{r eval = F}
+package::function_name(arguments) # Don't run this!
+```
+
+---
+
+## Functions (2/2)
+
+```{r eval = F}
+package::function_name(arguments) # Don't run this!
+```
+
+* `package::` prefix is optional and names the package defining the function you want to use (essential only if you have functions from different packages sharing the same name, important to tell others which package they need to install to run the function).
+
+* `arguments` will of course varies depending on the function. Some arguments can be as default in the function definition so they are optional.
+
+A function may or may not produce an output. To store an output from a function 
+
+```{r eval = F}
+my_variable <- function_name(arguments) # Don't run this!
+```
+
+
+---
+
+## Loading data (1/2)
+
+R requires all data to be loaded in memory for processing. There are many way to load data and a number of packages offer functions to read in from virtually any format you will ever encounter - from the most common (.csv or .xls) to the rarest. 
+
+If your data was already stored as some collection of R objects, you will likely encounter a data file with the extension **.RData**. You load everything stored in a .RData file with the function `load("mydata.RData")`.<sup>1</sup>  
+
+Wait, why the quotation mark? The `load()` function requires a `character` value indicating the path to the file on your computer. Yet, when you load a package with `library(package_name)` you refer to an object of the R environment by its name - so no quotes!  
+
+
+.footnote[
+[1] Another less common data format is *.Rds* which instead stores a *single* R object. 
+]
+
+---
+
+## Loading data (2/2)
+
+Very often you will need to read data from a spreadsheet. If your data is in a *comma separated values* format, you can use the base function `read.csv("my-file.csv")` - notably your file can be on your computer but can also be somewhere on the Internet. 
+
+For example try this
+
+```{r}
+cities <- 
+  read.csv("https://raw.githubusercontent.com/fraba/SSPS4102/master/data/cities.csv")
+```
+
+---
+
+## Making sense of data objects
+
+Data can come in many different *types* (or *classes*) of objects. Among the most common data "shapes" are *vectors* and *matrices*.
+
+Vectors are values of the same type (e.g. `numeric`, `character`) combined together (with `c()`) in a precise order
+
+```{r}
+#   [1]       [2].     [3]  #
+c("first", "second", "third")
+```
+
+If we *bind* vectors of the same type and of the same lenght, by columns with `cbind()` or by rows `rbind()`, we create a rectangular-shaped data object called a `matrix`. 
+
+A special type of matrix is the `data.frame` in which each column - we refer to a data frame column as *variables* - can be a vector of a different type (e.g. `character` and `numeric`).
+
+---
+
+## Measuring data objects (1/2)
+
+A vector is a one-dimensional data object: it only has a lenght! We measure the length of a vector with `length()`
+
+```{r}
+length(c("first", "second", "third"))
+```
+
+A `matrix` and its buddy the `data.frame` instead have two dimensions: *rows* and *columns*.
+
+Conveniently, the `read.csv()` function will import the data of spreadsheet into a `data.frame` object. If you run it before you should now able to get 
+
+```{r}
+class(cities)
+```
+
+---
+
+## Measuring data objects (2/2)
+
+To measure the size of a `matrix` or `data.frame`, you can use `dim()`, `nrow()` or `ncol`. 
+
+```{r}
+dim(cities)
+```
+
+will detail both dimensions at once while 
+
+```{r}
+ncol(cities)
+
+nrow(cities)
+```
+
+respectively the number of columns and the number of rows.
+
+---
+
+## RStudio project (1/2)
+
+(A more expansive documentation on RStudio project is available [here on Canvas](https://canvas.sydney.edu.au/courses/49127/modules/items/1865380).)
+
+To effectively complete your tasks (the three assignments but also the weekly problem sets) you want to familiarise yourself with **RStudio projects**.
+
+**RStudio projects** facilitate working with R code and data files. But they also greatly facilitate sharing your projects with others (when submitting your assignments, you are required to also upload the compressed folder of your project).
+
+![](http://www.rstudio.com/images/docs/projects_new.png)
+
+---
+
+## RStudio project (2/2)
+
+An RStudio project is located in a dedicated folder on your computer and that folder will also be the working directory, when you open a project in your *R session*. 
+
+There are two key files linked to your project and placed in your project folder:
+
+1. The file "[name-of-your-project].Rproj" contains the metadata about your project (this is a small file);
+
+2. The file ".RData" (no file name, just the extension ".RData") contains all the objects of your environment and is loaded/saved when you open/close your project. 
+
+
+---
+
+## Week 01 Individual quiz/tutorial (in class)
+
+```{r eval = F, echo = T}
+install.packages("remotes")
+remotes::install_github("kosukeimai/qss-package", build_vignettes = TRUE)
+remotes::install_github("rstudio/learnr")
+remotes::install_github("rstudio-education/gradethis")
+```
+
+```{r eval = F, echo = T}
+remotes::install_github("fraba/sspslearnr")
+```
+
+```{r eval = F, echo = T}
+learnr::run_tutorial("week-01", package = "sspslearnr")
+```
+
+Do first two parts only, 
+
+* **Basics of R**
+* **Working with Data**
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+
+---
+class: inverse
+
+# Stats: Data & Datasets, Variables, Mean
+
+(Refer to other slide deck)
+
+---
+
+## Week 01 Individual quiz/tutorial (in class)
+
+* **Introductory stats**
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+---
+
+# Attendance
+
+---
+
+# Group problem set (Canvas)
+
+
+
+---
+class: inverse, center, middle
+
+# Questions?
+
+---
+class: center, middle
+
+# See you next week with The Selection of a Research Approach
+
