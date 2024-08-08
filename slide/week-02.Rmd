@@ -42,21 +42,35 @@ I would like to acknowledge the Traditional Owners of Australia and  recognise t
 
 ## Recap
 
+- First steps into to R
+
+- What are data/datasets?
+  - what is an observation?
+  - what is a variable?
+  
+- Types of variables based on content
+  - character vs. numeric variables
+  - binary vs. non-binary variables
+  
+- Average or mean of a variable
+  - how to compute it?
+  - how to interpret it?
+
+Any question?
 
 ---
 
 ## Today's class
 
 
-| Time (tentative)  | Content                                                                                        |
-|---------------|------------------------------------------------------------------------------------------------|
-| 11:00 - 11:40 |   |
-| 11:40 - 12:00 |                                                         |
-| 12:00 - 12:15 |                                                                |
-| 12:15 - 12:45 |                                                       |
-| 12:45 - 13:00 |                                                                                         |
-| 13:00 - 13:15 |                                                             |
-| 13:15 - 14:00 |                                                            |
+| Time          | Content                   |
+|---------------|---------------------------|
+| 11:00 - 11:45 | Stats (Causality)         |
+| 11:45 - 12:15 | R Lab (plenary)           |
+| 12:15 - 12:30 | Individual quiz/tutorial  |
+| 12:30 - 12:45 | Break                     |
+| 12:45 - 13:00 | R Markdown                |
+| 13:00 - 14:00 | Group problem set         |
 
 ---
 
