@@ -1,0 +1,567 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 02</br>Causality"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', out.width = "45%", fig.width = 6,
+                      fig.align="center")
+
+library(tidyverse)
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and  recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap
+
+
+---
+
+## Today's class
+
+
+| Time (tentative)  | Content                                                                                        |
+|---------------|------------------------------------------------------------------------------------------------|
+| 11:00 - 11:40 |   |
+| 11:40 - 12:00 |                                                         |
+| 12:00 - 12:15 |                                                                |
+| 12:15 - 12:45 |                                                       |
+| 12:45 - 13:00 |                                                                                         |
+| 13:00 - 13:15 |                                                             |
+| 13:15 - 14:00 |                                                            |
+
+---
+
+## Zoom for in-class support 
+
+If you want to share you screen the from the class (e.g., to get help on your installation or code), join this meeting
+
+.center[https://uni-sydney.zoom.us/j/86005279457]
+
+---
+
+## Let's start with a first question on the difference-in-means!
+
+.center[<img src = '../img/menti_week_02.png' width = '25%'>
+
+OR 
+
+[menti.com/alvgz67hakq2](https://www.menti.com/alvgz67hakq2) 
+
+OR
+
+Menti link from Canvas
+]
+
+
+---
+
+
+<div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden;'><iframe sandbox='allow-scripts allow-same-origin allow-presentation' allowfullscreen='true' allowtransparency='true' frameborder='0' height='315' src='https://www.mentimeter.com/app/presentation/aleo1x7tinbn9z1nvunstwua3or89pbs/embed' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' width='420'></iframe></div>
+
+---
+
+## Individual causal effect vs Average causal effect
+
+.content-box-yellow[
+
+Casual inference is about answering "**WHAT IF?**" questions...
+
+]
+
+* What if Joe Biden (instead of Hillary Clinton) run against Donald Trump in 2016?
+
+When we ask this question, we are interested in the net **effect** of some **intervention** on some **outcome**. 
+
+* What if we pay teacher more? Will it have an effect on students' outcomes?
+
+.content-box-red[
+
+Yet, there is a problem, we can't pay $teacher_{Emily}$ both *more* and *less* so to measure its effect.
+
+]
+
+---
+
+### A counterfactual world, clearly, does not exist ...
+
+.content-box-purple[
+
+It is therefore **impossible** to measure an **individual casual effect**, because $teacher_{Emily}$ is either paid more **or** less.
+
+]
+
+Yet still estimate an **average** causal effect within a population of interest (e.g., NSW teachers) -- and at the end of the day, it is often what we are really interested in.
+
+- We do this by comparing different **samples** (i.e., groups) drawn from the same **population**. 
+
+.content-box-yellow[
+
+1. If sampling is random ( $teacher_{Emily}$ has the same probability of being assigned to any group) and 
+
+2. If we control the treatment (and we randomly assign it to some group only)
+
+]
+
+We can measure an Average Casual (a.k.a. Treatment) Effect on some outcome variable of interest.
+
+---
+
+### Individual causal effect vs Average causal effect
+
+- We will never now the effect of a change in pay for $teacher_{Emily}$ 
+  
+  - (.content-box-red[individual causal effect]);
+
+- But we can know the effect of a change in pay for $teacher_i$, where $teacher_i = \{Emily, ... (\text{and all the other teachers in NSW})\}$
+
+  - (.content-box-yellow[average casual effect])
+
+---
+
+## Association inference vs Causal inference
+
+Why we know that some treatment or intervention (i.e., *higher* salary for teachers) has **caused** an increase in some outcome ( *higher* student performance)?
+
+Because we have run a **randomised experiment** where
+
+1. Individuals (teachers) were **randomly assigned** to one of at least two groups (higher or lower pay);
+
+2. Treatment (higher pay) was (consequentially) also **assigned randomly** to one of the group. 
+
+Randomness allows us to protect the measurement of the effect (i.e., difference-in-means) from other factors that might have influenced the relationship $treatement \rightarrow outcome$.
+
+.content-box-yellow[
+
+Without this control, the difference-in-means doesn't allow for a **causal inference** but an **association inference**.
+
+]
+
+
+---
+
+## Now let's open Professor Elena Llaudet's slides 
+
+(she is the author of one of the two textbooks...)
+
+
+[PDF slides available here on Canvas](https://canvas.sydney.edu.au/courses/59609/files/38636511?module_item_id=2458862)
+
+
+---
+class: inverse
+
+# Lab
+
+(Also based on Professor Elena Llaudet's slides)
+
+---
+
+## Does Social Pressure Affect Turnout?
+
+.center[<img src = '../img/vote.jpg' width = '45%'>]
+
+.footnote[Based on [Alan S. Gerber, Donald P. Green, and Christopher W. Larimer. 2008. ``Social Pressure and Voter Turnout: Evidence from a Large-Scale Field Experiment." *American Political Science Review*](http://www.donaldgreen.com/wp-content/uploads/2015/09/Gerber_Green_Larimer-APSR-2008.pdf), 102 (1): 33-48.]
+
+---
+
+## Does Social Pressure Affect Turnout?
+
+We will answer, by analysing data from an experiment where registered voters were randomly assigned to either 
+
+.content-box-yellow[
+
+- (a) receive a message designed to induce social pressure to vote, or
+    
+- (b) receive nothing
+    
+]
+
+The message told registered voters that .content-box-yellow[after the election their neighbours would be informed about whether they voted in the election or not].
+    
+- What to you think the effect might be?
+
+
+---
+
+- What do we need to calculate to estimate the average causal effect of receiving the message on the probability of turning out to vote?
+
+--
+
+.content-box-red[
+
+.center[the difference-in-means estimator]
+
+]
+   
+--
+
+- Why does the difference-in-means estimator provide us with a *valid* estimate of the average treatment effect in this case?
+
+--
+
+.content-box-yellow[
+
+- because the data come from a randomised experiment (where treatment was randomly assigned)
+    
+- as a result, **treatment** and **control** groups are comparable and we can use the factual outcome of one group as a proxy for the counterfactual outcome of the other
+
+]
+    
+---
+
+- In this case, the **difference-in-means estimator** is:
+
+
+
+$$\overline{voted}_{treatment} - \overline{voted}_{control}$$
+.content-box-purple[
+
+- $\overline{voted}_{treatment}$: proportion of registered voters who voted among those who received the message
+
+- $\overline{voted}_{control}$: proportion of registered voters who voted among those who did not receive the message
+
+]
+
+---
+
+## Let's estimate the difference-in-means estimator with R!
+
+### STEP 1. Download the data 
+
+- Download `voting.csv` from Canvas [link](https://canvas.sydney.edu.au/courses/59609/files/folder/problem-set-files?preview=37498756)
+
+---
+
+### STEP 2. Load `voting.csv` into R     
+
+.center[<img src = '../img/rstudio-import.gif' width = 70%>]
+
+The RStudio feature "Import Dataset" -> "From Text (base)" will write this code for you (making sure to specify the right path to the file).
+
+```{r, eval = F}
+voting <- read.csv("voting.csv") # reads and stores data
+```
+
+```{r, echo = F}
+voting <- read.csv("../data/voting.csv")
+```
+
+Now your data is stored in a dataframe object named `voting`
+---
+
+### STEP 3. Look at the data
+
+```{r}
+head(voting) # shows the first six observations
+```
+
+- what does each **observation** represent?
+- what is the **outcome** variable?
+- what is the **treatment** variable?
+
+---
+
+### STEP 4. Create binary treatment variable
+
+- First, we need to learn how to use `==` and `ifelse()`.
+
+--
+
+- The operator `==`
+
+    + is used to create logical tests that evaluate whether the observations of a variable equal a particular value
+    
+        + values should be in quotes if text but without quotes if numbers
+        
+    + examples: 
+    
+        + `variable == 1` 
+        + `variable == yes`
+
+---
+
+- The function `ifelse()`
+
+    - creates the contents of a new variable based on the values of an existing one
+    - requires three arguments, separated by commas, in the following order: 
+    
+       1. logical test (using `==`),
+       2. return value if logical test is `TRUE`,
+       3. return value if logical test is `FALSE`.
+
+#### Example
+       
+```{r eval = F}
+ifelse(variable=="yes", 1, 0)
+```
+
+    
+---
+
+### STEP 5. Create binary treatment variable
+
+#### ifelse on data frame's variables
+
+Using `ifelse()` we can create a new variable (i.e. column) in a data frame with this syntax
+
+```{r eval = F}
+data$new_variable <- 
+  ifelse(data$variable == "yes", 1, 0)
+```
+
+--
+
+Let's now create a new variable in our data frame
+
+```{r}
+
+## create variable pressure inside dataframe voting
+voting$pressure <- # stores return values in new variable
+  ifelse(voting$message=="yes", # logical test
+         1, # return value if logical test is true
+         0) # return value if logical test is false
+```
+
+--
+
+- You need to run the code all at once (not line by line)
+- Remember that R will ignore anything that follows the `#` sign, until the end of the line
+
+---
+
+#### Let's check that everything is OK ...
+
+```{r}
+head(voting) # shows first observations
+```
+
+- Note that when *message* equals "yes", *pressure* equals 1; and when *message* equals "no", *pressure* equals 0
+
+---
+
+## STEP 6. Compute the difference-in-means estimator
+
+$$\overline{Y}_{treatment} - \overline{Y}_{control}$$
+We use the letter $Y$ which conventionally denotes the **outcome** (a.k.a. **dependent**) variable.
+
+
+- $\overline{Y}_{treatment}$: average outcome for the treatment group
+- $\overline{Y}_{control}$: average outcome for the control group
+
+
+- In the voting experiment:
+
+$\overline{voted}_{treatment} - \overline{voted}_{control}$
+
++ $\overline{voted}_{treatment}$: mean of *voted* for treatment group
++ $\overline{voted}_{control}$: mean of *voted* for control group
+
+---
+
+- Let's start by practising computing and interpreting means (with the function `mean()`)
+
+```{r}
+mean(voting$voted) # calculates the mean of voted
+```
+
+- Interpretation?
+    + 31% of *all* the registered voters who were part of the experiment voted
+    
+- Why in %?
+    + Because *voted* is binary
+    + Recall: The mean of a binary variable should be interpreted in \% (after multiplying the output by 100)
+
+---
+
+### Now, how do we estimate the difference-in-means estimator?
+
+- `mean(voting$voted` computes the mean of *voted* for all the observations in the dataset (that is, for all the registered voters in the experiment)
+
+- To compute the difference-in-means estimator, we need to calculate the mean of *voted* for subsets of observations
+
+- Specifically, we need to compute:
+
+    + the mean of *voted* for the treatment group, that is, for the observations that were treated (for which *pressure* equals 1)
+    
+    + the mean of *voted* for the control group, that is, for the observations that were not treated (for which *pressure* equals 0)
+
+- To do this, we need to learn how to use the `[]` operator
+
+---
+
+- Operator `[]`:
+
+  - extracts a selection of observations from a variable
+  - to its left, we specify the variable we want to subset
+  - inside the square brackets, we specify the criteria of selection (for example, we can specify a logical test using the relational operator `==`)
+    
+Example:
+
+```{r eval = F}
+data$var1[data$var2==1] ## Don't run
+```
+    
+  - extracts the observations of the variable `var1` for which the variable `var2` equals 1
+  
+---
+
+#### Let's Compute the mean of *voted* for treatment and control groups
+
+```{r}
+mean(voting$voted[voting$pressure==1]) # treatment
+mean(voting$voted[voting$pressure==0]) # control
+```
+
+.content-box-green[
+
+- Interpretation of the first mean?
+    + 30% of the registered voters who did *not* receive the message voted (30x100=30%)
+    
+- Interpretation of the second mean?
+    + 38% of the registered voters who received the message voted (38x100=38%)
+    
+]
+    
+---
+
+#### Now, we can compute the difference-in-means estimator as the difference between the two means above:
+
+```{r}
+mean(voting$voted[voting$pressure==1]) - 
+  mean(voting$voted[voting$pressure==0]) 
+```
+
+Direction, size, and unit of measurement of the effect?
+
+--
+
+- increase of 8 percentage points
+
+--
+
+- *increase* because we are measuring a change in $Y$ and the number is positive
+
+--
+
+- *percentage points* because it is the result of subtracting two percentages: %-% = p.p. (because *voted* is binary)
+
+--
+
+- *8* (and not 0.08) because we need to multiply the number by 100 to turn it into p.p. (because *voted* is binary)
+
+--
+
+- 38% - 30% = 8 p.p.
+
+---
+
+## STEP 7. Write conclusion statement
+
+- What's the assumption we are making when estimating the average causal effect? 
+    + registered voters who received the message are comparable to registered voters who did not
+
+- Why is this a reasonable assumption?
+    + data comes from a randomized experiment
+    
+- What's the treatment? 
+    + receiving the message inducing social `pressure`
+
+- What's the **outcome** (a.k.a. **dependent variable**)? 
+    + probability of voting
+
+- What's the direction, size, and unit of measurement of the average causal effect?
+    + an increase of 8 percentage points, on average
+
+---
+
+.blockquote[
+### Conclusion statement (template)
+
+Assuming that .content-box-gray[the treatment and control groups are comparable] (a reasonable assumption because .content-box-gray[...]), we estimate that .content-box-gray[the treatment] .content-box-gray[increases/decreases] .content-box-gray[the outcome] by.content-box-gray[size and unit of measurement of the effect], on average.
+
+]
+
+--- 
+ 
+.blockquote[ 
+### Conclusion statement (for this study)
+Assuming that .content-box-green[registered voters who received the message are comparable to the registered voters who did not] (a reasonable assumption because .content-box-green[the data come from a randomized experiment]), we estimate that .content-box-green[receiving the message inducing social pressure] .content-box-green[increases] .content-box-green[the probability of voting] by .content-box-green[8 percentage points], on average.
+]
+
+---
+
+## Recap for today's stats
+
+- Causal Effects
+- Treatment and Outcome Variables
+- Individual vs. Average Causal Effects
+- Randomized Experiments
+- Difference-in-Means Estimator
+- Units of Measurement of Means
+and Diffs-in-Means
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial
+
+---
+class: inverse, center, middle
+
+# How to render a R markdown document into a PDF
+
+---
+
+(This page is also available on [Canvas here](https://canvas.sydney.edu.au/courses/59609/pages/how-to-render-an-r-markdown-document-into-a-pdf-document))
+
+<p><iframe src="https://fraba.github.io/SSPS4102/doc/how-to-render-rmd" width="100%" height="560px"></iframe></p>
+
+---
+class: inverse, center, middle
+
+# Group problem set
+
+---
+
+# Attendance
+
+
+---
+class: inverse, center, middle
+
+# Questions?
+
+---
+class: center, middle
+
+# See you next week with Data visualisation with R
+

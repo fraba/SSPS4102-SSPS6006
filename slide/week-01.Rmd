@@ -916,5 +916,5 @@ class: inverse, center, middle
 ---
 class: center, middle
 
-# See you next week with The Selection of a Research Approach
+# See you next week with Causality
 
