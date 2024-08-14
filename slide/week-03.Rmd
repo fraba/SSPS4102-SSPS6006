@@ -1,0 +1,1117 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 03</br>Data visualisation"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+
+---
+
+background-image: url(https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9780133041187/files/graphics/fmfig02.jpg)
+background-size: 100%
+
+# Data visualisation
+
+---
+
+## The five qualities of great visualisations
+
+1. It is **truthful**, as it’s based on thorough and honest research.
+
+2. It is **functional**, as it constitutes an accurate depiction of the data, and it’s built in a way that lets people do meaningful operations based on it (seeing change in time).
+
+3. It is **beautiful**, in the sense of being attractive, intriguing, and even aesthetically pleasing for its intended audience—scientists, in the first place, but the general public, too.
+
+4. It is **insightful**, as it reveals evidence that we would have a hard time seeing otherwise.
+
+5. It is **enlightening** because if we grasp and accept the evidence it depicts, it will change our minds for the better.
+
+Cairo, A. (2016). 2. The five qualities of great visualizations. *In The Truthful Art: Data, Charts, and Maps for Communication*. Pearson Education.
+
+---
+
+## What Makes Bad Figures Bad 
+
+### 1. Bad taste
+
+.center[<img src = 'https://socviz.co/assets/ch-01-chartjunk-life-expectancy.png' width = '70%'></img>]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+## What Makes Bad Figures Bad
+
+### 2. Bad data: How do you read this figure?
+
+.center[<img src = 'https://socviz.co/assets/ch-01-democracy-nyt-version.png' width = '80%'></img>]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+### 2. Bad data
+
+What are the problems with this figure? 
+
+> ... lines do not show a trend measured each decade from the 1930s but rather differences in the answers given by people born in different decades, all of whom were asked the question at the same time. Given that, a bar graph might have been a more appropriate to display the results.
+
+> ... the survey question asked respondents to rate the importance of living in a democracy on a ten-point scale, with 1 being “Not at all Important” and 10 being “Absolutely Important.” The graph showed the difference across ages of people who had given a score of 10 only, not changes in the average score on the question.
+
+
+---
+
+### This is a more appropriate way to represent the same data ...
+
+<img src = '../img/bad-figure-example-01.png'>
+
+---
+
+## What Makes Bad Figures Bad
+
+### 3. Bad perception
+
+.center[<img src = 'https://socviz.co/dataviz-pdfl_files/figure-html4/ch-01-preception-data-1.png'></img>]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+##  Basic perceptual tasks for nine chart types
+
+.pull-left[
+
+.center[<img src ='https://socviz.co/assets/ch-01-channels-for-cont-data-vertical.png' width = "55%"></img>]
+
+]
+
+
+.pull-right[
+
+### Channels for mapping unordered categorical data, arranged top-to-bottom from more to less effective, after Munzer (2014, 102).
+
+Source: Healy, K. (2018). Data visualization: A practical introduction. Princeton University Press.
+
+]
+
+
+
+
+---
+
+## Why do we visualise data?
+
+#### 1. We visualise data because we want to understand it as part of our *analysis* process. 
+
+.pull-left[
+
+```{r echo = F, out.width = "90%"}
+cowplot::plot_grid(
+  ggplot(anscombe, aes(x = x1, y = y1)) +
+    geom_point() +
+    geom_smooth(method = 'lm', se = FALSE) +
+    coord_cartesian(xlim = c(0, 20), ylim = c(0,15)),
+  ggplot(anscombe, aes(x = x2, y = y2)) +
+    geom_point() +
+    geom_smooth(method = 'lm', se = FALSE) +
+    coord_cartesian(xlim = c(0, 20), ylim = c(0,15)),
+  ggplot(anscombe, aes(x = x3, y = y3)) +
+    geom_point() +
+    geom_smooth(method = 'lm', se = FALSE) +
+    coord_cartesian(xlim = c(0, 20), ylim = c(0,15)),
+  ggplot(anscombe, aes(x = x4, y = y4)) +
+    geom_point() +
+    geom_smooth(method = 'lm', se = FALSE) +
+    coord_cartesian(xlim = c(0, 20), ylim = c(0,15)),
+  ncol = 2)
+```
+
+]
+
+.pull-right[
+
+Consider these data. 
+
+These four combinations of variables return the exact same correlation and slope. 
+
+And yet these variables are totally different - something you might miss if you don't visualise it before jumping into your analysis.
+
+]
+
+
+---
+
+## Why do we visualise data?
+
+#### 2. We visualise data to (1) communicate to (2) some audience (3) selected insights from our data analysis excercise
+
+.center[<img src = 'https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9780133041187/files/graphics/02fig13_newyork.jpg' width = '85%'></img>]
+
+---
+class: inverse, center, middle
+
+# Lab
+
+---
+
+## The gapminder package
+
+To replicate the code in the next slide, you need to install and load the *gapminder* package. 
+
+.pull-left[
+
+Do it now with 
+
+```{r eval = F}
+
+install.packages("gapminder")
+
+library(gapminder)
+
+```
+
+]
+
+.pull-right[
+<img src = 'https://media.giphy.com/media/3o6Ygfw40tlnPhX87m/giphy.gif'></img>
+]
+
+---
+
+## Preliminary information (1/2)
+
+Q: **What is a tibble?** A: Tibbles *are* data frames.<sup>1</sup>
+
+```{r inlude = F}
+gapminder 
+```
+
+Q: What does a row in this data frame represent?  
+
+.footnote[
+[1] If you want to know more: https://r4ds.had.co.nz/tibbles.html
+]
+
+---
+
+## Preliminary information (2/2)
+
+Q: **What is tidy data?** 
+
+A: Simply, *tidy* data is data that is in a single rectangular data object of class `data.frame` (or `tibble`), where
+
+.pull-left[
+
+1. Every **column** is a variable.
+
+2. Every **row** is an observation.
+
+3. Every **cell** is a single value.
+
+]
+
+.pull-right[
+
+```{r echo = F}
+gapminder %>%
+  dplyr::select(1:4) %>%
+  dplyr::slice(1:4) %>%
+  knitr::kable()
+```
+
+
+]
+
+</br>
+
+Remember that if your data is not *tidy*, ggplot2 will not take it!
+
+For more information, https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html 
+
+---
+
+## How to use RStudio projects
+
+[Link to Canvas page](https://canvas.sydney.edu.au/courses/59609/pages/how-to-use-rstudio-projects?module_item_id=2356233)
+
+---
+
+## Visualisations in R
+
+The two most popular ways to make data visualisation in R are 
+
+1. To use the **base** package.
+
+2. To use the **ggplot2** package, which is part of the *Tidyverse*, "a collection of R packages designed for data science" (see https://www.tidyverse.org/). 
+
+As you will soon realise, the textbook doesn't use ggplot2 but instead produces all the visualisations using the base package. 
+
+---
+
+### Visualisations in R: base vs ggplot2
+
+With the base package ...
+
+```{r eval = F}
+plot(x = gapminder$gdpPercap, 
+     y = gapminder$lifeExp)
+```
+
+... and with ggplot2
+
+```{r eval = F}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap,
+                     y = lifeExp)) +
+  geom_point()
+```
+
+---
+
+### Visualisations in R: base vs ggplot2
+
+With these results: 
+
+.pull-left[
+
+```{r fig.cap = "base", fig.width = 4, fig.height = 4, echo = F, out.width='80%'}
+plot(x = gapminder$gdpPercap, 
+     y = gapminder$lifeExp)
+```
+
+]
+
+.pull-right[
+
+```{r fig.cap = "ggplot2",  fig.width = 4, fig.height = 4, echo = F, out.width='80%'}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap,
+                     y = lifeExp)) +
+  geom_point()
+```
+
+]
+
+---
+
+class: inverse, center, middle
+
+# ggplot2: the basics
+
+---
+
+## Why to use ggplot2?
+
+1. If ggplot2 is more *expensive* in terms of lines of code (see previous slides) is also more *effective* and *intuitive* for making *complex* visualisations.
+
+2. By learning ggplot2, you learn a basic visualisation grammar that is use by a large number of third-party packages (ggplot2 is the *de-facto* visualisation standard for R).
+
+3. ggplot2 figures look much better already in its default version (so without spending time fine-tuning it). 
+
+4. The documentation is great.  
+
+.center[<img src = 'https://ggplot2.tidyverse.org/logo.png' width = '20%'></img>]
+
+
+---
+
+## The basics of ggplot2
+
+ggplot2 builds your visualisation by *mapping* 
+
+* **variables** 
+
+onto 
+
+* **visual elements** or **aesthetics**: with the function `aes()` (e.g. lines, dots, colours, shapes, areas, labels, ect...) 
+
+
+```{r eval = F}
+
+p <-  
+  ggplot(data = <data>, 
+         mapping = aes(<aesthetic> = <variable>,
+                       <aesthetic> = <variable>,
+                       <   ...   > = <   ...  >))
+# Don't run. Credit: Healy, 2018
+ 
+```
+
+---
+
+## The basics of ggplot2
+
+This creates a ggplot object, with all the instructions to map *variables* to *aesthetics.* But it won't visualise anything yet...
+
+```{r out.width = "15%"}
+
+p <-  
+  ggplot(data = gapminder, 
+         mapping = aes(x = gdpPercap,
+                       y =lifeExp))
+
+class(p)
+```
+
+```{r echo = F, fig.width = 4, fig.height = 4, out.width="30%"}
+p
+```
+
+
+---
+
+## The basics of ggplot2
+
+After we have specified `data = <data>` and `mapping = aes(...)`, we need to pass at least an additional *layer* specifying the *geometry* we want, so that ggplot2 can visualise the mapping.  
+
+
+```{r out.width="45%"}
+p + 
+  geom_point()
+```
+
+---
+
+## Layers
+
+ggplots are constructed by progressively adding new layers with new specifics about your plot. The minimum number required is two: `ggplot(...)` + `geom_<type>(...)` with all the other required layers being set by default.   
+
+
+.pull-left[
+
+```{r eval = F}
+
+ggplot(...) + #<<
+  geom_<type>(...) + #<<
+  scale_<mapping>_<type>(...) +
+  coord_<type>(...) + 
+  labs(...) +
+  facet_grid(...)
+  
+# Don't run. Credit: Healy, 2018
+```
+
+
+]
+
+.pull-right[<img src = 'https://media.giphy.com/media/XMgCFjsCSARxK/giphy.gif'></img>]
+
+---
+
+## Essential ggplot2 decisions
+
+### Layer 0 (the base, invisible layer)
+
+1. Tell the `ggplot()` function what our data is with the `data = <data>` argument.
+
+2. Tell the `ggplot()` function the *relationships* you want to visualise with the `mapping` attribute and the `aes()` function (`mapping = aes()`).
+
+    ### Layer 1 (visible)
+
+3. Tell the geometry you want to see with `geom_<type>` (e.g. `geom_point()`) 
+
+    ### Layer 2+ (visible)
+    
+4. Use additional functions (e.g. `scale_y_continuous()`) to specify everything else 😊
+
+
+---
+
+class: inverse, center, middle
+
+# Aesthetic mapping
+
+---
+
+## Aesthetic mapping
+
+Consider this, 
+
+* Data => variables => *values*
+
+* Aesthetics => properties => *levels*
+
+Values and levels need to be of the same type (continuous vs categorical or you will get an error/warning) 
+
+And remember,
+
+> An aesthetic is a visual property of the objects in your plot.
+
+> You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset.
+
+(Wickham & Grolemund, 2017)
+
+.center[<img src = 'https://media.giphy.com/media/xT9IgpL2wyBi1tCWYg/giphy-downsized-large.gif'></img>]
+
+---
+
+## Aesthetic mapping
+
+```{r out.width="60%", fig.width = 6, fig.height = 4}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, 
+                     y = lifeExp, 
+                     color = continent)) +
+  geom_point()
+```
+
+
+What is going on here? What are the aesthetic *properties* (or *arguments*) that we have set? What do they do?
+
+---
+
+### Aesthetic mapping
+
+There are a many different aesthetic property you can set and whether you need to specify them depends on the type of geometry you will use.
+
+So let's set up our layer 0 and store it into `g`... 
+
+```{r}
+g <- ggplot(data = gapminder)
+```
+
+
+Among the most common aesthetic properties are **`x`** and **`y`** which position in a 2D space. These are usually the only properties that are strictly required.
+
+
+```{r out.width = "20%"}
+g + geom_point(mapping = aes(x = gdpPercap, y = lifeExp))
+```
+
+
+---
+
+### Aesthetic mapping
+
+#### size
+
+```{r fig.width=5, fig.height=4, out.width="60%"}
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+                           size = lifeExp)) #<<
+```
+
+---
+
+### Aesthetic mapping
+
+#### shape
+
+```{r fig.width=5, fig.height=4, out.width="60%"}
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+                           shape = continent)) #<<
+```
+
+---
+
+### Aesthetic mapping
+
+#### colour
+
+```{r fig.width=5, fig.height=4, out.width="60%"}
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+                           colour = continent)) #<<
+```
+
+---
+
+### Aesthetic mapping
+
+#### label
+
+```{r fig.width=5, fig.height=4, out.width="60%"}
+g + 
+  geom_text(mapping = aes(x = gdpPercap, #<<
+                           y = lifeExp, 
+                           label = continent)) #<<
+```
+
+---
+
+### Aesthetic mapping vs aesthetic setting
+
+#### label
+
+```{r fig.width=5, fig.height=4, out.width="50%"}
+g + 
+  geom_text(mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+            label = "My new label") #<<
+```
+
+What happened here?
+
+---
+
+### Aesthetic mapping vs aesthetic setting
+
+#### alpha (transparency, in range 0 to 1)
+
+```{r fig.width=5, fig.height=4, out.width="60%"}
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+            alpha = 0.2) #<< 
+```
+
+---
+
+### Aesthetic mapping (advanced topics!)
+
+Aesthetics can be mapped at the level of the individual geom layer, and so can data...
+
+This can be confusing but actually allows you a lot of flexibility...
+
+```{r fig.width=5, fig.height=4, out.width="50%"}
+ggplot() + # Note, this is empty!
+  geom_point(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+             alpha = .2)
+```
+
+---
+
+### Aesthetic mapping (advanced topics!)
+
+And then...
+
+```{r fig.width=5, fig.height=4, out.width="40%"}
+ggplot() + 
+  geom_point(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+             alpha = .2) +
+    geom_point(data = gapminder[gapminder$country == "Australia",], #<<
+             mapping = aes(x = gdpPercap, #<<
+                           y = lifeExp), #<<
+             colour = "orange", size = 4) #<<
+```
+
+
+---
+
+## How defining data and aesthetics for layers
+
+Data (`data = <data>`) and aesthetics (`mapping = aes(<aesthetics>)`) are defined top-down. Each layer will look for a definition of the two above if not directly provided.
+
+```{r eval = F}
+
+ggplot(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp)) + 
+  geom_<type>() +
+  geom_<type>()
+
+
+```
+
+Let's try this out...
+
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial
+
+Up to **Size and Colour** section (included)
+
+---
+
+class: inverse, center, middle
+
+# Subsetting data frames
+
+
+---
+
+## Subsetting data frames
+
+* Data frames are a combination or vectors. 
+* Vectors have one dimensions: **length**. Data frame have two!
+
+Remind how to subset vectors
+
+```{r}
+my_vec <- c("one", "two", "three")
+my_vec[2]
+my_vec[c(1,3)]
+```
+
+And this is the template on how you subset data frames:
+
+```{r eval = FALSE}
+gapminder[ ..rows.. , ..columns..] # Don't run
+```
+
+.footnote[Note the comma!]
+
+---
+
+#### Selecting rows or columns based on position
+
+```{r}
+gapminder[ c(1,3) , 4  ]
+```
+
+#### Selecting columns based on name
+
+```{r}
+gapminder[ , c("year", "country")]
+```
+
+---
+
+#### Selecting rows based on a condition
+
+```{r}
+gapminder[gapminder$country == "Australia" , ]
+```
+
+---
+
+#### Selecting rows based on more than one condition
+
+```{r}
+gapminder[gapminder$country == "Australia" & gapminder$year == 1972, ]
+```
+
+---
+
+class: inverse, center, middle
+
+# ggplot2 Geometries
+
+---
+
+### What geometries can I use? 
+
+A lot! There are about 50 geometries you can use in ggplot2. A complete list is [here](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf). 
+
+### Which one should I use?
+
+It depends on the variables you plan to visualise...
+
+#### Consider these scenarios
+
+1. ONE VARIABLE continuous
+
+2. ONE VARIABLE discrete
+
+3. TWO VARIABLES continuous x, continuous y
+
+4. TWO VARIABLE discrete x, continuous y
+
+5. THREE VARIABLES
+
+---
+
+## ONE VARIABLE continuous
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = gdpPercap))  
+```
+
+
+.pull-left[
+
+### Histogram
+
+```{r out.width = '80%'}
+g + geom_histogram()
+```
+
+]
+
+.pull-right[
+
+### Density
+
+```{r out.width = '80%'}
+g + geom_density()
+```
+
+]
+
+---
+
+## ONE VARIABLE discrete
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = continent))  
+```
+
+### Bars
+
+```{r out.width = '40%'}
+g + geom_bar()
+```
+
+---
+
+### Wait! What is going on with `geom_histogram()`, `geom_density()` and `geom_bar()`?  
+
+```{r}
+g1 <- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_histogram() 
+g2 <- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_density() 
+g3 <- ggplot(data = gapminder, aes(x = continent)) + geom_bar() 
+```
+
+```{r echo = F, fig.width = 9, fig.height= 3, out.width = "100%"}
+
+cowplot::plot_grid(g1, g2, g3, ncol = 3, labels = c("g1", "g2", "g3"))
+
+```
+
+Where does the y-axis variable come from? 
+
+---
+
+### Some of the `geom_` functions will transform your data, creting a new variable before visualising it ...
+
+<img src = 'https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png' width = '100%'>
+
+---
+
+## TWO VARIABLES continuous x, continuous y
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
+```
+
+.pull-left[
+
+### Point
+
+```{r out.width = '80%'}
+g + geom_point()
+```
+
+]
+
+.pull-right[
+
+### Text (or label)
+
+```{r out.width = '80%'}
+g + geom_text(aes(label = continent)) # try also geom_label
+```
+
+]
+
+---
+
+## TWO VARIABLES continuous x, continuous y (cont. function)
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
+```
+
+
+### Smooth
+
+```{r}
+g + geom_point() + geom_smooth(method = "lm") # Try method = 'loess' #<<
+```
+
+
+---
+
+## TWO VARIABLES continuous x, continuous y 
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = year, y = lifeExp))  
+```
+
+### Line
+
+
+```{r}
+g + geom_line(aes(group = country)) #<<
+```
+
+
+---
+
+## What's the "group" aesthetic again?
+
+Let's try reproducing the same `geom_line()` as before, *without* setting `group` within `aes()`.
+
+```{r}
+g + geom_line()
+```
+
+
+Clearly, not good! the `geom_line()` doesn't know that year are grouped by country so will mesh every value with the same year in the same line!
+
+---
+
+## What's the "group" aesthetic again?
+
+```{r echo = F}
+gapminder %>%
+  dplyr::filter(year == 1982) %>%
+  dplyr::slice(1:5)  %>%
+  knitr::kable()
+```
+
+By setting `aes(group = country)` we specify that each country needs its own different line.
+
+---
+
+## TWO VARIABLE discrete x, continuous y
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = continent))  
+```
+
+.pull-left[
+
+### Columns
+
+```{r out.width = '80%'}
+g + geom_col(aes(y = pop))
+```
+
+]
+
+.pull-right[
+
+### Boxplot
+
+```{r out.width = '80%'}
+g + geom_boxplot(aes(y = lifeExp)) 
+```
+
+]
+
+---
+
+## THREE VARIABLES
+
+```{r}
+g <- ggplot(data = gapminder, aes(x = year, y = continent))  
+```
+
+```{r out.width = '90%', fig.height = 4, fig.width = 9}
+g + geom_tile(aes(fill = lifeExp)) +
+  scale_fill_viridis_c() 
+```
+
+What is going on here?
+
+
+---
+
+class: inverse, center, middle
+
+# Position adjustement
+
+---
+
+## Position scales 
+
+The `scale_<mapping>_<type>()` functions allows you to position scales for your data. It basically, allows to add specifics about how your data/aesthetic mapping should behave. 
+
+Common scenarios are ...
+
+---
+
+## Position scales 
+
+### Setting the colour palette for your mapping
+
+```{r out.width = '40%'}
+ggplot(data = gapminder, aes(x = continent, fill = continent))  +
+  geom_col(aes(y = pop)) +
+  scale_fill_brewer(palette = "Set1")  #<<
+```
+
+---
+
+## Position scales 
+
+###  Setting the limits of your scale to zoom within your chart in some range on the y (vertical axis);
+
+```{r out.width = '40%'}
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))  +
+  geom_point() +
+  scale_y_continuous(limits = c(50, 60)) #<<
+```
+
+---
+
+## Position scales
+
+### Setting the colour palette for your mapping
+
+```{r out.width = '40%'}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp,
+                     colour = lifeExp))  +
+  geom_point() +
+  scale_colour_viridis_c() #<<
+```
+
+---
+
+## Position scales
+
+### Using a scale transformation
+
+```{r out.width = '40%'}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp))  +
+  geom_point() +
+  scale_x_log10() #<<
+```
+
+---
+
+class: inverse, center, middle
+
+# Plot labels
+
+---
+
+To set the labels of your plot's elements - *title*, *axes*, *legends* - you add a `labs()` layer.
+
+It is pretty self-explanatory:
+
+```{r out.width = "75%", fig.width = 6, fig.height = 3}
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp, colour = lifeExp))  +
+  geom_point() +
+  scale_colour_viridis_c() +
+  labs(x = "My x-axis label", y = "My y-axis label",
+       colour = "My colour-legend title,", 
+       title = "my plot's title...", subtitle = "my subtitle",
+       caption = "...and my caption")
+```
+
+
+
+
+---
+
+class: inverse, center, middle
+
+# Facets
+
+---
+
+What if you want to make your visualisation easier to understand by having multiple panels mapping the same variables but for different groups? You can do it with the ggplot's **facets**.
+
+Remember the messy plots with a lot of spaghetti-lines? 
+
+```{r}
+
+g <- 
+  ggplot(data = gapminder, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country))
+
+```
+
+
+Let's make it better, with `facet_grid()`:
+
+```{r out.width = "90%", fig.height = 3, fig.width = 10}
+g + facet_grid(~continent)  #<<
+```
+
+What happened? Try `facet_grid("continent")` instead...
+
+---
+
+### The main elements of ggplot’s grammar of graphics
+
+.pull-left[
+
+.center[<img src = 'https://socviz.co/assets/ch-03-ggplot-flow-vertical.png' width = '35%'></img>]]
+
+.pull-right[Check out the website containing an almost integral version of Kieran Healy's 🔥 book 🔥.
+
+.center[
+
+<img src = 'https://socviz.co/assets/dv-cover-pupress.jpg' width = '65%'></img>
+
+</br>
+https://socviz.co/
+]]
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial
+
+From **One variable categorical (a.k.a., discrete)** until the end
+
+
+---
+
+class: inverse, center, middle
+
+# Group problem set
+
+---
+
+class: inverse, center, middle
+
+# Attendance
+
+

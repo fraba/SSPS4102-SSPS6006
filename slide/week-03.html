@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SSPS [4102|6006] Data Analytics[in the Social Sciences|for Social Research]</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Francesco Bailo" />
+    <script src="week-03_files/header-attrs/header-attrs.js"></script>
+    <link href="week-03_files/remark-css/default.css" rel="stylesheet" />
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+      });
+    </script>
+    <style>
+    .mjx-mrow a {
+      color: black;
+      pointer-events: none;
+      cursor: default;
+    }
+    </style>
+    <link rel="stylesheet" href="assets/sydney-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="assets/sydney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]
+]
+.subtitle[
+## Week 03</br>Data visualisation
+]
+.author[
+### Francesco Bailo
+]
+.date[
+### Semester 2, 2024 (updated: 2024-08-14)
+]
+
+---
+
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+
+---
+
+background-image: url(https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9780133041187/files/graphics/fmfig02.jpg)
+background-size: 100%
+
+# Data visualisation
+
+---
+
+## The five qualities of great visualisations
+
+1. It is **truthful**, as it’s based on thorough and honest research.
+
+2. It is **functional**, as it constitutes an accurate depiction of the data, and it’s built in a way that lets people do meaningful operations based on it (seeing change in time).
+
+3. It is **beautiful**, in the sense of being attractive, intriguing, and even aesthetically pleasing for its intended audience—scientists, in the first place, but the general public, too.
+
+4. It is **insightful**, as it reveals evidence that we would have a hard time seeing otherwise.
+
+5. It is **enlightening** because if we grasp and accept the evidence it depicts, it will change our minds for the better.
+
+Cairo, A. (2016). 2. The five qualities of great visualizations. *In The Truthful Art: Data, Charts, and Maps for Communication*. Pearson Education.
+
+---
+
+## What Makes Bad Figures Bad 
+
+### 1. Bad taste
+
+.center[&lt;img src = 'https://socviz.co/assets/ch-01-chartjunk-life-expectancy.png' width = '70%'&gt;&lt;/img&gt;]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+## What Makes Bad Figures Bad
+
+### 2. Bad data: How do you read this figure?
+
+.center[&lt;img src = 'https://socviz.co/assets/ch-01-democracy-nyt-version.png' width = '80%'&gt;&lt;/img&gt;]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+### 2. Bad data
+
+What are the problems with this figure? 
+
+&gt; ... lines do not show a trend measured each decade from the 1930s but rather differences in the answers given by people born in different decades, all of whom were asked the question at the same time. Given that, a bar graph might have been a more appropriate to display the results.
+
+&gt; ... the survey question asked respondents to rate the importance of living in a democracy on a ten-point scale, with 1 being “Not at all Important” and 10 being “Absolutely Important.” The graph showed the difference across ages of people who had given a score of 10 only, not changes in the average score on the question.
+
+
+---
+
+### This is a more appropriate way to represent the same data ...
+
+&lt;img src = '../img/bad-figure-example-01.png'&gt;
+
+---
+
+## What Makes Bad Figures Bad
+
+### 3. Bad perception
+
+.center[&lt;img src = 'https://socviz.co/dataviz-pdfl_files/figure-html4/ch-01-preception-data-1.png'&gt;&lt;/img&gt;]
+
+Healy, K. (2018). *Data visualization: A practical introduction*. Princeton University Press.
+
+---
+
+##  Basic perceptual tasks for nine chart types
+
+.pull-left[
+
+.center[&lt;img src ='https://socviz.co/assets/ch-01-channels-for-cont-data-vertical.png' width = "55%"&gt;&lt;/img&gt;]
+
+]
+
+
+.pull-right[
+
+### Channels for mapping unordered categorical data, arranged top-to-bottom from more to less effective, after Munzer (2014, 102).
+
+Source: Healy, K. (2018). Data visualization: A practical introduction. Princeton University Press.
+
+]
+
+
+
+
+---
+
+## Why do we visualise data?
+
+#### 1. We visualise data because we want to understand it as part of our *analysis* process. 
+
+.pull-left[
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-1-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Consider these data. 
+
+These four combinations of variables return the exact same correlation and slope. 
+
+And yet these variables are totally different - something you might miss if you don't visualise it before jumping into your analysis.
+
+]
+
+
+---
+
+## Why do we visualise data?
+
+#### 2. We visualise data to (1) communicate to (2) some audience (3) selected insights from our data analysis excercise
+
+.center[&lt;img src = 'https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9780133041187/files/graphics/02fig13_newyork.jpg' width = '85%'&gt;&lt;/img&gt;]
+
+---
+class: inverse, center, middle
+
+# Lab
+
+---
+
+## The gapminder package
+
+To replicate the code in the next slide, you need to install and load the *gapminder* package. 
+
+.pull-left[
+
+Do it now with 
+
+
+``` r
+install.packages("gapminder")
+
+library(gapminder)
+```
+
+]
+
+.pull-right[
+&lt;img src = 'https://media.giphy.com/media/3o6Ygfw40tlnPhX87m/giphy.gif'&gt;&lt;/img&gt;
+]
+
+---
+
+## Preliminary information (1/2)
+
+Q: **What is a tibble?** A: Tibbles *are* data frames.&lt;sup&gt;1&lt;/sup&gt;
+
+
+``` r
+gapminder 
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ℹ 1,694 more rows
+```
+
+Q: What does a row in this data frame represent?  
+
+.footnote[
+[1] If you want to know more: https://r4ds.had.co.nz/tibbles.html
+]
+
+---
+
+## Preliminary information (2/2)
+
+Q: **What is tidy data?** 
+
+A: Simply, *tidy* data is data that is in a single rectangular data object of class `data.frame` (or `tibble`), where
+
+.pull-left[
+
+1. Every **column** is a variable.
+
+2. Every **row** is an observation.
+
+3. Every **cell** is a single value.
+
+]
+
+.pull-right[
+
+
+|country     |continent | year| lifeExp|
+|:-----------|:---------|----:|-------:|
+|Afghanistan |Asia      | 1952|  28.801|
+|Afghanistan |Asia      | 1957|  30.332|
+|Afghanistan |Asia      | 1962|  31.997|
+|Afghanistan |Asia      | 1967|  34.020|
+
+
+]
+
+&lt;/br&gt;
+
+Remember that if your data is not *tidy*, ggplot2 will not take it!
+
+For more information, https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html 
+
+---
+
+## How to use RStudio projects
+
+[Link to Canvas page](https://canvas.sydney.edu.au/courses/59609/pages/how-to-use-rstudio-projects?module_item_id=2356233)
+
+---
+
+## Visualisations in R
+
+The two most popular ways to make data visualisation in R are 
+
+1. To use the **base** package.
+
+2. To use the **ggplot2** package, which is part of the *Tidyverse*, "a collection of R packages designed for data science" (see https://www.tidyverse.org/). 
+
+As you will soon realise, the textbook doesn't use ggplot2 but instead produces all the visualisations using the base package. 
+
+---
+
+### Visualisations in R: base vs ggplot2
+
+With the base package ...
+
+
+``` r
+plot(x = gapminder$gdpPercap, 
+     y = gapminder$lifeExp)
+```
+
+... and with ggplot2
+
+
+``` r
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap,
+                     y = lifeExp)) +
+  geom_point()
+```
+
+---
+
+### Visualisations in R: base vs ggplot2
+
+With these results: 
+
+.pull-left[
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-7-1.svg" alt="base" width="80%" /&gt;
+&lt;p class="caption"&gt;base&lt;/p&gt;
+&lt;/div&gt;
+
+]
+
+.pull-right[
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-8-1.svg" alt="ggplot2" width="80%" /&gt;
+&lt;p class="caption"&gt;ggplot2&lt;/p&gt;
+&lt;/div&gt;
+
+]
+
+---
+
+class: inverse, center, middle
+
+# ggplot2: the basics
+
+---
+
+## Why to use ggplot2?
+
+1. If ggplot2 is more *expensive* in terms of lines of code (see previous slides) is also more *effective* and *intuitive* for making *complex* visualisations.
+
+2. By learning ggplot2, you learn a basic visualisation grammar that is use by a large number of third-party packages (ggplot2 is the *de-facto* visualisation standard for R).
+
+3. ggplot2 figures look much better already in its default version (so without spending time fine-tuning it). 
+
+4. The documentation is great.  
+
+.center[&lt;img src = 'https://ggplot2.tidyverse.org/logo.png' width = '20%'&gt;&lt;/img&gt;]
+
+
+---
+
+## The basics of ggplot2
+
+ggplot2 builds your visualisation by *mapping* 
+
+* **variables** 
+
+onto 
+
+* **visual elements** or **aesthetics**: with the function `aes()` (e.g. lines, dots, colours, shapes, areas, labels, ect...) 
+
+
+
+``` r
+p &lt;-  
+  ggplot(data = &lt;data&gt;, 
+         mapping = aes(&lt;aesthetic&gt; = &lt;variable&gt;,
+                       &lt;aesthetic&gt; = &lt;variable&gt;,
+                       &lt;   ...   &gt; = &lt;   ...  &gt;))
+# Don't run. Credit: Healy, 2018
+```
+
+---
+
+## The basics of ggplot2
+
+This creates a ggplot object, with all the instructions to map *variables* to *aesthetics.* But it won't visualise anything yet...
+
+
+``` r
+p &lt;-  
+  ggplot(data = gapminder, 
+         mapping = aes(x = gdpPercap,
+                       y =lifeExp))
+
+class(p)
+```
+
+```
+## [1] "gg"     "ggplot"
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-11-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## The basics of ggplot2
+
+After we have specified `data = &lt;data&gt;` and `mapping = aes(...)`, we need to pass at least an additional *layer* specifying the *geometry* we want, so that ggplot2 can visualise the mapping.  
+
+
+
+``` r
+p + 
+  geom_point()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-12-1.svg" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Layers
+
+ggplots are constructed by progressively adding new layers with new specifics about your plot. The minimum number required is two: `ggplot(...)` + `geom_&lt;type&gt;(...)` with all the other required layers being set by default.   
+
+
+.pull-left[
+
+
+``` r
+*ggplot(...) +
+* geom_&lt;type&gt;(...) +
+  scale_&lt;mapping&gt;_&lt;type&gt;(...) +
+  coord_&lt;type&gt;(...) + 
+  labs(...) +
+  facet_grid(...)
+  
+# Don't run. Credit: Healy, 2018
+```
+
+
+]
+
+.pull-right[&lt;img src = 'https://media.giphy.com/media/XMgCFjsCSARxK/giphy.gif'&gt;&lt;/img&gt;]
+
+---
+
+## Essential ggplot2 decisions
+
+### Layer 0 (the base, invisible layer)
+
+1. Tell the `ggplot()` function what our data is with the `data = &lt;data&gt;` argument.
+
+2. Tell the `ggplot()` function the *relationships* you want to visualise with the `mapping` attribute and the `aes()` function (`mapping = aes()`).
+
+    ### Layer 1 (visible)
+
+3. Tell the geometry you want to see with `geom_&lt;type&gt;` (e.g. `geom_point()`) 
+
+    ### Layer 2+ (visible)
+    
+4. Use additional functions (e.g. `scale_y_continuous()`) to specify everything else 😊
+
+
+---
+
+class: inverse, center, middle
+
+# Aesthetic mapping
+
+---
+
+## Aesthetic mapping
+
+Consider this, 
+
+* Data =&gt; variables =&gt; *values*
+
+* Aesthetics =&gt; properties =&gt; *levels*
+
+Values and levels need to be of the same type (continuous vs categorical or you will get an error/warning) 
+
+And remember,
+
+&gt; An aesthetic is a visual property of the objects in your plot.
+
+&gt; You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset.
+
+(Wickham &amp; Grolemund, 2017)
+
+.center[&lt;img src = 'https://media.giphy.com/media/xT9IgpL2wyBi1tCWYg/giphy-downsized-large.gif'&gt;&lt;/img&gt;]
+
+---
+
+## Aesthetic mapping
+
+
+``` r
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, 
+                     y = lifeExp, 
+                     color = continent)) +
+  geom_point()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-14-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+What is going on here? What are the aesthetic *properties* (or *arguments*) that we have set? What do they do?
+
+---
+
+### Aesthetic mapping
+
+There are a many different aesthetic property you can set and whether you need to specify them depends on the type of geometry you will use.
+
+So let's set up our layer 0 and store it into `g`... 
+
+
+``` r
+g &lt;- ggplot(data = gapminder)
+```
+
+
+Among the most common aesthetic properties are **`x`** and **`y`** which position in a 2D space. These are usually the only properties that are strictly required.
+
+
+
+``` r
+g + geom_point(mapping = aes(x = gdpPercap, y = lifeExp))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-16-1.svg" width="20%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Aesthetic mapping
+
+#### size
+
+
+``` r
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+*                          size = lifeExp))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-17-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping
+
+#### shape
+
+
+``` r
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+*                          shape = continent))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-18-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping
+
+#### colour
+
+
+``` r
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp, 
+*                          colour = continent))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-19-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping
+
+#### label
+
+
+``` r
+g + 
+* geom_text(mapping = aes(x = gdpPercap,
+                           y = lifeExp, 
+*                          label = continent))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-20-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping vs aesthetic setting
+
+#### label
+
+
+``` r
+g + 
+  geom_text(mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+*           label = "My new label")
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-21-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
+What happened here?
+
+---
+
+### Aesthetic mapping vs aesthetic setting
+
+#### alpha (transparency, in range 0 to 1)
+
+
+``` r
+g + 
+  geom_point(mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+*           alpha = 0.2)
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-22-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping (advanced topics!)
+
+Aesthetics can be mapped at the level of the individual geom layer, and so can data...
+
+This can be confusing but actually allows you a lot of flexibility...
+
+
+``` r
+ggplot() + # Note, this is empty!
+  geom_point(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+             alpha = .2)
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-23-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Aesthetic mapping (advanced topics!)
+
+And then...
+
+
+``` r
+ggplot() + 
+  geom_point(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp),
+             alpha = .2) +
+*   geom_point(data = gapminder[gapminder$country == "Australia",],
+*            mapping = aes(x = gdpPercap,
+*                          y = lifeExp),
+*            colour = "orange", size = 4)
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-24-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## How defining data and aesthetics for layers
+
+Data (`data = &lt;data&gt;`) and aesthetics (`mapping = aes(&lt;aesthetics&gt;)`) are defined top-down. Each layer will look for a definition of the two above if not directly provided.
+
+
+``` r
+ggplot(data = gapminder, 
+             mapping = aes(x = gdpPercap, 
+                           y = lifeExp)) + 
+  geom_&lt;type&gt;() +
+  geom_&lt;type&gt;()
+```
+
+Let's try this out...
+
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial
+
+Up to **Size and Colour** section (included)
+
+---
+
+class: inverse, center, middle
+
+# Subsetting data frames
+
+
+---
+
+## Subsetting data frames
+
+* Data frames are a combination or vectors. 
+* Vectors have one dimensions: **length**. Data frame have two!
+
+Remind how to subset vectors
+
+
+``` r
+my_vec &lt;- c("one", "two", "three")
+my_vec[2]
+```
+
+```
+## [1] "two"
+```
+
+``` r
+my_vec[c(1,3)]
+```
+
+```
+## [1] "one"   "three"
+```
+
+And this is the template on how you subset data frames:
+
+
+``` r
+gapminder[ ..rows.. , ..columns..] # Don't run
+```
+
+.footnote[Note the comma!]
+
+---
+
+#### Selecting rows or columns based on position
+
+
+``` r
+gapminder[ c(1,3) , 4  ]
+```
+
+```
+## # A tibble: 2 × 1
+##   lifeExp
+##     &lt;dbl&gt;
+## 1    28.8
+## 2    32.0
+```
+
+#### Selecting columns based on name
+
+
+``` r
+gapminder[ , c("year", "country")]
+```
+
+```
+## # A tibble: 1,704 × 2
+##     year country    
+##    &lt;int&gt; &lt;fct&gt;      
+##  1  1952 Afghanistan
+##  2  1957 Afghanistan
+##  3  1962 Afghanistan
+##  4  1967 Afghanistan
+##  5  1972 Afghanistan
+##  6  1977 Afghanistan
+##  7  1982 Afghanistan
+##  8  1987 Afghanistan
+##  9  1992 Afghanistan
+## 10  1997 Afghanistan
+## # ℹ 1,694 more rows
+```
+
+---
+
+#### Selecting rows based on a condition
+
+
+``` r
+gapminder[gapminder$country == "Australia" , ]
+```
+
+```
+## # A tibble: 12 × 6
+##    country   continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Australia Oceania    1952    69.1  8691212    10040.
+##  2 Australia Oceania    1957    70.3  9712569    10950.
+##  3 Australia Oceania    1962    70.9 10794968    12217.
+##  4 Australia Oceania    1967    71.1 11872264    14526.
+##  5 Australia Oceania    1972    71.9 13177000    16789.
+##  6 Australia Oceania    1977    73.5 14074100    18334.
+##  7 Australia Oceania    1982    74.7 15184200    19477.
+##  8 Australia Oceania    1987    76.3 16257249    21889.
+##  9 Australia Oceania    1992    77.6 17481977    23425.
+## 10 Australia Oceania    1997    78.8 18565243    26998.
+## 11 Australia Oceania    2002    80.4 19546792    30688.
+## 12 Australia Oceania    2007    81.2 20434176    34435.
+```
+
+---
+
+#### Selecting rows based on more than one condition
+
+
+``` r
+gapminder[gapminder$country == "Australia" &amp; gapminder$year == 1972, ]
+```
+
+```
+## # A tibble: 1 × 6
+##   country   continent  year lifeExp      pop gdpPercap
+##   &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+## 1 Australia Oceania    1972    71.9 13177000    16789.
+```
+
+---
+
+class: inverse, center, middle
+
+# ggplot2 Geometries
+
+---
+
+### What geometries can I use? 
+
+A lot! There are about 50 geometries you can use in ggplot2. A complete list is [here](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf). 
+
+### Which one should I use?
+
+It depends on the variables you plan to visualise...
+
+#### Consider these scenarios
+
+1. ONE VARIABLE continuous
+
+2. ONE VARIABLE discrete
+
+3. TWO VARIABLES continuous x, continuous y
+
+4. TWO VARIABLE discrete x, continuous y
+
+5. THREE VARIABLES
+
+---
+
+## ONE VARIABLE continuous
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = gdpPercap))  
+```
+
+
+.pull-left[
+
+### Histogram
+
+
+``` r
+g + geom_histogram()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-33-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+### Density
+
+
+``` r
+g + geom_density()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-34-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## ONE VARIABLE discrete
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = continent))  
+```
+
+### Bars
+
+
+``` r
+g + geom_bar()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-36-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Wait! What is going on with `geom_histogram()`, `geom_density()` and `geom_bar()`?  
+
+
+``` r
+g1 &lt;- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_histogram() 
+g2 &lt;- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_density() 
+g3 &lt;- ggplot(data = gapminder, aes(x = continent)) + geom_bar() 
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-38-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+Where does the y-axis variable come from? 
+
+---
+
+### Some of the `geom_` functions will transform your data, creting a new variable before visualising it ...
+
+&lt;img src = 'https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png' width = '100%'&gt;
+
+---
+
+## TWO VARIABLES continuous x, continuous y
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
+```
+
+.pull-left[
+
+### Point
+
+
+``` r
+g + geom_point()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-40-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+### Text (or label)
+
+
+``` r
+g + geom_text(aes(label = continent)) # try also geom_label
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-41-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## TWO VARIABLES continuous x, continuous y (cont. function)
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
+```
+
+
+### Smooth
+
+
+``` r
+*g + geom_point() + geom_smooth(method = "lm") # Try method = 'loess'
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-43-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## TWO VARIABLES continuous x, continuous y 
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = year, y = lifeExp))  
+```
+
+### Line
+
+
+
+``` r
+*g + geom_line(aes(group = country))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-45-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## What's the "group" aesthetic again?
+
+Let's try reproducing the same `geom_line()` as before, *without* setting `group` within `aes()`.
+
+
+``` r
+g + geom_line()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-46-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+
+Clearly, not good! the `geom_line()` doesn't know that year are grouped by country so will mesh every value with the same year in the same line!
+
+---
+
+## What's the "group" aesthetic again?
+
+
+|country     |continent | year| lifeExp|      pop| gdpPercap|
+|:-----------|:---------|----:|-------:|--------:|---------:|
+|Afghanistan |Asia      | 1982|  39.854| 12881816|  978.0114|
+|Albania     |Europe    | 1982|  70.420|  2780097| 3630.8807|
+|Algeria     |Africa    | 1982|  61.368| 20033753| 5745.1602|
+|Angola      |Africa    | 1982|  39.942|  7016384| 2756.9537|
+|Argentina   |Americas  | 1982|  69.942| 29341374| 8997.8974|
+
+By setting `aes(group = country)` we specify that each country needs its own different line.
+
+---
+
+## TWO VARIABLE discrete x, continuous y
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = continent))  
+```
+
+.pull-left[
+
+### Columns
+
+
+``` r
+g + geom_col(aes(y = pop))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-49-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+### Boxplot
+
+
+``` r
+g + geom_boxplot(aes(y = lifeExp)) 
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-50-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## THREE VARIABLES
+
+
+``` r
+g &lt;- ggplot(data = gapminder, aes(x = year, y = continent))  
+```
+
+
+``` r
+g + geom_tile(aes(fill = lifeExp)) +
+  scale_fill_viridis_c() 
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-52-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+What is going on here?
+
+
+---
+
+class: inverse, center, middle
+
+# Position adjustement
+
+---
+
+## Position scales 
+
+The `scale_&lt;mapping&gt;_&lt;type&gt;()` functions allows you to position scales for your data. It basically, allows to add specifics about how your data/aesthetic mapping should behave. 
+
+Common scenarios are ...
+
+---
+
+## Position scales 
+
+### Setting the colour palette for your mapping
+
+
+``` r
+ggplot(data = gapminder, aes(x = continent, fill = continent))  +
+  geom_col(aes(y = pop)) +
+* scale_fill_brewer(palette = "Set1")
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-53-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Position scales 
+
+###  Setting the limits of your scale to zoom within your chart in some range on the y (vertical axis);
+
+
+``` r
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))  +
+  geom_point() +
+* scale_y_continuous(limits = c(50, 60))
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-54-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Position scales
+
+### Setting the colour palette for your mapping
+
+
+``` r
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp,
+                     colour = lifeExp))  +
+  geom_point() +
+* scale_colour_viridis_c()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-55-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Position scales
+
+### Using a scale transformation
+
+
+``` r
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp))  +
+  geom_point() +
+* scale_x_log10()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-56-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: inverse, center, middle
+
+# Plot labels
+
+---
+
+To set the labels of your plot's elements - *title*, *axes*, *legends* - you add a `labs()` layer.
+
+It is pretty self-explanatory:
+
+
+``` r
+ggplot(data = gapminder, 
+       mapping = aes(x = gdpPercap, y = lifeExp, colour = lifeExp))  +
+  geom_point() +
+  scale_colour_viridis_c() +
+  labs(x = "My x-axis label", y = "My y-axis label",
+       colour = "My colour-legend title,", 
+       title = "my plot's title...", subtitle = "my subtitle",
+       caption = "...and my caption")
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-57-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+class: inverse, center, middle
+
+# Facets
+
+---
+
+What if you want to make your visualisation easier to understand by having multiple panels mapping the same variables but for different groups? You can do it with the ggplot's **facets**.
+
+Remember the messy plots with a lot of spaghetti-lines? 
+
+
+``` r
+g &lt;- 
+  ggplot(data = gapminder, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country))
+```
+
+
+Let's make it better, with `facet_grid()`:
+
+
+``` r
+*g + facet_grid(~continent)
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-59-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+What happened? Try `facet_grid("continent")` instead...
+
+---
+
+### The main elements of ggplot’s grammar of graphics
+
+.pull-left[
+
+.center[&lt;img src = 'https://socviz.co/assets/ch-03-ggplot-flow-vertical.png' width = '35%'&gt;&lt;/img&gt;]]
+
+.pull-right[Check out the website containing an almost integral version of Kieran Healy's 🔥 book 🔥.
+
+.center[
+
+&lt;img src = 'https://socviz.co/assets/dv-cover-pupress.jpg' width = '65%'&gt;&lt;/img&gt;
+
+&lt;/br&gt;
+https://socviz.co/
+]]
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial
+
+From **One variable categorical (a.k.a., discrete)** until the end
+
+
+---
+
+class: inverse, center, middle
+
+# Group problem set
+
+---
+
+class: inverse, center, middle
+
+# Attendance
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="assets/remark-zoom.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
