@@ -35,7 +35,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-08-14)
+### Semester 2, 2024 (updated: 2024-08-15)
 ]
 
 ---
@@ -51,6 +51,33 @@ background-size: 95%
 ## Acknowledgement of Country
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap
+
+- Causal Effects
+- Treatment and Outcome Variables
+- Individual Causal Effects
+- Average Causal Effects
+- Randomized Experiments
+- Difference-in-Means Estimator
+- Units of Measurement of Means and Diffs-in-Means
+
+---
+
+## Today's class
+
+
+| Time          | Content                                                                       |
+|---------------|-------------------------------------------------------------------------------|
+| 11:00 - 11:20 | Data visualisation                                                            |
+| 11:20 - 11:45 | R Lab: ggplot2 basics and aesthetics; RStudio projects; Subsetting dataframes |
+| 11:45 - 12:00 | Individual quiz/tutorial Part 1                                               |
+| 12:00 - 12:15 | Break                                                                         |
+| 12:15 - 12:45 | R Lab: ggplot2 geometries                                                     |
+| 12:45 - 13:00 | Individual quiz/tutorial Part 2                                               |
+| 13:00 - 14:00 | Group problem set                                                             |
 
 
 ---
@@ -833,7 +860,7 @@ gapminder[gapminder$country == "Australia" &amp; gapminder$year == 1972, ]
 
 class: inverse, center, middle
 
-# ggplot2 Geometries
+# Geometries
 
 ---
 
@@ -843,254 +870,296 @@ A lot! There are about 50 geometries you can use in ggplot2. A complete list is 
 
 ### Which one should I use?
 
-It depends on the variables you plan to visualise...
+It depends on the *type of variables* you plan to visualise 
 
-#### Consider these scenarios
+- **Categorical** (a.k.a. **discrete**); or
+- **Numerical** (a.k.a. **continuous**)
 
-1. ONE VARIABLE continuous
+but it also depends on whether you want to visualise
 
-2. ONE VARIABLE discrete
-
-3. TWO VARIABLES continuous x, continuous y
-
-4. TWO VARIABLE discrete x, continuous y
-
-5. THREE VARIABLES
+- **Distributions**; or
+- **Relationships**
 
 ---
 
-## ONE VARIABLE continuous
+class: inverse, center, middle
 
-
-``` r
-g &lt;- ggplot(data = gapminder, aes(x = gdpPercap))  
-```
-
-
-.pull-left[
-
-### Histogram
-
-
-``` r
-g + geom_histogram()
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-33-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
-
-]
-
-.pull-right[
-
-### Density
-
-
-``` r
-g + geom_density()
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-34-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
-
-]
+# Visualising distributions
 
 ---
 
-## ONE VARIABLE discrete
+## A Categorical Variable
+
+- **Definition:** A variable is **categorical** if it can only take one of a small set of values.
+
+- **Visualization:** To examine the distribution of a categorical variable, use a bar chart. The height of the bars displays how many observations occurred with each `x` value.
 
 
 ``` r
-g &lt;- ggplot(data = gapminder, aes(x = continent))  
+ggplot(gapminder, aes(x = continent)) +
+geom_bar()
 ```
 
-### Bars
+&lt;img src="week-03_files/figure-html/unnamed-chunk-32-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
-
-``` r
-g + geom_bar()
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-36-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
 
 ---
 
-### Wait! What is going on with `geom_histogram()`, `geom_density()` and `geom_bar()`?  
+## A Categorical Variable
+
+- **Reordering Bars:** In bar plots of categorical variables with non-ordered levels, it's often preferable to reorder the bars based on their frequencies.
 
 
 ``` r
-g1 &lt;- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_histogram() 
-g2 &lt;- ggplot(data = gapminder, aes(x = gdpPercap)) + geom_density() 
-g3 &lt;- ggplot(data = gapminder, aes(x = continent)) + geom_bar() 
+ggplot(gapminder, aes(x = fct_infreq(continent))) +
+geom_bar()
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-38-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-33-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
-Where does the y-axis variable come from? 
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
 
 ---
 
-### Some of the `geom_` functions will transform your data, creting a new variable before visualising it ...
+## A Numerical Variable
+
+- **Definition:** A variable is **numerical** (a.k.a. continuous) if it can take on a wide range of numerical/quantitative values.
+
+- **Visualisation:** A commonly used visualization for distributions of continuous variables is a *histogram*.
+
+
+``` r
+ggplot(gapminder, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5) # width of 5 years (as lifeExp is in years)
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-34-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+
+
+---
+
+## Alternative Visualisation: The Density Plot
+
+- **Definition:** A density plot is a smoothed-out version of a histogram and is practical for continuous data that comes from an underlying smooth distribution.
+
+
+``` r
+ggplot(gapminder, aes(x = lifeExp)) +
+geom_density()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-35-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+
+---
+
+## When you visualise distributions of a single variable of the `geom_` functions will transform your data, creting a new variable before visualising it ...
 
 &lt;img src = 'https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png' width = '100%'&gt;
 
+
 ---
 
-## TWO VARIABLES continuous x, continuous y
+class: inverse, center, middle
+
+# Visualising Relationships
+
+---
+
+
+
+## Aesthetics in Variable Distribution vs Relationships
+
+
+.content-box-yellow[
+
+### Distribution needs only one variable mapping
 
 
 ``` r
-g &lt;- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
+geom_histogram(mapping = aes(x = var)) # Don't run
 ```
+
+]
+
+.content-box-purple[
+
+### Relationships need two variables
+
+
+``` r
+geom_point(mapping = aes(x = var1, y = var2)) # Don't run
+```
+
+]
+
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+
+---
+
+## A Numerical and a Categorical Variable
+
+- **Boxplots:** Visualize the relationship between a numerical and a categorical variable using side-by-side box plots.
+
+- **Explanation of Boxplot Components:**
+  - **Box:** Indicates the interquartile range (IQR).
+  - **Median Line:** Displays the median of the distribution.
+  - **Whiskers and Outliers:** Extends to the farthest non-outlier point; outliers are plotted individually.
 
 .pull-left[
 
-### Point
-
 
 ``` r
-g + geom_point()
+ggplot(gapminder, 
+       aes(x = continent, 
+           y = lifeExp)) +
+  geom_boxplot()
 ```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-40-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
 
 ]
 
 .pull-right[
 
-### Text (or label)
+&lt;img src="week-03_files/figure-html/unnamed-chunk-39-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+
+---
+
+### More on boxplots if you need it!
+
+.pull-left[
+&lt;img src = "https://r4ds.hadley.nz/images/EDA-boxplot.png" width = "100%"&gt;
+]
+
+.pull-right[
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/zc4ymS5xBQA?si=s-v_C1U_rOgT5GCc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen&gt;&lt;/iframe&gt;
+]
+
+
+---
+
+## Alternative Visualization: Density Plot by Category
+
+- **Explanation:** Density plots can be split by categorical variables using color and fill aesthetics.
 
 
 ``` r
-g + geom_text(aes(label = continent)) # try also geom_label
+ggplot(gapminder, aes(x = lifeExp, color = continent, fill = continent)) +
+  geom_density(alpha = 0.5)
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-41-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-40-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+---
+
+## Two Categorical Variables
+
+.pull-left[
+
+**Stacked Bar Plots:** Visualise relationships between two categorical variables using stacked bar plots.
+
+
+``` r
+ggplot(gapminder[gapminder$pop&gt;100000000,], 
+       aes(x = continent, 
+           fill = country)) +
+  geom_bar()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-41-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+**Relative Frequency Plot:** Adjust the bar plot to display relative frequencies using `position = "fill"`.
+
+
+``` r
+ggplot(gapminder[gapminder$pop&gt;100000000,], 
+       aes(x = continent, 
+           fill = country)) +
+  geom_bar(position = "fill")
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-42-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
 ---
 
-## TWO VARIABLES continuous x, continuous y (cont. function)
+## Two Numerical Variables
+
+- **Scatterplots:** A scatterplot is commonly used to visualise the relationship between two numerical variables.
 
 
 ``` r
-g &lt;- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp))  
-```
-
-
-### Smooth
-
-
-``` r
-*g + geom_point() + geom_smooth(method = "lm") # Try method = 'loess'
+ggplot(gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point()
 ```
 
 &lt;img src="week-03_files/figure-html/unnamed-chunk-43-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
+
+---
+
+## Two Numerical Variables (when one is time)
+
+- **Lines** are the default standard to visualise a variable from the same individual over time.
+
+
+``` r
+ggplot(gapminder[gapminder$country == "Australia",], 
+       aes(x = year, y = lifeExp)) +
+  geom_line()
+```
+
+&lt;img src="week-03_files/figure-html/unnamed-chunk-44-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
 
 
 ---
 
-## TWO VARIABLES continuous x, continuous y 
+## Three or More Variables
+
+**Adding Aesthetics:** Incorporate more variables into a plot by mapping them to additional aesthetics like color and shape.
 
 
 ``` r
-g &lt;- ggplot(data = gapminder, aes(x = year, y = lifeExp))  
-```
-
-### Line
-
-
-
-``` r
-*g + geom_line(aes(group = country))
+ggplot(gapminder, 
+       aes(x = lifeExp, y = gdpPercap, 
+           colour = continent, size = pop)) +
+  geom_point()
 ```
 
 &lt;img src="week-03_files/figure-html/unnamed-chunk-45-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
-
-
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
 ---
 
-## What's the "group" aesthetic again?
+## Three or More Variables: Faceting
 
-Let's try reproducing the same `geom_line()` as before, *without* setting `group` within `aes()`.
+**Faceting:** Use facets to create subplots for each category of a variable, reducing plot clutter.
 
 
 ``` r
-g + geom_line()
+ggplot(gapminder, 
+       aes(x = lifeExp, y = gdpPercap, 
+           size = pop)) +
+  geom_point() +
+  facet_wrap(~continent)
 ```
 
 &lt;img src="week-03_files/figure-html/unnamed-chunk-46-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
-
-Clearly, not good! the `geom_line()` doesn't know that year are grouped by country so will mesh every value with the same year in the same line!
-
----
-
-## What's the "group" aesthetic again?
-
-
-|country     |continent | year| lifeExp|      pop| gdpPercap|
-|:-----------|:---------|----:|-------:|--------:|---------:|
-|Afghanistan |Asia      | 1982|  39.854| 12881816|  978.0114|
-|Albania     |Europe    | 1982|  70.420|  2780097| 3630.8807|
-|Algeria     |Africa    | 1982|  61.368| 20033753| 5745.1602|
-|Angola      |Africa    | 1982|  39.942|  7016384| 2756.9537|
-|Argentina   |Americas  | 1982|  69.942| 29341374| 8997.8974|
-
-By setting `aes(group = country)` we specify that each country needs its own different line.
-
----
-
-## TWO VARIABLE discrete x, continuous y
-
-
-``` r
-g &lt;- ggplot(data = gapminder, aes(x = continent))  
-```
-
-.pull-left[
-
-### Columns
-
-
-``` r
-g + geom_col(aes(y = pop))
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-49-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
-
-]
-
-.pull-right[
-
-### Boxplot
-
-
-``` r
-g + geom_boxplot(aes(y = lifeExp)) 
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-50-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
-
-]
-
----
-
-## THREE VARIABLES
-
-
-``` r
-g &lt;- ggplot(data = gapminder, aes(x = year, y = continent))  
-```
-
-
-``` r
-g + geom_tile(aes(fill = lifeExp)) +
-  scale_fill_viridis_c() 
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-52-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
-
-What is going on here?
+.footnote[Adapted from *R for data science* (2023), https://r4ds.hadley.nz/]
 
 
 ---
@@ -1120,7 +1189,7 @@ ggplot(data = gapminder, aes(x = continent, fill = continent))  +
 * scale_fill_brewer(palette = "Set1")
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-53-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-47-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1135,7 +1204,7 @@ ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))  +
 * scale_y_continuous(limits = c(50, 60))
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-54-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-48-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1152,7 +1221,7 @@ ggplot(data = gapminder,
 * scale_colour_viridis_c()
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-55-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-49-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1168,7 +1237,7 @@ ggplot(data = gapminder,
 * scale_x_log10()
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-56-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-03_files/figure-html/unnamed-chunk-50-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1194,41 +1263,7 @@ ggplot(data = gapminder,
        caption = "...and my caption")
 ```
 
-&lt;img src="week-03_files/figure-html/unnamed-chunk-57-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
-
-
-
-
----
-
-class: inverse, center, middle
-
-# Facets
-
----
-
-What if you want to make your visualisation easier to understand by having multiple panels mapping the same variables but for different groups? You can do it with the ggplot's **facets**.
-
-Remember the messy plots with a lot of spaghetti-lines? 
-
-
-``` r
-g &lt;- 
-  ggplot(data = gapminder, aes(x = year, y = lifeExp)) +
-  geom_line(aes(group = country))
-```
-
-
-Let's make it better, with `facet_grid()`:
-
-
-``` r
-*g + facet_grid(~continent)
-```
-
-&lt;img src="week-03_files/figure-html/unnamed-chunk-59-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
-
-What happened? Try `facet_grid("continent")` instead...
+&lt;img src="week-03_files/figure-html/unnamed-chunk-51-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1270,6 +1305,15 @@ class: inverse, center, middle
 # Attendance
 
 
+---
+class: inverse, center, middle
+
+# Questions?
+
+---
+class: center, middle
+
+# See you next week with Measurement!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
