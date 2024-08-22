@@ -87,6 +87,36 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ---
 
+### App to help you visualise mean, standard deviation and correlation.
+
+![Demo of app](../img/demo.gif)
+
+---
+
+The app requires these packages:
+
+```{r eval = F}
+library(shiny)
+library(ggplot2)
+library(MASS)
+```
+
+To install
+
+```{r  eval = F}
+install.packages("shiny")
+install.packages("ggplot2")
+install.packages("MASS")
+```
+
+To run the app
+```{r eval = F}
+shiny::runGitHub("shiny-geom-points-mvrnorm", "fraba")
+```
+
+
+---
+
 ## Preliminary quiz (two slide!)
 
 .center[<img src = '../img/menti_week_04.png' width = '25%'>
