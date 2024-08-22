@@ -1,0 +1,188 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 04</br>Measurement"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap
+
+- Visualisation with ggplot2
+- `geom_bar()`
+- `geom_histogram()`
+- `geom_point()` 
+- `geom_boxplot()`
+
+---
+
+## Today's class
+
+
+| Time          | Content                                         |
+|---------------|-------------------------------------------------|
+| 11:00 - 11:20 | Population, Sample, Sampling                    |
+| 11:20 - 11:45 | R Lab: `table()`, `mean()`, `median()`, `sd()`, `is.na()` |
+| 11:45 - 12:00 | Individual quiz/tutorial Part 1                 |
+| 12:00 - 12:15 | Break                                           |
+| 12:15 - 12:45 | R Lab: `cor()`                                    |
+| 12:45 - 13:00 | Individual quiz/tutorial Part 2                 |
+| 13:00 - 14:00 | Group problem set                               |
+
+
+---
+
+## But first please complete the anonymous feedback survey 
+
+[Available from Canvas](https://canvas.sydney.edu.au/courses/59609/quizzes/268544?module_item_id=2356267)
+
+---
+
+## Now let's open Professor Elena Llaudet's slides
+
+.center[PP 1-34]
+
+
+.center[[PDF slides available here on Canvas](https://canvas.sydney.edu.au/courses/59609/files/38797485?module_item_id=2466828)]
+
+
+---
+
+## Understanding `is.na()` in R
+
+The `is.na()` function in R is used to identify missing (`NA`) values in a dataset. It returns a logical vector of the same length as the input, with `TRUE` for elements that are `NA` and `FALSE` for elements that are not.
+
+Missing values are pretty common in the social sciences. For example, a person might decline to respond to a survey question. 
+
+### Example: Checking for Missing Values in a Vector
+
+```{r}
+# Create a vector with some missing values
+data_vector <- c(1, 2, NA, 4, NA, 6)
+
+# Use is.na() to identify missing values
+missing_values <- is.na(data_vector)
+
+# Print the result
+print(missing_values)
+
+```
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 1
+
+Up to **Conceptual questions Part 1** section (included)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+---
+
+class: inverse, center, middle
+
+# Break
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+---
+
+## Now let's open Professor Elena Llaudet's slides
+
+.center[PP 35-66]
+
+
+[PDF slides available here on Canvas](https://canvas.sydney.edu.au/courses/59609/files/38797485?module_item_id=2466828)
+
+
+---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 2
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+---
+
+class: inverse, center, middle
+
+# Group problem set
+
+---
+
+class: inverse, center, middle
+
+# Attendance
+
+
+---
+class: inverse, center, middle
+
+# Questions?
+
+---
+class: center, middle
+
+# See you next week with Measurement!
