@@ -1,0 +1,726 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 05</br>Measurement"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+background-image: url(https://www.antiprism.com/misc/tri_jit_rd01.gif)
+background-size: 100%
+
+# Data collection and tranformation 
+
+---
+class: inverse, center, middle
+
+# Data collection
+
+---
+
+## Data collection (social sciences)
+
+.pull-left[
+
+In *research design*, **data collection** is the process of *creating* your research data. In the social sciences there are a number of methods to create interesting data sets. They can be of two types:
+
+1. **Observational**: In an observational study, we don't influence in anyway the behaviour of the subjects of our study - who should not adapt their behavior because of or in response to our investigation. 
+
+2. **Experimental**: In an experiment we design and control the environment where our subjects will operate. 
+
+]
+
+.pull-right[
+
+.center[<img src = 'https://1.bp.blogspot.com/-Pt0cQYzFA1A/Xshlv9SviGI/AAAAAAAAAmY/zEMnvw3fq_spdjYmuJ6f8t4q9q20k1kbQCLcBGAsYHQ/w490/pasteur6.gif'></img>]
+
+<mark>Try to classify a number of data collection instruments in **Menti**, either as Observational or Experimental...</mark>
+
+]
+
+
+---
+
+## Data collection (social sciences)
+
+Indeed we might need to add a couple of extra types...
+
+3. **Asking questions**: It is an type of study where we record responses and reactions to questions or other input we design through instruments of our design (online questionnaire, unstructured interview, focus group). The subject is clearly aware of the research setting and the research design should limit the impact of this awareness. 
+  
+4. **Quasi-experimental**: A quasi-experimental study use data recorded in a non-experimental setting. Still, these data will approximate experimental data either because of 
+
+    1. particular events or 
+    
+    2. through "statistically adjusting non-experimental data in an attempt to account for preexisting differences between those who did and did not receive the treatment"<sup>1</sup>, (for example with a technique called "matching"). 
+  
+.footnote[[1] Salganik, M. J. (2018). Bit by bit: Social research in the digital age. Princeton University Press.]
+
+---
+
+# Data collection (social sciences)
+
+Independently of the *subject* of your data (so the WHOs your data are about), these data sets, can be
+
+1. created directly by you (the researcher) - to which we refer to as **primary** or **first-party data**;
+
+2. created by some other research organisation such as the ABS (**secondary** or **second-party data**); or;
+
+3. commonly nowadays created using different second-party sources by some *data aggregating organisation* (**third-party data**).
+
+---
+
+## Data collection (data analytics)
+
+In data analytics, data collection generally has a slighlty different meaning. *Data collection* refers here to the process of bringing the data into a computing environment and ready that data for the analysis. 
+
+
+### Data collection in research design
+
+```{r echo = F, out.width = '100%'}
+require(DiagrammeR)
+
+DiagrammeR::grViz("
+  digraph graph2 {
+  
+  graph [layout = dot, rankdir = LR]
+  
+  # node definitions with substituted label text
+  node [shape = oval, style = filled]
+  a [label = 'Data collection', fillcolor = Orange]
+  b [label = 'Data', shape = egg, fillcolor = Lightblue]
+  c [label = 'Data analysis']
+  d [label = 'Results']
+
+  
+  a -> b -> c -> d;
+  }
+  ",
+  height = 100)
+
+```
+
+### Data collection in data analytics 
+
+```{r echo = F, out.width = '100%'}
+require(DiagrammeR)
+
+DiagrammeR::grViz("
+  digraph graph2 {
+  
+  graph [layout = dot, rankdir = LR]
+  
+  # node definitions with substituted label text
+  node [shape = oval, style = filled]
+  a [label = 'Data', shape = egg, fillcolor = Lightblue]
+  b [label = 'Data collection', fillcolor = Orange]
+  c [label = 'Computer', shape = box]
+  d [label = 'Data analysis']
+  e [label = 'Results']
+
+  
+  a -> b -> c -> d -> e;
+  }
+  ",
+  height = 100)
+
+```
+
+---
+
+## Data collection (data analytics)
+
+.pull-left[
+
+For data scientists, the problem is not creating the data. Data science is about existing data - not about creating new data through rigorous scientific methods. 
+
+This doesn't mean you should not care about how the data was created in the first place. In fact, as every rigourour research you should!
+
+But, in a data science context, the scope of the *data collection* is different from the scope of *data collection* in a social science research project.
+
+
+]
+
+.pull.right[
+
+
+.center[<img src = 'https://media.giphy.com/media/KzKFAvaM1RBoRU5dcl/giphy.gif'></img>]
+
+]
+
+---
+
+## So when data scientists talk about data collection, what do they talk about?
+
+
+1. **Sourcing**: Where is the data store? How big is the data? How is structured? How can I access it (e.g. direct download, database, API)?
+
+.center[↓]
+
+2. **Reading in**: How do I import the data I need into my computer? You can integrally read in the data you need but sometimes you can pre-filter the data at the source with a query (e.g. with a SQL query if you are requesting data from a database or a POST query if you are requesting data from an API...)  
+
+.center[↓]
+
+3. **Cleaning/Preparing**: How do I prepare the data I imported for my analysis? This is about structuring the data, exactly how I need it? <mark>(This is what we'll discuss during the lab today...)</mark>.
+
+---
+
+## Sourcing and Reading in
+
+Note: Big data for computer scientists $\neq$ Big data for social scientists.
+
+When data is "small" (let's say, it can fit in a spreadsheet or can be shared via email), sourcing and reading in, is generally not a problem. For example, you can simply read your file into memory by pointing your software to that file while specifying the format:
+
+```{r eval = F}
+dat <- read.csv(file = "my_file.csv")
+```
+
+But when data is "big" (let's say it won't fit into your memory), you need to deal with sourcing and reading issues. 
+
+Example of big data:
+
+1. The text of all revisions of all pages of en.wikipedia.org;
+
+2. All tweets with the hashtag "#metoo" published since October 2017. 
+
+Simply put, you can't `read(source = "http://en.wikipedia.org")`.
+
+---
+
+## Sourcing and reading in
+
+A detail discussion about sourcing and reading data is out of the scope of this unit. Still, as example, here an example of a common "pipeline" to collect social media data. 
+
+```{r echo = F, out.width = '100%'}
+require(DiagrammeR)
+
+DiagrammeR::grViz("
+  digraph graph2 {
+  
+  graph [layout = dot, rankdir = LR]
+
+  node [shape = oval, style = filled]
+  a [label = 'Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }', 
+  shape = box, fillcolor = Lightblue]
+  b [label = 'API', fillcolor = Orange, shape = egg]
+  c [label = 'Data\\njson format']
+  
+  d [label = 'Read json', shape = box, fillcolor = Lightblue]
+  
+  e [label = 'Computer', shape = box]
+
+  
+  a -> b -> c; d -> c; c -> d; d -> e;
+  }
+  ",
+  height = 100)
+
+```
+
+If instead of an API, you have a database you should expect a very similar pipeline.
+
+</br>
+
+</br>
+
+.pull-left[
+R offers a large number of tools and packages to deal about all your data sourcing and data reading issues. Yet, we will not cover them in this unit. 
+
+But let's just quickly, talk about APIs...
+]
+
+
+.pull-right[
+.center[<img src = 'https://media.giphy.com/media/y69OrzhaWfE7frw6OI/giphy.gif' width = '55%'></img>]
+]
+
+---
+
+## What's an API again?
+
+.center[
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/s7wmiS2mSXY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+]
+
+---
+class: inverse, center, middle
+
+# Lab: Data transformation with dplyr
+
+.center[<img src = 'https://media.giphy.com/media/R9zXHWAHyTjnq/giphy.gif'></img>]
+
+
+---
+
+
+## Prerequisites<sup>1</sup>
+
+We are going to use these two packages:
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+Install them with
+
+```{r eval = FALSE}
+install.packages(c("nycflights13", "tidyverse"))
+```
+
+nycflights13 includes is a data packages (and includes the data we will use in the examples).
+
+As mentioned last week, tidyverse is not really a package but a collection of packages...
+
+.footnote[[1] Adapted from https://r4ds.had.co.nz/transform.html (Wickham & Grolemund, 2017)]
+
+---
+
+## R's Tidyverse
+
+.center[<img src = 'https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-1-getting-started/img/tidyverse-packages.png' width = "95%"></img>]
+
+Image from [Mine Çetinkaya-Rundel](https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-1-getting-started/)
+
+---
+
+## nycflights13::flights
+
+```{r}
+nycflights13::flights # (or `flights` for short)
+```
+
+---
+
+## nycflights13::flights
+
+The object `nycflights13` is not of class `data.frame` but **tibble**. We have already encountered the tibble last week. For our purposes, let's consider a tibble as a data frame (which as a matter of fact is), so a two-dimensional data objects with values ordered in rows and columns.  
+
+In a data frame, each column can be variable of a different class (or type). We have already met a few of these types, here among the most important:
+
+* `int` stands for **integers** (e.g. `c(1, 2, 3, 4)`).
+
+* `dbl` stands for **doubles**, or real numbers:  (e.g. `c(1.5, 2.323132, 3.5445, 4.565)`).
+
+* `chr` stands for **character** vectors, or strings. 
+
+* `lgl` stands for **logical**, vectors that contain only TRUE or FALSE.
+
+* `fctr` stands for **factors**, which R uses to represent *categorical variables* with fixed possible values.
+
+---
+
+## dplyr basics
+
+dplyr is a package for manipulating data frame like objects. 
+
+Today we will use it to learn to 
+
+> * Pick observations by their values with `filter()`.
+>
+> * Reorder the rows with `arrange()`.
+>
+> * Pick variables by their names  with `select()`.
+>
+> * Create new variables with functions of existing variables  with `mutate()`.
+>
+> * Collapse many values down to a single summary  with `summarise()` in combination with `group_by()` (which define the variables to use for the summary).
+
+---
+
+## dplyr basics
+
+
+> All verbs (functions) work similarly:
+>
+> * The first argument is a data frame.
+>
+> * The subsequent arguments describe what to do with the data frame, using the variable names (without quotes).
+>
+> * The result is a new data frame.
+
+So in R...
+
+```{r eval = FALSE}
+
+verb(dataframe, arguments, ...)
+
+```
+
+or with `filter()`
+
+```{r eval = FALSE}
+dplyr::filter(flights, air_time == 100)
+```
+
+---
+
+## Filter rows with filter()
+
+You can filter rows (i.e. records) of your data frame with the function `filter()`.
+
+> The first argument is the name of the data frame. The second and subsequent arguments are the expressions that filter the data frame. For example, we can select all flights on January 1st with:
+
+```{r}
+dplyr::filter(flights, month == 1, day == 1)
+```
+
+---
+
+## Filter rows with filter()
+
+Remember that R won't automagically store the resulting, new data frame everywhere. If you don't specify it, your outcome will be lost, as tears in the rain.
+
+.center[
+<img src ='https://media.giphy.com/media/7aFDGPdxGLuEg/giphy.gif'></img>
+]
+
+To save your results, do
+
+```{r}
+
+jan1 <- dplyr::filter(flights, month == 1, day == 1)
+
+```
+
+---
+
+## Comparisons
+
+> To use filtering effectively, you have to know how to select the observations that you want using the comparison operators. R provides the standard suite: `>`, `>=`, `<`, `<=`, `!=` (not equal), and `==` (equal).
+
+> When you’re starting out with R, the easiest mistake to make is to use = instead of == when testing for equality. When this happens you’ll get an informative error.
+
+```{r eval = F}
+dplyr::filter(flights, month = 1)
+```
+
+---
+
+## Logical operators
+
+You can combine multiple logical comparison in your statement with the following operators:
+
+* `&` is “and”, 
+
+* `|` is “or”, and 
+
+* `!` is “not”.
+
+The code
+
+```{r eval = F}
+dplyr::filter(flights, month == 11 & year == 2013)
+```
+
+will filter records where month is `11` but also where year is `2013`. We will come back to logical operators next week.
+
+
+---
+
+## Select columns with select()
+
+If you want to simplify your data frame by keeping only some of the columns (this is useful if your data frame contains many columns).
+
+```{r}
+dplyr::select(flights, year, month, day)
+```
+
+---
+
+## Create new variables with mutate()
+
+The function `mutate()` will add a new column at the end of your data frame (on the right...). Of course, it is not enough to only name the new column. You also need to specify the content of the new variable.
+
+The most common scenario is to use `mutate()` to transform an existing variable or to operate on two (or more) variables to create a new one. For example, 
+
+```{r eval = F}
+dplyr::mutate(flights,
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60
+)
+```
+
+creates two new columns `gain` and `speed`. For example, `gain` is the result of the subtraction of the value `arr_delay` from the value `dep_delay` (again, for each record). So,
+
+.center[
+$gain_i = dep\_delay_i - arr\_delay_i$
+]
+
+where $i$ is one of the number of rows. 
+
+
+---
+
+## Create new variables with mutate()
+
+```{r eval = F}
+dplyr::mutate(flights,
+  gain = dep_delay - arr_delay, #<<
+  speed = distance / air_time * 60) #<<
+```
+
+
+```{r echo = F}
+dplyr::mutate(flights,
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60
+) %>%
+  dplyr::select(dep_delay, arr_delay, gain, distance, air_time, speed) %>%
+  dplyr::slice(1:10) %>%
+  knitr::kable() %>%
+  column_spec(c(1:2,4:5), background = "lightblue") %>%
+  column_spec(c(3,6), background = "orange") %>%
+   row_spec(4, bold = T, color = "white", background = "#D7261E")
+  
+```
+
+
+---
+
+## Grouped summaries with summarise()
+
+The verb `summarise()` "collapses a data frame to a single row".
+
+```{r}
+dplyr::summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+Great, it doesn't look that `dplyr::summarise()` does much than simply `mean(flights$dep_delay, na.rm = TRUE)`... 
+
+Indeed! `dplyr::summarise()` is only useful after `group_by()`!
+
+.footnote[Note: We already introduced the function `mean()`, which as expected returned the mean of a vector of numbers. Here `mean()` takes an additional argument `na.rm = TRUE`. It simply tells the function to disregard all the missing values (`NA`) while computing the mean. By default, `mean` will do `na.rm = FALSE)` - and with this setting, the presence of a single `NA` in your vector will force `mean()` to return `NA`. ]
+
+---
+
+## Grouped summaries with summarise() and group_by()
+
+> [`group_by()`] changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by `year, month and day`, we get the average delay per date:
+
+```{r}
+by_day <- dplyr::group_by(flights, 
+                          year, month, day) #<<
+```
+
+And then...
+
+.pull-left[
+```{r eval = F}
+summarise(
+  by_day, 
+  delay = mean(dep_delay, 
+               na.rm = TRUE))
+```
+]
+
+.pull-right[
+```{r echo = F}
+dplyr::summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+]
+
+---
+
+## Grouped summaries with summarise() and group_by()
+
+Let's take another example:
+
+```{r}
+us_population_by_county <- 
+  read.csv("https://raw.githubusercontent.com/fraba/SSPS4102/master/data/US-pop-by-county.csv")
+nrow(us_population_by_county)
+```
+
+```{r echo = F}
+us_population_by_county %>%
+  dplyr::sample_n(5) %>%
+  knitr::kable()
+```
+
+---
+
+## Grouped summaries with summarise() and group_by()
+
+```{r}
+us_population_by_state <- 
+  dplyr::group_by(us_population_by_county, 
+           state) #<<
+```
+
+and then,
+
+```{r eval = F}
+dplyr::summarise(us_population_by_state, 
+                 sum(...)) #<<
+```
+
+What we replace `...` with to get the `sum()` of the population for each **state**?
+
+---
+
+## Grouped summaries of factors with count() and group_by()
+
+Let's say that you have a non-numeric variable (character or factor). How can you summarise it? You can use `count()` on your grouped data frame. 
+
+```{r}
+
+us_population_by_state <- 
+  dplyr::group_by(us_population_by_county, state)
+
+dplyr::count(us_population_by_state)
+
+```
+
+---
+
+## The pipe (`|>`) operator
+
+But now let's introduce the `|>` pipe operator...
+
+The pipe operator, which you type with a (per cent sign) `|` + `>`, *chains* function together so that the value returned from the function *on the left* of the `|>` flows as first argument into the function *on the right* of the `|>`.
+
+```{r echo = F, out.width = '100%'}
+require(DiagrammeR)
+
+DiagrammeR::grViz("
+  digraph graph2 {
+  
+  graph [layout = dot, rankdir = LR]
+  
+  # node definitions with substituted label text
+  node [shape = box, style = filled]
+  a [label = 'data']
+  b [label = '%>%', shape = oval, fillcolor = Lightblue]
+  c [label = 'fun()', fillcolor = Orange]
+  d [label = '%>%', shape = oval, fillcolor = Lightblue]
+  e [label = 'fun()', fillcolor = Orange]
+  f [label = '%>%', shape = oval, fillcolor = Lightblue]
+  g [label = 'fun()', fillcolor = Orange]
+
+  
+  a -> b -> c -> d -> e -> f -> g;
+  }
+  ",
+  height = 100)
+
+```
+
+And in R...
+
+```{r eval = F}
+
+flights |> filter(air_time < 100) |> mutate(new = 1)
+
+```
+
+---
+
+## The pipe (`|>`) operator
+
+The pipe operator doesn't add new functions to your toolbox. But it drastically improves and simplifies how you can write your code. 
+
+Also, with `|>` you don't need to store your results in temporary/intermediary variables. Instead, you define your transformations and you store the results from the entire pipeline of transforming functions.
+
+```{r}
+my_new_dataframe <- 
+  flights |> # Source of data #<< 
+  filter(air_time < 100) %>% # First transformation    #<<
+  mutate(new = 1) # Second transformation #<< 
+```
+
+Note that you can improve the readability of your code using a new line for each command separated chained with a `|>`. In this code, after three steps, the results will be stored in the object `my_new_dataframe`.
+
+Also, note that `filter(air_time < 100)` and the other verbs do not specify a data frame (which must be the first argument of `filter()` and `mutate()`) because the data is piped in, top-down, with `|>`.
+
+---
+
+## Piping all together with `|>`: Example 1
+
+```{r}
+us_population_by_county |>
+  dplyr::group_by(state) |>
+  dplyr::summarise(tot_pop = sum(population / 1000000),
+                   mean_pop = mean(population / 1000000))
+```
+
+What is `mean_pop`?
+
+---
+
+## Piping all together with `|>`: Example 2
+
+```{r fig.width=12, out.width = "100%"}
+us_population_by_county |>
+  dplyr::group_by(state) |>
+  dplyr::summarise(tot_pop = sum(population / 1000000),
+                   mean_pop = mean(population / 1000000)) |>
+  ggplot(aes(x = state, y = tot_pop)) +
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+.footnote[`theme(axis.text.x = element_text(angle = 45))` rotate the text of the axis X label by 45 degrees]
+
+---
+
+## `case_when`
