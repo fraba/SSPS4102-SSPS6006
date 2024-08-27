@@ -68,6 +68,17 @@ background-size: 100%
 
 # Data collection and tranformation 
 
+
+---
+
+## Closing the loop with Week 04 anonymous feedback
+
+Reassure about 
+
+- engagement 
+
+- pace of explanation for programming concepts (introduction of new concepts will slow down drammatically)
+
 ---
 class: inverse, center, middle
 
@@ -296,9 +307,86 @@ But let's just quickly, talk about APIs...
 
 .center[
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/s7wmiS2mSXY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/s7wmiS2mSXY?si=btQMsQIOGlThmR8q&amp;start=48" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ]
+
+---
+class: inverse, center, middle
+
+# Lab: Data import and export with R
+
+---
+
+.content-box-yellow[
+
+There is a huge number of file formats out there. And this number is growing. Assume that if there are using the file formats, someone might have dedicated some time in writing an R function to import that data file. If you find yourself in front of a weird data format, Google is your friend!
+
+]
+
+## Read CSV data files (comma separated file)
+
+```{r eval = F}
+my_dat <- read.csv("file.csv", header = TRUE)
+```
+
+---
+
+## Read Excel data files
+
+```{r eval = F}
+library(readxl)
+my_dat <- readxl::read_excel("file.xlsx", sheet = 1)
+```
+
+- Note you might need to indicate which Excel sheet you need to import 
+
+- Also, note that adding `package_name::` in front of a function
+
+```{r eval = F}
+package_name::function_name()
+```
+
+is *optional*. Here I am going to often specify the `package_name::` since we are using a few. 
+
+
+---
+
+## Read SPSS data files
+
+```{r eval = F}
+library(haven)
+my_dat <- haven::read_sav("file.sav")
+```
+
+## Read Stata data files
+
+```{r eval = F}
+my_dat <- haven::read_dta("file.dta")
+```
+
+---
+
+## Write data frames to CSV
+
+```{r eval = F}
+write.csv(my_dat, file = "file.csv")
+```
+
+## Write data objects using R data file formats
+
+#### Write single objects (e.g., a data frame) to data file
+
+```{r eval = F}
+saveRDS(my_obj, file = "file.rds")
+```
+
+#### Write all objects in your environment
+
+```{r eval = F}
+save.image(file = "file.RData")
+```
+
 
 ---
 class: inverse, center, middle
@@ -330,7 +418,7 @@ nycflights13 includes is a data packages (and includes the data we will use in t
 
 As mentioned last week, tidyverse is not really a package but a collection of packages...
 
-.footnote[[1] Adapted from https://r4ds.had.co.nz/transform.html (Wickham & Grolemund, 2017)]
+.footnote[[1] Adapted from https://r4ds.hadley.nz/data-transform.html (Wickham & Grolemund, 2023)]
 
 ---
 
@@ -372,17 +460,38 @@ In a data frame, each column can be variable of a different class (or type). We 
 
 dplyr is a package for manipulating data frame like objects. 
 
-Today we will use it to learn to 
+We use dplyr to manipulate **rows**, **columns** and **groups** of a data frame using specific functions (a.k.a. **verbs**).
 
-> * Pick observations by their values with `filter()`.
->
-> * Reorder the rows with `arrange()`.
->
-> * Pick variables by their names  with `select()`.
->
-> * Create new variables with functions of existing variables  with `mutate()`.
->
-> * Collapse many values down to a single summary  with `summarise()` in combination with `group_by()` (which define the variables to use for the summary).
+### Rows
+
+.content-box-yellow[
+
+* Pick observations by their values with `filter()`.
+* Reorder the rows with `arrange()`.
+* Drop rows with missing values with `drop_na()`.
+
+]
+
+---
+
+### Columns
+
+.content-box-red[
+
+* Pick variables by their names  with `select()`.
+* Create new variables with functions of existing variables  with `mutate()`.
+* Recode a variable with `ifelse()` or `case_when()`
+
+]
+
+### Groups
+
+.content-box-green[
+
+* Divide data into groups with `group_by()`
+* Collapse many values down to a single summary  with `summarise()` in combination with `group_by()`.
+
+]
 
 ---
 
@@ -410,6 +519,17 @@ or with `filter()`
 ```{r eval = FALSE}
 dplyr::filter(flights, air_time == 100)
 ```
+
+---
+class: inverse, center, middle
+
+# Verbs for Rows
+
+- `filter()`
+
+- `arrange()`
+
+- `drop_na()`
 
 ---
 
@@ -471,7 +591,55 @@ The code
 dplyr::filter(flights, month == 11 & year == 2013)
 ```
 
-will filter records where month is `11` but also where year is `2013`. We will come back to logical operators next week.
+will filter records where month is `11` but also where year is `2013`.
+
+.content-box-red[
+
+Logical operators are hard (i.e. easy to get wrong). Make sure you always check the results when using them!
+
+]
+
+---
+
+## Sort rows with arrange()
+
+If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns.
+
+```{r}
+dplyr::arrange(flights, year, month)
+```
+
+---
+
+and with `desc()` I sort rows by the descending order of a variable
+
+```{r}
+dplyr::arrange(flights, desc(dep_delay))
+```
+
+---
+
+## Drop missing values with `drop_na()`
+
+If your data frame has any missing value and you like to exclude rows with at least one missing value you can
+
+```{r}
+my_dat <- data.frame(x = c(1, 2, NA, 4), y = c("a", NA, "b", "d"))
+my_dat
+```
+
+
+```{r}
+tidyr::drop_na(my_dat)
+```
+
+---
+class: inverse, center, middle
+
+# Verbs for Columns
+- `select()`
+- `mutate()`
+- `ifelse()` or `case_when()`
 
 
 ---
@@ -483,6 +651,15 @@ If you want to simplify your data frame by keeping only some of the columns (thi
 ```{r}
 dplyr::select(flights, year, month, day)
 ```
+
+---
+
+## Select columns with select() while changing their names
+
+```{r}
+dplyr::select(flights, yr = year, month, day)
+```
+
 
 ---
 
@@ -510,7 +687,7 @@ where $i$ is one of the number of rows.
 
 ---
 
-## Create new variables with mutate()
+## Create new variables with `mutate()`
 
 ```{r eval = F}
 dplyr::mutate(flights,
@@ -533,111 +710,85 @@ dplyr::mutate(flights,
   
 ```
 
-
 ---
 
-## Grouped summaries with summarise()
-
-The verb `summarise()` "collapses a data frame to a single row".
-
-```{r}
-dplyr::summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
-```
-
-Great, it doesn't look that `dplyr::summarise()` does much than simply `mean(flights$dep_delay, na.rm = TRUE)`... 
-
-Indeed! `dplyr::summarise()` is only useful after `group_by()`!
-
-.footnote[Note: We already introduced the function `mean()`, which as expected returned the mean of a vector of numbers. Here `mean()` takes an additional argument `na.rm = TRUE`. It simply tells the function to disregard all the missing values (`NA`) while computing the mean. By default, `mean` will do `na.rm = FALSE)` - and with this setting, the presence of a single `NA` in your vector will force `mean()` to return `NA`. ]
-
----
-
-## Grouped summaries with summarise() and group_by()
-
-> [`group_by()`] changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by `year, month and day`, we get the average delay per date:
-
-```{r}
-by_day <- dplyr::group_by(flights, 
-                          year, month, day) #<<
-```
-
-And then...
-
-.pull-left[
-```{r eval = F}
-summarise(
-  by_day, 
-  delay = mean(dep_delay, 
-               na.rm = TRUE))
-```
-]
-
-.pull-right[
-```{r echo = F}
-dplyr::summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
-```
-
-]
-
----
-
-## Grouped summaries with summarise() and group_by()
-
-Let's take another example:
-
-```{r}
-us_population_by_county <- 
-  read.csv("https://raw.githubusercontent.com/fraba/SSPS4102/master/data/US-pop-by-county.csv")
-nrow(us_population_by_county)
-```
-
-```{r echo = F}
-us_population_by_county %>%
-  dplyr::sample_n(5) %>%
-  knitr::kable()
-```
-
----
-
-## Grouped summaries with summarise() and group_by()
-
-```{r}
-us_population_by_state <- 
-  dplyr::group_by(us_population_by_county, 
-           state) #<<
-```
-
-and then,
+## Create new variables with `mutate()`
 
 ```{r eval = F}
-dplyr::summarise(us_population_by_state, 
-                 sum(...)) #<<
+dplyr::mutate(flights,
+  mean_delay = (dep_delay + arr_delay) / 2) #<<
 ```
 
-What we replace `...` with to get the `sum()` of the population for each **state**?
+
+```{r echo = F}
+dplyr::mutate(flights,
+  mean_delay = (dep_delay + arr_delay) / 2
+) %>%
+  dplyr::select(dep_delay, arr_delay, mean_delay) %>%
+  dplyr::slice(1:10) %>%
+  knitr::kable() %>%
+  column_spec(c(1:2), background = "lightblue") %>%
+  column_spec(3, background = "orange") %>%
+  row_spec(4, bold = T, color = "white", background = "#D7261E")
+  
+```
 
 ---
 
-## Grouped summaries of factors with count() and group_by()
+### Create new variables by recoding old variables with `ifelse()`
 
-Let's say that you have a non-numeric variable (character or factor). How can you summarise it? You can use `count()` on your grouped data frame. 
+Let's say you have a data frame where sex is encoded as "male" or "female" and instead you want 0 (for male) and 1 (for female)
 
 ```{r}
-
-us_population_by_state <- 
-  dplyr::group_by(us_population_by_county, state)
-
-dplyr::count(us_population_by_state)
-
+my_dat <- data.frame(sex = c("male", "female", "male", "male", NA))
+my_dat
 ```
+
+```{r}
+dplyr::mutate(my_dat, female = ifelse(sex == "female", 1, 0))
+```
+
+---
+
+### Create new variables by recoding old variables with `case_when()`
+
+Let's say you have a more complicated case. 
+
+```{r}
+my_dat <- data.frame(question_1 = c("yes", "no", "no", "yes", "don't know"))
+```
+
+You want to recode "yes" as `1`, "no" as `0` and "don't know" as `NA`. How do you do?
+
+You can use `case_when()` which
+
+> takes pairs that look like `condition ~ output`. condition must be a logical vector; when it’s `TRUE`, `output` will be used. 
+
+---
+
+using `mutate()` you can then
+
+```{r}
+mutate(my_dat,
+       new_question_1 = 
+         case_when(question_1 == "yes" ~ 1,
+                   question_1 == "no" ~ 0,
+                   question_1 == "don't know" ~ NA))
+```
+
+---
+class: inverse, center, middle
+
+# pipe (`|>`) operator
+
 
 ---
 
 ## The pipe (`|>`) operator
 
-But now let's introduce the `|>` pipe operator...
+Before moving to group operations on data frame now let's introduce the `|>` pipe operator...
 
-The pipe operator, which you type with a (per cent sign) `|` + `>`, *chains* function together so that the value returned from the function *on the left* of the `|>` flows as first argument into the function *on the right* of the `|>`.
+The pipe operator, which you type with a `|` + `>`, *chains* function together so that the value returned from the function *on the left* of the `|>` flows as first argument into the function *on the right* of the `|>`.
 
 ```{r echo = F, out.width = '100%'}
 require(DiagrammeR)
@@ -650,11 +801,11 @@ DiagrammeR::grViz("
   # node definitions with substituted label text
   node [shape = box, style = filled]
   a [label = 'data']
-  b [label = '%>%', shape = oval, fillcolor = Lightblue]
+  b [label = '|>', shape = oval, fillcolor = Lightblue]
   c [label = 'fun()', fillcolor = Orange]
-  d [label = '%>%', shape = oval, fillcolor = Lightblue]
+  d [label = '|>', shape = oval, fillcolor = Lightblue]
   e [label = 'fun()', fillcolor = Orange]
-  f [label = '%>%', shape = oval, fillcolor = Lightblue]
+  f [label = '|>', shape = oval, fillcolor = Lightblue]
   g [label = 'fun()', fillcolor = Orange]
 
   
@@ -693,6 +844,103 @@ Note that you can improve the readability of your code using a new line for each
 Also, note that `filter(air_time < 100)` and the other verbs do not specify a data frame (which must be the first argument of `filter()` and `mutate()`) because the data is piped in, top-down, with `|>`.
 
 ---
+class: inverse, center, middle
+
+# Verbs for Groups
+
+- `group_by()`
+
+- `summarise()`
+
+---
+
+## Grouping rows
+
+> Use `group_by()` to divide your dataset into groups meaningful for your analysis.
+
+> `group_by()` doesn’t change the data but, if you look closely at the output, you’ll notice that the output indicates that it is "grouped by" month (Groups: month [12]). This means subsequent operations will now work “by month”. group_by() adds this grouped feature (referred to as class) to the data frame, which changes the behavior of the subsequent verbs applied to the data.
+
+```{r}
+dplyr::group_by(flights, month)
+```
+
+
+
+---
+
+## Grouped summaries with summarise()
+
+The verb `summarise()` "collapses a data frame to a single row".
+
+```{r}
+dplyr::summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+Great, it doesn't look that `dplyr::summarise()` does much than simply `mean(flights$dep_delay, na.rm = TRUE)`... 
+
+Indeed! `dplyr::summarise()` is only useful after `group_by()`!
+
+.footnote[Note: We already introduced the function `mean()`, which as expected returned the mean of a vector of numbers. Here `mean()` takes an additional argument `na.rm = TRUE`. It simply tells the function to disregard all the missing values (`NA`) while computing the mean. By default, `mean` will do `na.rm = FALSE)` - and with this setting, the presence of a single `NA` in your vector will force `mean()` to return `NA`. ]
+
+---
+
+## Grouped summaries with `group_by()` and `summarise()` and pipes `|>`.
+
+Let's say for each day, we want to summarise the average delay.
+
+```{r}
+flights |>
+  group_by(year, month, day) |> #<<
+  summarise(delay = mean(dep_delay, na.rm = TRUE)) #<<
+```
+
+---
+
+## Grouped summaries with `group_by()` and `summarise()` and pipes `|>`.
+
+Let's take another example:
+
+```{r}
+us_population_by_county <- 
+  read.csv("https://raw.githubusercontent.com/fraba/SSPS4102/master/data/US-pop-by-county.csv")
+nrow(us_population_by_county)
+```
+
+```{r echo = F}
+us_population_by_county %>%
+  dplyr::sample_n(5) %>%
+  knitr::kable()
+```
+
+---
+
+## Grouped summaries with `group_by()` and `summarise()` and pipes `|>`.
+
+Let's sum the population of each state
+
+```{r eval = F}
+us_population_by_county |>
+  dplyr::group_by(state) |> #<<
+  dplyr::summarise(us_population_by_state, sum(...))  #<<
+```
+
+What we replace `...` with to get the `sum()` of the population for each **state**?
+
+---
+
+## Grouped summaries with `group_by()` and `summarise()` and pipes `|>`.
+
+Let's say that you have a non-numeric variable (character or factor). How can you summarise it? You can use `count()` on your grouped data frame. 
+
+```{r}
+
+us_population_by_county |>
+  dplyr::group_by(state) |>
+  dplyr::count()
+
+```
+
+---
 
 ## Piping all together with `|>`: Example 1
 
@@ -700,7 +948,7 @@ Also, note that `filter(air_time < 100)` and the other verbs do not specify a da
 us_population_by_county |>
   dplyr::group_by(state) |>
   dplyr::summarise(tot_pop = sum(population / 1000000),
-                   mean_pop = mean(population / 1000000))
+                   mean_pop = mean(population / 1000))
 ```
 
 What is `mean_pop`?
@@ -713,14 +961,11 @@ What is `mean_pop`?
 us_population_by_county |>
   dplyr::group_by(state) |>
   dplyr::summarise(tot_pop = sum(population / 1000000),
-                   mean_pop = mean(population / 1000000)) |>
+                   mean_pop = mean(population / 1000)) |>
   ggplot(aes(x = state, y = tot_pop)) +
   geom_col() + 
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
-.footnote[`theme(axis.text.x = element_text(angle = 45))` rotate the text of the axis X label by 45 degrees]
+.footnote[`theme(axis.text.x = element_text(angle = 90))` rotate the text of the axis X label by 90 degrees]
 
----
-
-## `case_when`
