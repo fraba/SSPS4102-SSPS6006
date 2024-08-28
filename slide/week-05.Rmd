@@ -1,6 +1,6 @@
 ---
 title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
-subtitle: "Week 05</br>Measurement"
+subtitle: "Week 05</br>Data transformation and communication with R"
 author: "Francesco Bailo"
 date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
 output:
@@ -941,6 +941,11 @@ us_population_by_county |>
 ```
 
 ---
+class: inverse, center, middle
+
+# Piping all together with `|>`
+
+---
 
 ## Piping all together with `|>`: Example 1
 
@@ -957,6 +962,7 @@ What is `mean_pop`?
 
 ## Piping all together with `|>`: Example 2
 
+
 ```{r fig.width=12, out.width = "100%"}
 us_population_by_county |>
   dplyr::group_by(state) |>
@@ -968,4 +974,8 @@ us_population_by_county |>
 ```
 
 .footnote[`theme(axis.text.x = element_text(angle = 90))` rotate the text of the axis X label by 90 degrees]
+
+--- 
+
+## Now let's move everything we have learned on a Rmd file so to communicate our results!
 
