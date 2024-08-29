@@ -601,6 +601,50 @@ Logical operators are hard (i.e. easy to get wrong). Make sure you always check 
 
 ---
 
+## Filter for multiple values in the same columns
+
+Let's say you want to filter all rows where one column takes either one value OR another value.
+
+For example, let's filter for rows where `sched_dep_time` is either 529 or 600.
+
+### Option 1
+
+```{r}
+dplyr::filter(flights, sched_dep_time == 529 | sched_dep_time == 545)
+```
+
+---
+
+## Filter for multiple values in the same columns
+
+Alternatively, you can use the special operator `%in%`.
+
+`%in%` returns a logical vector indicating if there is a match or not for its left operand.
+
+```{r}
+1 %in% c(1, 3, 4, 1)
+```
+
+```{r}
+c(1, 2) %in% c(1, 3, 4, 1)
+```
+
+Remember that when operating with dplyr verbs all your operations are vector operations (as you are operating on multiple values across rows or columns).
+
+---
+
+## Filter for multiple values in the same columns
+
+### Option 2
+
+```{r}
+dplyr::filter(flights, sched_dep_time %in% c(529, 545))
+```
+
+
+
+---
+
 ## Sort rows with arrange()
 
 If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns.
@@ -778,6 +822,11 @@ mutate(my_dat,
 
 ---
 class: inverse, center, middle
+# Individual in-class quiz/tutorial Part 1
+# Until "ifelse() and case_when()" included
+
+---
+class: inverse, center, middle
 
 # pipe (`|>`) operator
 
@@ -835,13 +884,24 @@ Also, with `|>` you don't need to store your results in temporary/intermediary v
 ```{r}
 my_new_dataframe <- 
   flights |> # Source of data #<< 
-  filter(air_time < 100) %>% # First transformation    #<<
+  filter(air_time < 100) |> # First transformation    #<<
   mutate(new = 1) # Second transformation #<< 
 ```
 
 Note that you can improve the readability of your code using a new line for each command separated chained with a `|>`. In this code, after three steps, the results will be stored in the object `my_new_dataframe`.
 
 Also, note that `filter(air_time < 100)` and the other verbs do not specify a data frame (which must be the first argument of `filter()` and `mutate()`) because the data is piped in, top-down, with `|>`.
+
+---
+
+.content-box-yellow[
+
+## `|>` == `%>%`
+
+It is also common to find the pipe operator written as `%>%` (especially in old code). Just remember that `|>` and `%>%` are functionally the same yet `|>` is to be preferred as it doesn't require loading extra packages (it is from the R base package).
+
+]
+
 
 ---
 class: inverse, center, middle
@@ -975,7 +1035,52 @@ us_population_by_county |>
 
 .footnote[`theme(axis.text.x = element_text(angle = 90))` rotate the text of the axis X label by 90 degrees]
 
---- 
+---
+class: inverse, center, middle
 
-## Now let's move everything we have learned on a Rmd file so to communicate our results!
+# Individual in-class quiz/tutorial Part 2
+
+---
+class: inverse, center, middle
+
+# Something more on Rmd (to make your document look better)
+
+---
+
+- Print your data frame as a nice table
+  
+```{r eval = F}
+data |>
+  dplyr::filter(x == "something") |>
+  knitr::kable()
+```
+
+- Include a figure in your document
+
+```{r eval = F}
+knitr::include_graphics("path/to/image.jpg")
+```
+
+---
+
+- Remove all your code from the final output
+
+```{r eval = F}
+# Set echo = FALSE in your first (setup) chunk
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+- Resize your plots (also if font-size is too small)
+
+```{r eval = F}
+# Use this option with the {} at the beginning
+# of your chunk
+fig.width=8, fig.height=4
+```
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
 

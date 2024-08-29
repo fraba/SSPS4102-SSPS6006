@@ -35,13 +35,13 @@ class: center, middle, inverse, title-slide
 # SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]
 ]
 .subtitle[
-## Week 05</br>Measurement
+## Week 05</br>Data transformation and communication with R
 ]
 .author[
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-08-27)
+### Semester 2, 2024 (updated: 2024-08-29)
 ]
 
 ---
@@ -150,13 +150,13 @@ In data analytics, data collection generally has a slighlty different meaning. *
 
 ### Data collection in research design
 
-<div id="htmlwidget-4369f7a758cd5d6b8b95" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4369f7a758cd5d6b8b95">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-35f994dc398a5e37e376" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-35f994dc398a5e37e376">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ### Data collection in data analytics 
 
-<div id="htmlwidget-aaccdb9a37d716e5b067" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-aaccdb9a37d716e5b067">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-541892355899d5636367" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-541892355899d5636367">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -224,8 +224,8 @@ Simply put, you can't `read(source = "http://en.wikipedia.org")`.
 
 A detail discussion about sourcing and reading data is out of the scope of this unit. Still, as example, here an example of a common "pipeline" to collect social media data. 
 
-<div id="htmlwidget-c4537d5b22c3d55b068c" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c4537d5b22c3d55b068c">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d51d71f00f5258bfa124" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d51d71f00f5258bfa124">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 If instead of an API, you have a database you should expect a very similar pipeline.
 
@@ -594,6 +594,102 @@ will filter records where month is `11` but also where year is `2013`.
 Logical operators are hard (i.e. easy to get wrong). Make sure you always check the results when using them!
 
 ]
+
+---
+
+## Filter for multiple values in the same columns
+
+Let's say you want to filter all rows where one column takes either one value OR another value.
+
+For example, let's filter for rows where `sched_dep_time` is either 529 or 600.
+
+### Option 1
+
+
+``` r
+dplyr::filter(flights, sched_dep_time == 529 | sched_dep_time == 545)
+```
+
+```
+## # A tibble: 542 × 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      533            529         4      850            830
+##  2  2013     1     1      544            545        -1     1004           1022
+##  3  2013     1     2      536            529         7      840            828
+##  4  2013     1     2      539            545        -6      959           1022
+##  5  2013     1     3      543            545        -2     1009           1022
+##  6  2013     1     4      608            545        23     1039           1022
+##  7  2013     1     5      602            545        17     1035           1022
+##  8  2013     1     6      629            545        44     1156           1022
+##  9  2013    10     1      536            545        -9      809            855
+## 10  2013    10     1      539            545        -6      801            827
+## # ℹ 532 more rows
+## # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+## Filter for multiple values in the same columns
+
+Alternatively, you can use the special operator `%in%`.
+
+`%in%` returns a logical vector indicating if there is a match or not for its left operand.
+
+
+``` r
+1 %in% c(1, 3, 4, 1)
+```
+
+```
+## [1] TRUE
+```
+
+
+``` r
+c(1, 2) %in% c(1, 3, 4, 1)
+```
+
+```
+## [1]  TRUE FALSE
+```
+
+Remember that when operating with dplyr verbs all your operations are vector operations (as you are operating on multiple values across rows or columns).
+
+---
+
+## Filter for multiple values in the same columns
+
+### Option 2
+
+
+``` r
+dplyr::filter(flights, sched_dep_time %in% c(529, 545))
+```
+
+```
+## # A tibble: 542 × 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      533            529         4      850            830
+##  2  2013     1     1      544            545        -1     1004           1022
+##  3  2013     1     2      536            529         7      840            828
+##  4  2013     1     2      539            545        -6      959           1022
+##  5  2013     1     3      543            545        -2     1009           1022
+##  6  2013     1     4      608            545        23     1039           1022
+##  7  2013     1     5      602            545        17     1035           1022
+##  8  2013     1     6      629            545        44     1156           1022
+##  9  2013    10     1      536            545        -9      809            855
+## 10  2013    10     1      539            545        -6      801            827
+## # ℹ 532 more rows
+## # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+
 
 ---
 
@@ -1032,6 +1128,11 @@ mutate(my_dat,
 
 ---
 class: inverse, center, middle
+# Individual in-class quiz/tutorial Part 1
+# Until "ifelse() and case_when()" included
+
+---
+class: inverse, center, middle
 
 # pipe (`|&gt;`) operator
 
@@ -1044,8 +1145,8 @@ Before moving to group operations on data frame now let's introduce the `|&gt;` 
 
 The pipe operator, which you type with a `|` + `&gt;`, *chains* function together so that the value returned from the function *on the left* of the `|&gt;` flows as first argument into the function *on the right* of the `|&gt;`.
 
-<div id="htmlwidget-551c1dc34da13588e05f" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-551c1dc34da13588e05f">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d7b7e5d7479ffc0e2237" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d7b7e5d7479ffc0e2237">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 And in R...
 
@@ -1066,13 +1167,24 @@ Also, with `|&gt;` you don't need to store your results in temporary/intermediar
 ``` r
 my_new_dataframe &lt;- 
 * flights |&gt; # Source of data
-* filter(air_time &lt; 100) %&gt;% # First transformation
+* filter(air_time &lt; 100) |&gt; # First transformation
 * mutate(new = 1) # Second transformation
 ```
 
 Note that you can improve the readability of your code using a new line for each command separated chained with a `|&gt;`. In this code, after three steps, the results will be stored in the object `my_new_dataframe`.
 
 Also, note that `filter(air_time &lt; 100)` and the other verbs do not specify a data frame (which must be the first argument of `filter()` and `mutate()`) because the data is piped in, top-down, with `|&gt;`.
+
+---
+
+.content-box-yellow[
+
+## `|&gt;` == `%&gt;%`
+
+It is also common to find the pipe operator written as `%&gt;%` (especially in old code). Just remember that `|&gt;` and `%&gt;%` are functionally the same yet `|&gt;` is to be preferred as it doesn't require loading extra packages (it is from the R base package).
+
+]
+
 
 ---
 class: inverse, center, middle
@@ -1192,13 +1304,13 @@ nrow(us_population_by_county)
 ```
 
 
-|county            |state          | population|
-|:-----------------|:--------------|----------:|
-|Sibley County     |Minnesota      |      15226|
-|Washington County |Maine          |      32856|
-|Halifax County    |North Carolina |      54691|
-|Burke County      |North Dakota   |       1968|
-|Lincoln County    |Nevada         |       5345|
+|county          |state          | population|
+|:---------------|:--------------|----------:|
+|Fulton County   |New York       |      55531|
+|Posey County    |Indiana        |      25910|
+|Johnston County |North Carolina |     168878|
+|LaMoure County  |North Dakota   |       4139|
+|Laramie County  |Wyoming        |      91738|
 
 ---
 
@@ -1247,6 +1359,11 @@ us_population_by_county |&gt;
 ```
 
 ---
+class: inverse, center, middle
+
+# Piping all together with `|&gt;`
+
+---
 
 ## Piping all together with `|&gt;`: Example 1
 
@@ -1282,6 +1399,7 @@ What is `mean_pop`?
 ## Piping all together with `|&gt;`: Example 2
 
 
+
 ``` r
 us_population_by_county |&gt;
   dplyr::group_by(state) |&gt;
@@ -1292,9 +1410,62 @@ us_population_by_county |&gt;
   theme(axis.text.x = element_text(angle = 90))
 ```
 
-&lt;img src="week-05_files/figure-html/unnamed-chunk-48-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-05_files/figure-html/unnamed-chunk-52-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 .footnote[`theme(axis.text.x = element_text(angle = 90))` rotate the text of the axis X label by 90 degrees]
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial Part 2
+
+---
+class: inverse, center, middle
+
+# Something more on Rmd (to make your document look better)
+
+---
+
+- Print your data frame as a nice table
+  
+
+``` r
+data |&gt;
+  dplyr::filter(x == "something") |&gt;
+  knitr::kable()
+```
+
+- Include a figure in your document
+
+
+``` r
+knitr::include_graphics("path/to/image.jpg")
+```
+
+---
+
+- Remove all your code from the final output
+
+
+``` r
+# Set echo = FALSE in your first (setup) chunk
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+- Resize your plots (also if font-size is too small)
+
+
+``` r
+# Use this option with the {} at the beginning
+# of your chunk
+fig.width=8, fig.height=4
+```
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
