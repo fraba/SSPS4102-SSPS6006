@@ -73,11 +73,41 @@ background-size: 100%
 
 ## Closing the loop with Week 04 anonymous feedback
 
-Reassure about 
+Let's check the aggregate results!
 
-- engagement 
+---
 
-- pace of explanation for programming concepts (introduction of new concepts will slow down drammatically)
+## Recap from last week
+
+- Sample vs. Population
+- Representative Samples and Random Sampling
+- Exploring One Variable at a Time
+- Table of Frequencies `table()`
+- Table of Proportions `prop.table(table())`
+- Histogram `ggplot() + geom_histogram()`
+- Mean `mean()`
+- Median `median()`
+- Standard Deviation `sd()`
+- Exploring the Relationship Between Two Variables
+- Scatter plots `ggplot() + geom_point()`
+- Correlations `cor()`
+
+---
+
+## Today's class
+
+
+| Time          | Content                                  |
+|---------------|------------------------------------------|
+| 11:00 - 11:15 | Data collection                          |
+| 11:15 - 11:25 | Lab: Data import and export with R       |
+| 11:25 - 11:45 | Lab: Data transformation with dplyr      |
+| 11:45 - 12:00 | Lab: dplyr's Verbs for Rows              |
+| 12:00 - 12:15 | Lab: dplyr's Verbs for Columns           |
+| 12:15 - 12:30 | Individual in-class quiz/tutorial Part 1 |
+| 12:30 - 12:45 | BREAK                                    |
+| 12:45 - 13:00 | Lab: pipes & dplyr's Verbs for Groups    |
+| 13:00 - 14:00 | Group in-class problem set               |
 
 ---
 class: inverse, center, middle
@@ -1087,5 +1117,13 @@ class: inverse, center, middle
 
 <img src = "https://www.angelfire.com/wv2/titanic/RDRoseOnBoardJackFloating.jpg"></src>
 
+---
+class: inverse, center, middle
 
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week with Prediction!
 
