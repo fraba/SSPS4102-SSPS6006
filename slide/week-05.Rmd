@@ -1081,6 +1081,11 @@ fig.width=8, fig.height=4
 ---
 class: inverse, center, middle
 
-# Group in-class problem set
+# Group in-class problem set OR
+
+# Could Jack have fitted on that door?
+
+<img src = "https://www.angelfire.com/wv2/titanic/RDRoseOnBoardJackFloating.jpg"></src>
+
 
 
