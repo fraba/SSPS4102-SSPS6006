@@ -1,0 +1,130 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 06</br>Prediction"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+background-image: url(https://www.antiprism.com/misc/tri_jit_rd01.gif)
+background-size: 100%
+
+# Prediction 
+
+---
+
+## Recap from last week
+
+- Data transformation with dplyr.
+- Rows with `filter()` and `arrange()`.
+- Columns with `mutate()` and `case_when()`.
+- Groups with `group_by()` and `summarise()`.
+
+
+--- 
+
+## Housekeeping: Assignment submission should be anonymous
+
+Even if the RMD template invites to add your name as author, you should not add it to any file you will submit.
+
+---
+
+## Preliminary quiz (two slide!)
+
+.center[<img src = '../img/menti_week_06.png' width = '25%'>
+
+OR 
+
+[menti.com/aliv7gi3oa72](https://www.menti.com/aliv7gi3oa72) 
+
+
+]
+
+---
+
+<div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden;'><iframe sandbox='allow-scripts allow-same-origin allow-presentation' allowfullscreen='true' allowtransparency='true' frameborder='0' height='315' src='https://www.mentimeter.com/app/presentation/alcmsn3vpxq6rt3od3gnp5s1dttxs3a2/embed' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' width='420'></iframe></div>
+
+---
+class: inverse, center, middle
+
+# Prediction 
+
+# (Stats slides)
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial (all)
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week with Prediction!
+
