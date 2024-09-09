@@ -1,0 +1,72 @@
+---
+title: "Summarise Regression Models with broom"
+author: "Francesco Bailo"
+date: "2024-09-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The broom package offers you utilities to render regression models objects into the tidy `tibble()`s (a special type of data frame).
+
+## Step 1: Install the broom package (only once)
+
+```{r eval = F}
+install.packages("tidymodels")
+```
+
+Alternatively, to install just broom
+
+```{r  eval = F}
+install.packages("broom")
+```
+
+Alternatively, to install just broom with pak
+
+```{r eval = F}
+# install.packages("pak") # if you don't have pak already installed
+pak::pak("tidymodels/broom")
+```
+
+## Step 2: Load the broom package (and the knitr package for `kable()`)
+
+```{r}
+library(broom)
+```
+
+We also need to load the knitr package to use `kable()` and produce nice looking tables in your PDF or HTML output.
+
+```{r}
+library(knitr)
+```
+
+
+## Step 3: Produce a standard regression model table with `broom:tidy()`
+
+```{r}
+fit <- lm(Volume ~ Girth + Height, trees)
+```
+
+```{r}
+tidy(fit) |>
+  kable()
+```
+
+This table produces all the standard statistics that are generally found in regression tables reporting on a model.
+
+## Step 4: Produce an augemented regression model table with `broom:glance()`
+
+```{r}
+glance(fit) |>
+    kable()
+```
+
+This table produces all the standard statistics that are generally found in regression tables reporting on a model.
+
+```{r}
+augment(fit, data = trees) |>
+      kable()
+```
+
