@@ -1,0 +1,78 @@
+---
+title: "Prediction error with lm()"
+author: "Francesco Bailo"
+date: "2024-09-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Step 1: Fitting the Model
+
+First, you'll fit the linear model as you did earlier using `lm()`:
+
+```{r}
+fit <- lm(formula = mpg ~ wt, data = mtcars)
+```
+
+The `formula` of your model, is `mpg ~ wt` which means that for each car model (your observations/rows in your data frame `mtcars`) you are predicting `mpg` (mile per gallons) from `wt` (the weight of the car). 
+
+Your model and your prediction are now stored inside the object `fit`, which contains multiple statistics, including the *coefficients* ($\alpha$ and $\beta$) and the *predicted values* (also known as *fitted values*) for all the cars in the data frame.
+
+## Step 2: Observed values
+
+- **Q**: What is your *observed* value of `mpg` for the car "Ferrari Dino"? There are many ways to access this information stored in the column `mpg` of your data frame.
+
+You can print out the entire data frame 
+
+```{r}
+mtcars 
+```
+
+But if the data frame is large, it is probably better access the value you need directly, by selecting the column `mpg` and filtering for the row named "Ferrari Dino" (note, that `mtcars` as named columns but also named rows).
+
+```{r}
+# Note: use this syntax your_data_frame[ "row name" , "col name" ]
+mtcars["Ferrari Dino","mpg"]
+```
+
+- **A**: `r mtcars["Ferrari Dino","mpg"]` is the *observed* value for `mpg` of the car "Ferrari Dino"
+
+## Step 3: Predicted values
+
+- **Q**: What is the value of `mpg` predicted from `wt` for "Ferrari Dino" using as predictor?
+
+To extract the *predicted* or *fitted values* from any object created with the function `lm()` you can use `predict()`. Since the data frame `mtcars` had row names, this has also been stored in your object `fit` and you can extract them all, along with the predicted values with:
+
+```{r}
+predict(fit)
+```
+Alternatively, if you want to only extract the value of interest you can
+
+```{r}
+# Note: use the [] syntax to extract information from a vector, if the vector 
+# is named as in this case you can use a character string.
+predict(fit)["Ferrari Dino"]
+```
+
+- **A**: `r predict(fit)["Ferrari Dino"]` 
+
+## Step 3: Prediction error
+
+Now we have all the information to compute the prediction error for this car.
+
+Remember that 
+
+$$Error = \text{Observed Value} - \text{Predicted Value}$$ or 
+
+$$\hat{\epsilon} = Y - \hat{Y}$$
+
+```{r}
+mtcars["Ferrari Dino","mpg"] - predict(fit)["Ferrari Dino"]
+```
+
+
+
+
