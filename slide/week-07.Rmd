@@ -1,0 +1,301 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 07</br>Probability"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+class: inverse, center, middle
+
+# Probability 
+
+---
+
+## Recap from last week
+
+- `lm()` with one independent variable.
+- $R^2$, a model fit measure, which represents the proportion of variability in $Y$ (outcome or dependent variable) that is explained by a linear combination of $X$ (predictors or independent variables).  
+
+---
+class: inverse, center, middle
+
+# Before talking about probability, let's talk about the multiple regression models
+
+---
+
+## Multiple Linear Regression Models
+
+Linear models with more than one $X$ variable
+
+$$\widehat{Y}_i = \widehat{\alpha} + \widehat{\beta}_1 X_{i1}+... + \widehat{\beta}_p X_{ip}$$
+
+where:
+
+- $\widehat{Y_i}$ is the predicted value of $Y$ for observation $i$
+
+- $\widehat{\alpha}$ is the estimated intercept coefficient  
+
+ each $\widehat{\beta}_j$ (pronounced beta hat sub j) is the estimated coefficient for variable $X_j$ ( $j{=} {1}, ..., p$ ) - we use $j$ as a stand-in for all different subscripts.
+
+- each $X_{ij}$ is the observed value of the variable $X_j$ for observation $i$ ( $j{=} {1}, ..., p$ )
+
+- $p$ is the total number of $X$ variables in the model.
+
+.footnote[Slide adapted from slides by Prof. Llaudet]
+
+
+---
+
+## Simple vs Multiple regression
+
+.pull-left[
+
+| simple regression                          |
+|--------------------------------------------|
+| $\widehat{Y} = \widehat{\alpha} + \widehat{\beta} X$  |
+| $\widehat{\alpha}$: $\widehat{Y}$ when $X=0$ |
+| $\widehat{\beta}$: $\triangle\widehat{Y}$ associated with $\triangle X=1$ |
+
+
+]
+
+.pull-right[
+
+| multiple regression                                                             |
+|---------------------------------------------------------------------------------|
+| $\widehat{Y} = \widehat{\alpha} + \widehat{\beta}_{1} X_{1} + ... + \widehat{\beta}_p X_{p}$  |
+| $\widehat{\alpha}$: $\widehat{Y}$ when all $X_j=0$ ( $j=1,...,p$ ) |
+| each $\widehat{\beta}_j$: $\triangle\widehat{Y}$ associated with $\triangle X_j=1$, while holding all other $X$ variables constant or *ceteris paribus* |
+
+
+]
+
+.footnote[Slide adapted from slides by Prof. Llaudet]
+
+---
+
+## Interpretation of Coefficients in Multiple Linear Regression Models
+
+$$\widehat{Y} = \widehat{\alpha} + \widehat{\beta}_{1} X_{1} + ... + \widehat{\beta}_p X_{p}$$
+
+- $\widehat{\alpha}$ is the $\widehat{Y}$ when *all* $X_j{=}{0}$
+
+- Because there are multiple $X$ variables, there are multiple $\widehat{\beta}$ coefficients (one for each $X$ variable)
+
+.content-box-yellow[
+
+- Each $\widehat{\beta}_j$ is the $\triangle \widehat{Y}$ associated with $\triangle X_j$=1, *while holding all other $X$ variables constant* 
+
+]
+
+.footnote[Slide adapted from slides by Prof. Llaudet]
+---
+
+## Interpretation of $\widehat{\beta_1}$ when $X_1$ is the treatment variable and the other X variables are all the potential confounding variables
+
+- Adding all confounders as controls in the model makes treatment and control groups comparable *after controls*
+
+- As a result, we can interpret $\widehat{\beta}_1$ using **causal langauge**
+
++ $\widehat{\beta}_1$ is the $\triangle \widehat{Y}$ *caused by* the presence of the treatment ( $\triangle X_1$=1 ), while holding all confounders constant 
+
+- $\widehat{\beta}_1$ should be a valid estimate of the average treatment effect if all confounding variables  are in the model
+
+
+.footnote[Slide adapted from slides by Prof. Llaudet]
+
+---
+class: inverse, center, middle
+
+# Lab: lm() with multiple regression
+
+---
+
+## Example: US midterm elections<sup>1</sup>
+
+| Variable name | Description |
+| ------------- | ----------- |
+| `year` | midterm election year |
+| `president` | name of president |
+| `party` | Democrat or Republican |
+| `approval` | Gallup approval rating at midterms |
+| `seat.change` | change in the number of House seat's for the president's party |
+| `rdi.change` | change in real disposable income over the year before |
+
+
+.footnote[[1] Slides from http://www.mattblackwell.org/files/teaching/gov50/regression-ii.pdf]
+
+
+---
+
+```{r echo = F}
+midterms <- read.csv("../data/midterms.csv")
+```
+
+```{r eval = F}
+midterms <- read.csv("midterms.csv")
+```
+
+
+```{r echo = F}
+midterms %>%
+  slice(1:5) %>%
+  kable()
+```
+
+---
+
+## Simple regression
+
+```{r}
+fit_simple <- 
+  lm(formula = seat.change ~ approval, data = midterms)
+
+summary(fit_simple)
+```
+
+
+---
+
+## Mutliple regression
+
+```{r}
+fit_multi <- 
+  lm(formula = seat.change ~ approval + rdi.change, data = midterms)
+```
+
+We add as many additional independent variables we want by adding to the formula `+ new_iv`.
+
+---
+
+```{r}
+summary(fit_multi)
+```
+
+---
+
+## Using predict()
+
+The function `predict()` takes the result from a `lm()` function and any value for the $X$ and predict, based on the regression line, the average (expected )value for $Y$ given $x$.
+
+```{r}
+summary(midterms$approval)
+```
+
+
+```{r}
+my_new_data <- 
+  data.frame(approval = c(20, 80))
+
+predict(fit_simple, newdata = my_new_data)
+```
+
+---
+
+## Using predict()
+
+To obtain the 95% confidence intervals around the mean the predictions, we can add `interval = "confidence"`.
+
+```{r}
+seat.change_prediction <- 
+  predict(fit_simple, newdata = my_new_data, interval = "confidence")
+seat.change_prediction
+```
+
+---
+
+We can plot the results from predict with 
+
+```{r out.width = "40%"}
+# First we need to create a data.frame adding the `approval` rate
+# that we want to use as input values
+data.frame(seat.change_prediction,
+           approval = c(20, 80)) %>% 
+# Then we plot  
+  ggplot(aes(y = fit, 
+             ymin = lwr, ymax = upr, 
+             x = approval)) +
+  geom_point() +
+  geom_errorbar() +
+  labs(y = "seat.change")
+```
+
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial (all)
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week with Uncertainty!
+
