@@ -419,9 +419,12 @@ and produce nice looking tables in your PDF or HTML output.</p>
 </tr>
 </tbody>
 </table>
+<p>This table produces all the standard statistics that are generally
+found in regression tables reporting on a model. After the intercept,
+each row of this table corresponds to an independent variable.</p>
 </div>
-<div id="step-4-produce-an-augemented-regression-model-table-with-broomglance" class="section level2">
-<h2>Step 4: Produce an augemented regression model table with
+<div id="step-4-produce-a-regression-model-summary-statistics-with-broomglance" class="section level2">
+<h2>Step 4: Produce a regression model summary statistics with
 <code>broom:glance()</code></h2>
 <pre class="r"><code>glance(fit) |&gt;
     kable()</code></pre>
@@ -473,6 +476,20 @@ and produce nice looking tables in your PDF or HTML output.</p>
 </tr>
 </tbody>
 </table>
+<p>This table produces all the standard statistics that are generally
+found in regression tables reporting on a model, the most popular one
+being the <code>r.squared</code> (or <span class="math inline">\(R^2\)</span>).</p>
+</div>
+<div id="step-5-produce-augemented-regression-model-tables-with-broomaugment" class="section level2">
+<h2>Step 5: Produce augemented regression model tables with
+<code>broom:augment()</code></h2>
+<p>You can also produce a table with the observed values of all your
+model variables (independent and dependent) and other model statistics
+including the predicted value (“.fitted”) for your dependent variable,
+the prediction error or residual (“.resid”). In this table, each row
+correspond to one observartion from your data frame <code>trees</code>.
+(See <a href="https://broom.tidymodels.org/reference/augment.lm.html">here</a>
+for more details on the values produced by <code>augment()</code>)</p>
 <pre class="r"><code>augment(fit, data = trees) |&gt;
       kable()</code></pre>
 <table>

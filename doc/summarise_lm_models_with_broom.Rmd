@@ -54,16 +54,21 @@ tidy(fit) |>
   kable()
 ```
 
-This table produces all the standard statistics that are generally found in regression tables reporting on a model.
+This table produces all the standard statistics that are generally found in regression tables reporting on a model. After the intercept, each row of this table corresponds to an independent variable. 
 
-## Step 4: Produce an augemented regression model table with `broom:glance()`
+## Step 4: Produce a regression model summary statistics with `broom:glance()`
 
 ```{r}
 glance(fit) |>
     kable()
 ```
 
-This table produces all the standard statistics that are generally found in regression tables reporting on a model.
+This table produces all the standard statistics that are generally found in regression tables reporting on a model, the most popular one being the 
+`r.squared` (or $R^2$).
+
+## Step 5: Produce augemented regression model tables with `broom:augment()`
+
+You can also produce a table with the observed values of all your model variables (independent and dependent) and other model statistics including the predicted value (".fitted") for your dependent variable, the prediction error or residual (".resid"). In this table, each row correspond to one observartion from your data frame `trees`. (See [here](https://broom.tidymodels.org/reference/augment.lm.html) for more details on the values produced by `augment()`)  
 
 ```{r}
 augment(fit, data = trees) |>
