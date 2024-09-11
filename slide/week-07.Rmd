@@ -370,6 +370,13 @@ Adding extra an variable in this case **decreased** the accuracy of the model!
 
 ]
 
+.content-box-red[
+
+The substantial interpretation here is that the national economy does not explain voting behaviour as much as we think...
+
+]
+
+
 
 ### How could we know?
 
