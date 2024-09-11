@@ -35,7 +35,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-09-10)
+### Semester 2, 2024 (updated: 2024-09-11)
 ]
 
 ---
@@ -77,7 +77,7 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# Before talking about probability, let's talk about the multiple regression models
+# But ... Before talking about probability, let's go back a bit and talk about multiple regression models
 
 ---
 
@@ -181,7 +181,7 @@ class: inverse, center, middle
 | `rdi.change` | change in real disposable income over the year before |
 
 
-.footnote[[1] Slides from http://www.mattblackwell.org/files/teaching/gov50/regression-ii.pdf]
+.footnote[[1] Slides adapted from http://www.mattblackwell.org/files/teaching/gov50/regression-ii.pdf]
 
 
 ---
@@ -207,11 +207,25 @@ midterms &lt;- read.csv("midterms.csv")
 
 ## Simple regression
 
+$$ \widehat{seat.change} = \hat{\alpha} + \hat{\beta} \times approval $$
+
 
 ``` r
 fit_simple &lt;- 
-  lm(formula = seat.change ~ approval, data = midterms)
+  lm(formula = seat.change ~ approval, 
+     data = midterms)
+```
 
+.content-box-yellow[
+
+Remember: the attribute `formula` is constructed as `outcome ~ predictor`.
+
+]
+
+---
+
+
+``` r
 summary(fit_simple)
 ```
 
@@ -237,18 +251,268 @@ summary(fit_simple)
 ## F-statistic: 12.11 on 1 and 16 DF,  p-value: 0.003096
 ```
 
+So far, we discussed "Estimate", which is the coefficient for each independent variable ( `\(\hat{\beta}_j\)`) and the intercept ( `\(\hat{\alpha}\)` ) and the "R-squared", which is the proportion of the variation in `\(Y\)` explained by the model.
 
 ---
 
 ## Mutliple regression
 
+Using the `formula` syntax `outcome ~ predictor_1 + predictor_2 + ...` we can add additional predictors (i.e independent variables).
+
 
 ``` r
 fit_multi &lt;- 
-  lm(formula = seat.change ~ approval + rdi.change, data = midterms)
+  lm(formula = seat.change ~ approval + rdi.change, 
+     data = midterms)
 ```
 
-We add as many additional independent variables we want by adding to the formula `+ new_iv`.
+---
+
+&lt;div style = 'font-size: 14pt'&gt;
+
+
+``` r
+summary(fit_multi)
+```
+
+```
+## 
+## Call:
+## lm(formula = seat.change ~ approval + rdi.change, data = midterms)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -28.793 -13.405   2.787  10.407  29.218 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -120.4363    30.2634  -3.980  0.00137 **
+## approval       1.5720     0.4739   3.317  0.00509 **
+## rdi.change     3.3342     2.2755   1.465  0.16495   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 17.27 on 14 degrees of freedom
+##   (2 observations deleted due to missingness)
+## Multiple R-squared:  0.4448,	Adjusted R-squared:  0.3655 
+## F-statistic: 5.609 on 2 and 14 DF,  p-value: 0.01625
+```
+
+&lt;/div&gt;
+The only difference here is that we have an extra row for the additional predictors. The interpretation of the "Estimate" now is variation in `\(\hat{Y}\)` ( i.e. `\(\Delta\hat{Y}\)` ) when variation in `\(X_j\)` is 1 ( i.e. `\(\Delta X_j=1\)` ).
+
+---
+
+## Using predict()
+
+If we don't pass new data, the function `predict()` will just return the prediction for `\(Y\)` (i.e. `\(\hat{Y}\)` ) for each observation in our original data.
+
+
+``` r
+predict(fit_multi)
+```
+
+```
+##          2          3          4          5          6          7          8 
+## -31.786520 -21.207962 -27.162685  -7.871170 -33.595516  -7.252560 -14.207542 
+##          9         10         11         12         13         14         15 
+## -17.733263 -38.406687  -4.393679 -10.586758 -35.119322   1.989527 -12.729174 
+##         16         17         18 
+## -41.694051 -38.025037 -42.217598
+```
+
+The number you see above the prediction is the row number of you `midterms` (which is replaced by labels if your rows are named). Note that the first row is missing because one predictor value is missing...  
+
+
+``` r
+midterms[1,]
+```
+
+```
+##   year president party approval seat.change rdi.change
+## 1 1946    Truman     D       33         -55         NA
+```
+
+---
+
+## Predict based on you data
+
+But we don't need to use the original data for our predictions. Remember that `lm()` gives us a continuous straight line; we can predict `\(Y\)` for any value of each `\(X_j\)`. 
+
+Let's get `\(\widehat{seat.change}\)` using our simple model for an approval rate of 20% and 80% (which is not in the original data set).
+
+
+``` r
+*my_new_data &lt;-
+* data.frame(approval = c(20, 80))
+
+predict(fit_simple, 
+*       newdata = my_new_data)
+```
+
+```
+##         1         2 
+## -68.35610  17.10995
+```
+
+With an approval rate of 20 the president's party is predicted to lose 68 seats and with an approval rate of 80 to gain 17 seats.
+
+---
+
+## How confident are we in our prediction?
+
+To obtain the 95% confidence intervals (more on this next week) around our predicted values ( `\(\hat{Y}\)` ), we can add `interval = "confidence"`.
+
+
+``` r
+*seat.change_prediction &lt;- # Storing prediction
+  predict(fit_simple, 
+          newdata = my_new_data, 
+*         interval = "confidence") # Adding confidence interval
+seat.change_prediction 
+```
+
+```
+##         fit       lwr       upr
+## 1 -68.35610 -96.58698 -40.12522
+## 2  17.10995  -9.56615  43.78605
+```
+
+---
+
+# Which we can then plot... 
+
+
+``` r
+# First we need to create a data.frame adding the `approval` rate
+# that we want to use as input values
+data.frame(seat.change_prediction,
+           approval = c(20, 80)) |&gt;
+# Then we plot  
+  ggplot(aes(y = fit, 
+             ymin = lwr, ymax = upr, 
+             x = approval)) +
+  geom_point() +
+  geom_errorbar() +
+  labs(y = "seat.change")
+```
+
+&lt;img src="week-07_files/figure-html/unnamed-chunk-12-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Let's compare our predictions with the actual results ... 
+
+- We are in 2018, just before the mid-term. (Trump is president).
+
+- We want to use `seat.change` to predict the outcome of the upcoming midterm election for Trump's party. 
+
+- Note that the 2018-Trump row was not used to estimate the model because of the missing value (of course, we are before the mid-term).
+
+- We only know that Trump's approval rate in 2018 was 38%. So we can plug that value in...
+
+
+``` r
+predict(fit_simple, newdata = data.frame(approval = 38))
+```
+
+```
+##         1 
+## -42.71629
+```
+
+We predict his party will lose about **43 seats**.
+
+---
+
+## Does adding predictors improve the accuracy of our model?
+
+This is out multivariate regression model: in addition to `approval` we are also using `rdi.change` (change in real disposable income over the year before, an economic measure)
+
+
+``` r
+fit_multi
+```
+
+```
+## 
+## Call:
+## lm(formula = seat.change ~ approval + rdi.change, data = midterms)
+## 
+## Coefficients:
+## (Intercept)     approval   rdi.change  
+##    -120.436        1.572        3.334
+```
+
+---
+
+
+``` r
+predict(fit_multi, 
+        newdata = data.frame(approval = 38,
+*                            rdi.change = 4.1)) # Observed value
+```
+
+```
+##         1 
+## -47.02877
+```
+
+Using the multiple regression model, we predict his party will lose **47 seats** instead of about **43 seats** with the simple regression model.
+
+## Which model did better?
+
+### Let's check Wikipedia!
+
+---
+
+&lt;iframe id="wiki" src="https://en.wikipedia.org/wiki/2018_United_States_elections" width = '900px' height = '600px'&gt;&lt;/iframe&gt;
+
+---
+
+.content-box-yellow[
+
+Adding extra an variable in this case **decreased** the accuracy of the model!
+
+]
+
+
+### How could we know?
+
+We could have checked the "Adjusted R-squared" of the two models...
+
+The "Multiple R-squared", the `\(R^2\)` we saw last week, explains the variation in the outcome variable that is explained by the predictors. Yet, the multiple R-squared will always increase if we add new predictors.
+
+This is way it is more appropriate to compare the "Adjusted R-squared" when we add new predictors. 
+
+---
+
+
+``` r
+summary(fit_simple)
+```
+
+```
+## 
+## Call:
+## lm(formula = seat.change ~ approval, data = midterms)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -31.348 -10.913   6.091  11.473  26.867 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -96.8448    21.2569  -4.556 0.000324 ***
+## approval      1.4244     0.4094   3.479 0.003096 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 17.41 on 16 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.4307,	Adjusted R-squared:  0.3951 
+## F-statistic: 12.11 on 1 and 16 DF,  p-value: 0.003096
+```
 
 ---
 
@@ -279,77 +543,6 @@ summary(fit_multi)
 ## Multiple R-squared:  0.4448,	Adjusted R-squared:  0.3655 
 ## F-statistic: 5.609 on 2 and 14 DF,  p-value: 0.01625
 ```
-
----
-
-## Using predict()
-
-The function `predict()` takes the result from a `lm()` function and any value for the `\(X\)` and predict, based on the regression line, the average (expected )value for `\(Y\)` given `\(x\)`.
-
-
-``` r
-summary(midterms$approval)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   33.00   41.00   49.00   50.26   59.50   66.00
-```
-
-
-
-``` r
-my_new_data &lt;- 
-  data.frame(approval = c(20, 80))
-
-predict(fit_simple, newdata = my_new_data)
-```
-
-```
-##         1         2 
-## -68.35610  17.10995
-```
-
----
-
-## Using predict()
-
-To obtain the 95% confidence intervals around the mean the predictions, we can add `interval = "confidence"`.
-
-
-``` r
-seat.change_prediction &lt;- 
-  predict(fit_simple, newdata = my_new_data, interval = "confidence")
-seat.change_prediction
-```
-
-```
-##         fit       lwr       upr
-## 1 -68.35610 -96.58698 -40.12522
-## 2  17.10995  -9.56615  43.78605
-```
-
----
-
-We can plot the results from predict with 
-
-
-``` r
-# First we need to create a data.frame adding the `approval` rate
-# that we want to use as input values
-data.frame(seat.change_prediction,
-           approval = c(20, 80)) %&gt;% 
-# Then we plot  
-  ggplot(aes(y = fit, 
-             ymin = lwr, ymax = upr, 
-             x = approval)) +
-  geom_point() +
-  geom_errorbar() +
-  labs(y = "seat.change")
-```
-
-&lt;img src="week-07_files/figure-html/unnamed-chunk-10-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
-
 
 ---
 class: inverse, center, middle
