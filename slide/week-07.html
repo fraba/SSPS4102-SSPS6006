@@ -6,6 +6,8 @@
     <meta name="author" content="Francesco Bailo" />
     <script src="week-07_files/header-attrs/header-attrs.js"></script>
     <link href="week-07_files/remark-css/default.css" rel="stylesheet" />
+    <link href="week-07_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-07_files/countdown/countdown.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         TeX: { equationNumbers: { autoNumber: "AMS" } },
@@ -35,7 +37,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-09-11)
+### Semester 2, 2024 (updated: 2024-09-12)
 ]
 
 ---
@@ -63,11 +65,6 @@ pre code {
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
 
 ---
-class: inverse, center, middle
-
-# Probability 
-
----
 
 ## Recap from last week
 
@@ -75,9 +72,22 @@ class: inverse, center, middle
 - `\(R^2\)`, a model fit measure, which represents the proportion of variability in `\(Y\)` (outcome or dependent variable) that is explained by a linear combination of `\(X\)` (predictors or independent variables).  
 
 ---
+
+## Today's class
+
+| Time        | Content                                       |
+|-------------|-----------------------------------------------|
+| 11:00-11:30 | Lab: Multiple regression models and predict() |
+| 11:30-11:40 | Individual quiz/tutorial Part 1               |
+| 11:40-12:30 | Probability                                   |
+| 12:30-12:45 | Break                                         |
+| 12:45-13:00 | Individual quiz/tutorial Part 1               |
+| 13:00-14:00 | Group in-class problem set                    |
+
+---
 class: inverse, center, middle
 
-# But ... Before talking about probability, let's go back a bit and talk about multiple regression models
+# Before talking about probability, let's go back a bit and talk about multiple regression models
 
 ---
 
@@ -148,28 +158,13 @@ where:
 
 .footnote[Slide adapted from slides by Prof. Llaudet]
 ---
-
-## Interpretation of `\(\widehat{\beta_1}\)` when `\(X_1\)` is the treatment variable and the other X variables are all the potential confounding variables
-
-- Adding all confounders as controls in the model makes treatment and control groups comparable *after controls*
-
-- As a result, we can interpret `\(\widehat{\beta}_1\)` using **causal langauge**
-
-+ `\(\widehat{\beta}_1\)` is the `\(\triangle \widehat{Y}\)` *caused by* the presence of the treatment ( `\(\triangle X_1\)`=1 ), while holding all confounders constant 
-
-- `\(\widehat{\beta}_1\)` should be a valid estimate of the average treatment effect if all confounding variables  are in the model
-
-
-.footnote[Slide adapted from slides by Prof. Llaudet]
-
----
 class: inverse, center, middle
 
 # Lab: lm() with multiple regression
 
 ---
 
-## Example: US midterm elections&lt;sup&gt;1&lt;/sup&gt;
+## US midterm elections data&lt;sup&gt;1&lt;/sup&gt;
 
 | Variable name | Description |
 | ------------- | ----------- |
@@ -179,6 +174,18 @@ class: inverse, center, middle
 | `approval` | Gallup approval rating at midterms |
 | `seat.change` | change in the number of House seat's for the president's party |
 | `rdi.change` | change in real disposable income over the year before |
+
+---
+
+## Scenario
+
+Imagine we are in 2018 just *before* the US mid-term election. So for the 2018 observation,
+
+- .content-box-green[`president`] is known (Trump);
+- .content-box-green[`party`] is known (Republican);
+- .content-box-green[`approval`] is known;
+- .content-box-green[`rdi.change`] is known; but
+- .content-box-red[`seat.change`] is **unknown**, since it is about a **future** event... Yet we could predict it :-)
 
 
 .footnote[[1] Slides adapted from http://www.mattblackwell.org/files/teaching/gov50/regression-ii.pdf]
@@ -193,6 +200,7 @@ class: inverse, center, middle
 midterms &lt;- read.csv("midterms.csv")
 ```
 
+The top of the table...
 
 
 | year|president  |party | approval| seat.change| rdi.change|
@@ -202,6 +210,15 @@ midterms &lt;- read.csv("midterms.csv")
 | 1954|Eisenhower |R     |       61|          -4|        1.0|
 | 1958|Eisenhower |R     |       57|         -47|        1.1|
 | 1962|Kennedy    |D     |       61|          -4|        5.0|
+
+... and the bottom of the table.
+
+
+| year|president |party | approval| seat.change| rdi.change|
+|----:|:---------|:-----|--------:|-----------:|----------:|
+| 2010|Obama     |D     |       45|         -63|        3.5|
+| 2014|Obama     |D     |       40|         -13|        4.6|
+| 2018|Trump     |R     |       38|          NA|        4.1|
 
 ---
 
@@ -221,6 +238,12 @@ fit_simple &lt;-
 Remember: the attribute `formula` is constructed as `outcome ~ predictor`.
 
 ]
+
+--
+
+### How do you geta summary of the results from `lm()`?
+
+- For example, you can use `summary()` (but there are many other functions you could use...)
 
 ---
 
@@ -251,8 +274,10 @@ summary(fit_simple)
 ## F-statistic: 12.11 on 1 and 16 DF,  p-value: 0.003096
 ```
 
-So far, we discussed "Estimate", which is the coefficient for each independent variable ( `\(\hat{\beta}_j\)`) and the intercept ( `\(\hat{\alpha}\)` ) and the "R-squared", which is the proportion of the variation in `\(Y\)` explained by the model.
-
+--
+.small[
+So far, we discussed .content-box-yellow["Estimate"], which is the coefficient for each independent variable ( `\(\hat{\beta}_j\)`) and the intercept ( `\(\hat{\alpha}\)` ) and the .content-box-yellow["Multiple R-squared"], which is the proportion of the variation in `\(Y\)` explained by the model.
+]
 ---
 
 ## Mutliple regression
@@ -299,7 +324,7 @@ summary(fit_multi)
 ```
 
 &lt;/div&gt;
-The only difference here is that we have an extra row for the additional predictors. The interpretation of the "Estimate" now is variation in `\(\hat{Y}\)` ( i.e. `\(\Delta\hat{Y}\)` ) when variation in `\(X_j\)` is 1 ( i.e. `\(\Delta X_j=1\)` ).
+The only difference here is that we have an extra row for the additional predictors. The interpretation of the .content-box-yellow["Estimate"] now is variation in `\(\hat{Y}\)` ( i.e. `\(\Delta\hat{Y}\)` ) when variation in `\(X_j\)` is 1 ( i.e. `\(\Delta X_j=1\)` ) and when other variables are held constant.
 
 ---
 
@@ -321,7 +346,9 @@ predict(fit_multi)
 ## -41.694051 -38.025037 -42.217598
 ```
 
-The number you see above the prediction is the row number of you `midterms` (which is replaced by labels if your rows are named). Note that the first row is missing because one predictor value is missing...  
+.small[
+The number you see above the prediction is the row number of your `midterms` data (which is replaced by labels if your rows are named). Note that the first and last rows are (of course!) missing because the `seat.change` is missing.
+]
 
 
 ``` r
@@ -335,19 +362,19 @@ midterms[1,]
 
 ---
 
-## Predict based on you data
+## Predict based on your data
 
 But we don't need to use the original data for our predictions. Remember that `lm()` gives us a continuous straight line; we can predict `\(Y\)` for any value of each `\(X_j\)`. 
 
-Let's get `\(\widehat{seat.change}\)` using our simple model for an approval rate of 20% and 80% (which is not in the original data set).
+For example, let's get `\(\widehat{seat.change}\)` using our simple model for an approval rate of 20% and 80% (which is not in the original data set).
 
 
 ``` r
 *my_new_data &lt;-
-* data.frame(approval = c(20, 80))
+* data.frame(approval = c(20, 80)) # Create new data
 
 predict(fit_simple, 
-*       newdata = my_new_data)
+*       newdata = my_new_data) # Pass the new data to predict()
 ```
 
 ```
@@ -355,7 +382,7 @@ predict(fit_simple,
 ## -68.35610  17.10995
 ```
 
-With an approval rate of 20 the president's party is predicted to lose 68 seats and with an approval rate of 80 to gain 17 seats.
+With an approval rate of .content-box-green[**20**] the president's party is predicted to lose .content-box-purple[**68**] seats and with an approval rate of .content-box-green[**80**] to gain .content-box-purple[**17**] seats.
 
 ---
 
@@ -397,7 +424,7 @@ data.frame(seat.change_prediction,
   labs(y = "seat.change")
 ```
 
-&lt;img src="week-07_files/figure-html/unnamed-chunk-12-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-07_files/figure-html/unnamed-chunk-13-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -405,11 +432,13 @@ data.frame(seat.change_prediction,
 
 - We are in 2018, just before the mid-term. (Trump is president).
 
-- We want to use `seat.change` to predict the outcome of the upcoming midterm election for Trump's party. 
+- We want to use `approval` to predict the outcome of the upcoming midterm election for Trump's party (i.e., `\(\widehat{seat.change}\)`). 
 
 - Note that the 2018-Trump row was not used to estimate the model because of the missing value (of course, we are before the mid-term).
 
-- We only know that Trump's approval rate in 2018 was 38%. So we can plug that value in...
+- We only know that Trump's approval rate in 2018 was .content-box-green[**38%**]. So we can plug that value in...
+
+--
 
 
 ``` r
@@ -421,13 +450,21 @@ predict(fit_simple, newdata = data.frame(approval = 38))
 ## -42.71629
 ```
 
-We predict his party will lose about **43 seats**.
+We predict that in the 2018 mid-term his party will lose about .content-box-purple[**43**] seats.
 
 ---
 
 ## Does adding predictors improve the accuracy of our model?
 
 This is out multivariate regression model: in addition to `approval` we are also using `rdi.change` (change in real disposable income over the year before, an economic measure)
+
+
+``` r
+fit_multi &lt;- 
+  lm(formula = seat.change ~ approval + rdi.change, 
+     data = midterms)
+```
+
 
 
 ``` r
@@ -446,6 +483,8 @@ fit_multi
 
 ---
 
+## Now, let's predict using our fit_multi...
+
 
 ``` r
 predict(fit_multi, 
@@ -458,7 +497,7 @@ predict(fit_multi,
 ## -47.02877
 ```
 
-Using the multiple regression model, we predict his party will lose **47 seats** instead of about **43 seats** with the simple regression model.
+Using the multiple regression model, we predict his party will lose .content-box-purple[**47**] seats instead of about .content-box-purple[**43**] seats with the simple regression model.
 
 ## Which model did better?
 
@@ -484,13 +523,13 @@ The substantial interpretation here is that the national economy does not explai
 
 
 
-### How could we know?
+### How could we have known better?
 
-We could have checked the "Adjusted R-squared" of the two models...
+We could have checked the .content-box-yellow[**"Adjusted R-squared"**] of the two models...
 
-The "Multiple R-squared", the `\(R^2\)` we saw last week, explains the variation in the outcome variable that is explained by the predictors. Yet, the multiple R-squared will always increase if we add new predictors.
+The .content-box-yellow[**""Multiple R-squared"**], the `\(R^2\)` we saw last week, explains the variation in the outcome variable that is explained by the predictors. Yet, the multiple R-squared will **always** increase if we add new predictors. So it is useless to compare models after adding an extra predictors...
 
-This is way it is more appropriate to compare the "Adjusted R-squared" when we add new predictors. 
+This is why it is more appropriate to compare the .content-box-yellow[**"Adjusted R-squared"**] when we add new predictors. 
 
 ---
 
@@ -554,7 +593,29 @@ summary(fit_multi)
 ---
 class: inverse, center, middle
 
-# Individual in-class quiz/tutorial (all)
+# Individual in-class quiz/tutorial (Part 1, until `predict()` included)
+
+<div class="countdown" id="timer_979eb27b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+
+Prof. Llaudet slides on Probability
+
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial (Part 2)
+
+<div class="countdown" id="timer_e0ec4f41" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
 
 ---
 class: inverse, center, middle
@@ -569,7 +630,7 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# See you next week with Uncertainty!
+# See you next week with Uncertainty (and p-values)!
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

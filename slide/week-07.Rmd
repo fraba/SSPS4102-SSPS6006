@@ -63,11 +63,6 @@ ggplot2::theme_set(theme_bw())
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
 
 ---
-class: inverse, center, middle
-
-# Probability 
-
----
 
 ## Recap from last week
 
@@ -75,9 +70,22 @@ class: inverse, center, middle
 - $R^2$, a model fit measure, which represents the proportion of variability in $Y$ (outcome or dependent variable) that is explained by a linear combination of $X$ (predictors or independent variables).  
 
 ---
+
+## Today's class
+
+| Time        | Content                                       |
+|-------------|-----------------------------------------------|
+| 11:00-11:30 | Lab: Multiple regression models and predict() |
+| 11:30-11:40 | Individual quiz/tutorial Part 1               |
+| 11:40-12:30 | Probability                                   |
+| 12:30-12:45 | Break                                         |
+| 12:45-13:00 | Individual quiz/tutorial Part 1               |
+| 13:00-14:00 | Group in-class problem set                    |
+
+---
 class: inverse, center, middle
 
-# But ... Before talking about probability, let's go back a bit and talk about multiple regression models
+# Before talking about probability, let's go back a bit and talk about multiple regression models
 
 ---
 
@@ -148,28 +156,13 @@ $$\widehat{Y} = \widehat{\alpha} + \widehat{\beta}_{1} X_{1} + ... + \widehat{\b
 
 .footnote[Slide adapted from slides by Prof. Llaudet]
 ---
-
-## Interpretation of $\widehat{\beta_1}$ when $X_1$ is the treatment variable and the other X variables are all the potential confounding variables
-
-- Adding all confounders as controls in the model makes treatment and control groups comparable *after controls*
-
-- As a result, we can interpret $\widehat{\beta}_1$ using **causal langauge**
-
-+ $\widehat{\beta}_1$ is the $\triangle \widehat{Y}$ *caused by* the presence of the treatment ( $\triangle X_1$=1 ), while holding all confounders constant 
-
-- $\widehat{\beta}_1$ should be a valid estimate of the average treatment effect if all confounding variables  are in the model
-
-
-.footnote[Slide adapted from slides by Prof. Llaudet]
-
----
 class: inverse, center, middle
 
 # Lab: lm() with multiple regression
 
 ---
 
-## Example: US midterm elections<sup>1</sup>
+## US midterm elections data<sup>1</sup>
 
 | Variable name | Description |
 | ------------- | ----------- |
@@ -179,6 +172,18 @@ class: inverse, center, middle
 | `approval` | Gallup approval rating at midterms |
 | `seat.change` | change in the number of House seat's for the president's party |
 | `rdi.change` | change in real disposable income over the year before |
+
+---
+
+## Scenario
+
+Imagine we are in 2018 just *before* the US mid-term election. So for the 2018 observation,
+
+- .content-box-green[`president`] is known (Trump);
+- .content-box-green[`party`] is known (Republican);
+- .content-box-green[`approval`] is known;
+- .content-box-green[`rdi.change`] is known; but
+- .content-box-red[`seat.change`] is **unknown**, since it is about a **future** event... Yet we could predict it :-)
 
 
 .footnote[[1] Slides adapted from http://www.mattblackwell.org/files/teaching/gov50/regression-ii.pdf]
@@ -194,10 +199,19 @@ midterms <- read.csv("../data/midterms.csv")
 midterms <- read.csv("midterms.csv")
 ```
 
+The top of the table...
 
 ```{r echo = F}
 midterms %>%
   slice(1:5) %>%
+  kable()
+```
+
+... and the bottom of the table.
+
+```{r echo = F}
+midterms %>%
+  slice(17:19) %>%
   kable()
 ```
 
@@ -219,14 +233,22 @@ Remember: the attribute `formula` is constructed as `outcome ~ predictor`.
 
 ]
 
+--
+
+### How do you geta summary of the results from `lm()`?
+
+- For example, you can use `summary()` (but there are many other functions you could use...)
+
 ---
 
 ```{r}
 summary(fit_simple)
 ```
 
-So far, we discussed "Estimate", which is the coefficient for each independent variable ( $\hat{\beta}_j$) and the intercept ( $\hat{\alpha}$ ) and the "R-squared", which is the proportion of the variation in $Y$ explained by the model.
-
+--
+.small[
+So far, we discussed .content-box-yellow["Estimate"], which is the coefficient for each independent variable ( $\hat{\beta}_j$) and the intercept ( $\hat{\alpha}$ ) and the .content-box-yellow["Multiple R-squared"], which is the proportion of the variation in $Y$ explained by the model.
+]
 ---
 
 ## Mutliple regression
@@ -248,7 +270,7 @@ summary(fit_multi)
 ```
 
 </div>
-The only difference here is that we have an extra row for the additional predictors. The interpretation of the "Estimate" now is variation in $\hat{Y}$ ( i.e. $\Delta\hat{Y}$ ) when variation in $X_j$ is 1 ( i.e. $\Delta X_j=1$ ).
+The only difference here is that we have an extra row for the additional predictors. The interpretation of the .content-box-yellow["Estimate"] now is variation in $\hat{Y}$ ( i.e. $\Delta\hat{Y}$ ) when variation in $X_j$ is 1 ( i.e. $\Delta X_j=1$ ) and when other variables are held constant.
 
 ---
 
@@ -260,7 +282,9 @@ If we don't pass new data, the function `predict()` will just return the predict
 predict(fit_multi)
 ```
 
-The number you see above the prediction is the row number of you `midterms` (which is replaced by labels if your rows are named). Note that the first row is missing because one predictor value is missing...  
+.small[
+The number you see above the prediction is the row number of your `midterms` data (which is replaced by labels if your rows are named). Note that the first and last rows are (of course!) missing because the `seat.change` is missing.
+]
 
 ```{r}
 midterms[1,]
@@ -268,21 +292,21 @@ midterms[1,]
 
 ---
 
-## Predict based on you data
+## Predict based on your data
 
 But we don't need to use the original data for our predictions. Remember that `lm()` gives us a continuous straight line; we can predict $Y$ for any value of each $X_j$. 
 
-Let's get $\widehat{seat.change}$ using our simple model for an approval rate of 20% and 80% (which is not in the original data set).
+For example, let's get $\widehat{seat.change}$ using our simple model for an approval rate of 20% and 80% (which is not in the original data set).
 
 ```{r}
 my_new_data <- #<<
-  data.frame(approval = c(20, 80)) #<<
+  data.frame(approval = c(20, 80)) # Create new data #<<
 
 predict(fit_simple, 
-        newdata = my_new_data) #<<
+        newdata = my_new_data) # Pass the new data to predict() #<< 
 ```
 
-With an approval rate of 20 the president's party is predicted to lose 68 seats and with an approval rate of 80 to gain 17 seats.
+With an approval rate of .content-box-green[**20**] the president's party is predicted to lose .content-box-purple[**68**] seats and with an approval rate of .content-box-green[**80**] to gain .content-box-purple[**17**] seats.
 
 ---
 
@@ -322,17 +346,19 @@ data.frame(seat.change_prediction,
 
 - We are in 2018, just before the mid-term. (Trump is president).
 
-- We want to use `seat.change` to predict the outcome of the upcoming midterm election for Trump's party. 
+- We want to use `approval` to predict the outcome of the upcoming midterm election for Trump's party (i.e., $\widehat{seat.change}$). 
 
 - Note that the 2018-Trump row was not used to estimate the model because of the missing value (of course, we are before the mid-term).
 
-- We only know that Trump's approval rate in 2018 was 38%. So we can plug that value in...
+- We only know that Trump's approval rate in 2018 was .content-box-green[**38%**]. So we can plug that value in...
+
+--
 
 ```{r}
 predict(fit_simple, newdata = data.frame(approval = 38))
 ```
 
-We predict his party will lose about **43 seats**.
+We predict that in the 2018 mid-term his party will lose about .content-box-purple[**43**] seats.
 
 ---
 
@@ -341,10 +367,19 @@ We predict his party will lose about **43 seats**.
 This is out multivariate regression model: in addition to `approval` we are also using `rdi.change` (change in real disposable income over the year before, an economic measure)
 
 ```{r}
+fit_multi <- 
+  lm(formula = seat.change ~ approval + rdi.change, 
+     data = midterms)
+```
+
+
+```{r}
 fit_multi
 ```
 
 ---
+
+## Now, let's predict using our fit_multi...
 
 ```{r}
 predict(fit_multi, 
@@ -352,7 +387,7 @@ predict(fit_multi,
                              rdi.change = 4.1)) # Observed value #<<
 ```
 
-Using the multiple regression model, we predict his party will lose **47 seats** instead of about **43 seats** with the simple regression model.
+Using the multiple regression model, we predict his party will lose .content-box-purple[**47**] seats instead of about .content-box-purple[**43**] seats with the simple regression model.
 
 ## Which model did better?
 
@@ -378,13 +413,13 @@ The substantial interpretation here is that the national economy does not explai
 
 
 
-### How could we know?
+### How could we have known better?
 
-We could have checked the "Adjusted R-squared" of the two models...
+We could have checked the .content-box-yellow[**"Adjusted R-squared"**] of the two models...
 
-The "Multiple R-squared", the $R^2$ we saw last week, explains the variation in the outcome variable that is explained by the predictors. Yet, the multiple R-squared will always increase if we add new predictors.
+The .content-box-yellow[**""Multiple R-squared"**], the $R^2$ we saw last week, explains the variation in the outcome variable that is explained by the predictors. Yet, the multiple R-squared will **always** increase if we add new predictors. So it is useless to compare models after adding an extra predictors...
 
-This is way it is more appropriate to compare the "Adjusted R-squared" when we add new predictors. 
+This is why it is more appropriate to compare the .content-box-yellow[**"Adjusted R-squared"**] when we add new predictors. 
 
 ---
 
@@ -401,7 +436,31 @@ summary(fit_multi)
 ---
 class: inverse, center, middle
 
-# Individual in-class quiz/tutorial (all)
+# Individual in-class quiz/tutorial (Part 1, until `predict()` included)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+
+Prof. Llaudet slides on Probability
+
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial (Part 2)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
 
 ---
 class: inverse, center, middle
@@ -416,5 +475,5 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# See you next week with Uncertainty!
+# See you next week with Uncertainty (and p-values)!
 
