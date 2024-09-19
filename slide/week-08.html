@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SSPS [4102|6006] Data Analytics[in the Social Sciences|for Social Research]</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Francesco Bailo" />
+    <script src="week-08_files/header-attrs/header-attrs.js"></script>
+    <link href="week-08_files/remark-css/default.css" rel="stylesheet" />
+    <link href="week-08_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-08_files/countdown/countdown.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+      });
+    </script>
+    <style>
+    .mjx-mrow a {
+      color: black;
+      pointer-events: none;
+      cursor: default;
+    }
+    </style>
+    <link rel="stylesheet" href="assets/sydney-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="assets/sydney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]
+]
+.subtitle[
+## Week 08</br>Uncertainty
+]
+.author[
+### Francesco Bailo
+]
+.date[
+### Semester 2, 2024 (updated: 2024-09-20)
+]
+
+---
+
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+&lt;style&gt;
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+&lt;/style&gt;
+
+
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap from last week
+
+- Probability
+- Events, Random Variables, and Probability
+Distributions
+- Probability Distributions
+- Bernoulli Distribution
+- Normal Distribution
+- The Standard Normal Distribution
+- Population Parameters vs. Sample Statistics
+- Law of Large Numbers and Central Limit Theorem
+
+---
+
+## Today's class
+
+| Time          | Content                              |
+|---------------|--------------------------------------|
+| 11:00 - 11:10 | Week 08 Student Feedback Survey      |
+| 11:10 - 11:30 | Stats: Control/Confounding Variables |
+| 11:30 - 11:50 | Stats: Uncertainty (Part 1)          |
+| 11:50 - 12:00 | Individual in-class quiz/tutorial    |
+| 12:00 - 12:15 | Stats: Uncertainty (Part 2)          |
+| 12:15 - 12:30 | Break                                |
+| 12:30 - 13:00 | Individual in-class problem set      |
+| 13:00 - 14:00 | Group in-class problem set           |
+
+---
+class: inverse, center, middle
+
+# Week 08 Anonymous Student Feedback Survey
+
+---
+class: inverse, center, middle
+
+# Selecting Control/Confounding Variables in Linear Regression
+
+---
+
+## Why and when we use regression analysis (as social scientists)
+
+- We have variables that capture dimensions that capture interesting concepts (e.g., Democracy, Poverty, Race, Gender, Votes, Education)
+
+- We want to measure the .content-box-yellow[strength and significance of the association] between (generally) two variables: a variable `\(Y\)`, which .content-box-yellow[depends] on the value of another variable, `\(X\)`. 
+
+This is the relationships we are interested in:
+
+`$$X \rightarrow Y$$`
+
+And yet the world is a complicated place and many things happen at the same time.
+
+In fact, there are often .content-box-purple[confounding] variables that have an effect on both `\(X\)` and `\(Y\)`.
+
+`$$Z \rightarrow Y \quad Z \rightarrow X$$`
+
+---
+
+## What are Control Variables?
+
+- **Control variables** are additional variables included in your regression model to account for potential confounding factors.
+- **Confounders** are variables that are related to both your independent variable(s) and your dependent variable, which can bias the results if not controlled for.
+- Including control variables helps .content-box-yellow[isolate] the effect of your main independent variable by adjusting (i.e. **controlling**) for other influences.
+
+---
+
+## Why Include Control Variables?
+
+1. **Reduce Bias**: Get a more accurate estimate of the relationship between your main independent variable and the dependent variable.
+2. **Improve Validity**: Make findings more credible and closer to showing a "real" effect.
+3. **Clarify Relationships**: Disentangle complex relationships, making it clearer how your main independent variable(s) relate to the dependent variable.
+
+---
+
+## How to Select Control Variables
+
+1. **Theory and Prior Research**: Use existing literature to identify variables known to affect your dependent variable.
+2. **Common Sense and Domain Knowledge**: Use your understanding of the subject to identify logical control variables.
+3. **Statistical Tests**: Use exploratory data analysis (e.g., correlations) to identify potential controls.
+4. **Consistency Across Studies**: Use commonly accepted control variables for comparability.
+5. **Avoid Over-Control**: Do not control for mediators, which lie on the causal path between your predictor and the outcome.
+
+---
+
+## Practical Example: Are Private Schools Better Than Public Schools?
+
+- **IV: Private school**: Attending a private school;
+- **DP: Test score**: Score in a standard national test.
+- **Potential Control/Confounder**: Family wealth, which is likely to affect *both* the likelihood of attending a private school and the test score (e.g., private tutors).
+- **What we want to do**: Understand the specific (i.e. net) effect of attending a private school on test scores.
+
+---
+
+Padlet
+
+---
+
+## Key Takeaway
+
+- Selecting control variables is a balance of theory, evidence, and practicality.
+- Proper control variables ensure that results reflect the true relationship between predictors and the outcome, without confounding influences.
+
+
+---
+class: inverse, center, middle
+
+# Prof. Llaudet slides on Uncertainty (Part 1)
+
+---
+class: inverse, center, middle
+
+# Individual in-class quiz/tutorial
+
+<div class="countdown" id="timer_ce6beb6d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Prof. Llaudet slides on Uncertainty (Part 2)
+
+---
+class: inverse, center, middle
+
+# Individual in-class Problem set (with peer-review)
+
+<div class="countdown" id="timer_a40fbe3c" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week with Machine Learning!
+
+&lt;iframe src="https://giphy.com/embed/IZY2SE2JmPgFG" width="480" height="274" style="" frameBorder="0" class="giphy-embed" allowFullScreen&gt;&lt;/iframe&gt;&lt;p&gt;&lt;a href="https://giphy.com/gifs/terminator-IZY2SE2JmPgFG"&gt;via GIPHY&lt;/a&gt;&lt;/p&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="assets/remark-zoom.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
