@@ -153,10 +153,70 @@ $$Z \rightarrow Y \quad Z \rightarrow X$$
 - **DP: Test score**: Score in a standard national test.
 - **Potential Control/Confounder**: Family wealth, which is likely to affect *both* the likelihood of attending a private school and the test score (e.g., private tutors).
 - **What we want to do**: Understand the specific (i.e. net) effect of attending a private school on test scores.
+- **Mediator variables**: (Which we should not control for!) "Smaller Class sizes" or "Access to Better Resources"
+
 
 ---
 
-Padlet
+```{r echo = FALSE, out.width = "100%"}
+# Load the DiagrammeR package
+library(DiagrammeR)
+
+# Create the graph using mermaid syntax
+grViz("
+  digraph confounding {
+    # Define graph attributes
+    graph [layout = dot, rankdir = LR]
+
+    # Define nodes
+    X [label = 'X\n(I.V.)\nPrivate School\nAtt.', shape = circle, style = 'filled', fillcolor = 'orange']
+    Y [label = 'Y\n(D.V.)\nTest Score', shape = circle, style = 'filled', fillcolor = 'orange']
+    Z [label = 'Z\nFamily Wealth', shape = circle]
+    Z1 [label = 'Z1\nClass size', shape = circle]
+
+    # Define edges (arrows)
+    Z -> X [color = black]
+    Z -> Y [color = black]
+    X -> Y [color = black]
+    X -> Z1 [color = black]
+    Z1 -> Y [color = black]
+  }
+")
+```
+
+By measuring both $X \rightarrow Y$ and $Z1 \rightarrow Y$, which lies on the path between $X$ or $Y$ you are either attenuating the measurement of what affects test score or hiding it. 
+
+- What affects test score is not anything special with private school, but simply that they offer smaller classes, which is what actually affects students' performance
+
+**Policy lesson**: Don't fund private school, instead reduce the size of classes in public schools. 
+
+
+---
+
+# On Padlet
+
+.small[
+
+"Does regular exercise lead to better mental health outcomes?"
+
+You measure mental health using a validated scale that assesses anxiety, depression, and overall well-being. You also collect data on how many hours per week each student exercises.
+
+**Variables**:
+
+- **Independent Variable** (IV): Hours of exercise per week
+- **Dependent Variable** (DV): Mental health score
+= Task: Your task is to identify potential confounders/control variables that could influence both exercise habits and mental health outcomes, potentially biasing the results of the study.
+
+]
+
+.center[
+
+<img src = '../img/padlet_week_08.png' width = '25%'> OR [Link](https://sydney.padlet.org/francescobailo/does-regular-exercise-lead-to-better-mental-health-outcomes-udyw448dn7uq4h54)
+]
+
+
+
+
 
 ---
 
