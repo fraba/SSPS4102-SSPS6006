@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SSPS [4102|6006] Data Analytics[in the Social Sciences|for Social Research]</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Francesco Bailo" />
+    <script src="week-09_files/header-attrs/header-attrs.js"></script>
+    <link href="week-09_files/remark-css/default.css" rel="stylesheet" />
+    <link href="week-09_files/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="week-09_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="week-09_files/viz/viz.js"></script>
+    <link href="week-09_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="week-09_files/grViz-binding/grViz.js"></script>
+    <link href="week-09_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-09_files/countdown/countdown.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+      });
+    </script>
+    <style>
+    .mjx-mrow a {
+      color: black;
+      pointer-events: none;
+      cursor: default;
+    }
+    </style>
+    <link rel="stylesheet" href="assets/sydney-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="assets/sydney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]
+]
+.subtitle[
+## Week 09</br>Machine learning
+]
+.author[
+### Francesco Bailo
+]
+.date[
+### Semester 2, 2024 (updated: 2024-09-26)
+]
+
+---
+
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+&lt;style&gt;
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+&lt;/style&gt;
+
+
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap from last week
+
+- Hypothesis Testing Intuition
+  - Null Hypothesis
+  - Alternative Hypothesis
+  - Test Statistic
+  - P-Values
+- Hypothesis Testing Formal Procedure (using `lm()` in R)
+
+---
+
+## Today's class
+
+
+---
+
+class: inverse, center, middle
+
+# Machine Learning
+
+&lt;iframe src="https://giphy.com/embed/IZY2SE2JmPgFG" width="480" height="274" style="" frameBorder="0" class="giphy-embed" allowFullScreen&gt;&lt;/iframe&gt;
+
+.footnote[Slides adapted from *Machine learning with R* by Brett Lantz (2023)]
+
+
+---
+
+## What is Machine Learning?
+
+### Definition
+
+.content-box-yellow[
+
+Machine learning is the study of 
+
+- [1] **computer algorithms** that allow 
+
+- [2] **systems** to 
+
+- [3] **learn from data** and 
+
+- [4] **make decisions** without explicit programming.
+]
+
+- **Common Misconceptions**: Not all machine learning leads to AI; most applications are task-specific.
+
+- **Real-World Role**: Helps transform raw data into actionable insights.
+
+---
+
+## The Origins of Machine Learning
+
+- **Historical Context**: Machine learning grew from advances in 
+
+  - computing power, 
+  - data availability, and 
+  - statistical methods.
+  
+- **Evolution**: The field has continuously evolved as new data and more powerful computational resources became available.
+
+- **Relationship to AI**: Machine learning is a core component of AI, but AI also encompasses broader goals, including replicating human cognition.
+
+---
+
+## The Cycle of Advancement
+
+- **Data, Methods, and Computing Power**: A loop where increased data drives the development of new methods and computational needs.
+- **Impact**: Enables larger, more complex datasets to be analysed, spurring new discoveries and capabilities in machine learning.
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-eeafb750dd75fb4f7e0c" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-eeafb750dd75fb4f7e0c">{"x":{"diagram":"\n  digraph {\n    graph [layout = circo]\n\n    # Define nodes\n    A [label = \"Available Data\", shape = circle, style = filled, fillcolor = lightgray]\n    B [label = \"Statistical Methods\", shape = circle, style = filled, fillcolor = lightgray]\n    C [label = \"Computing Power\", shape = circle, style = filled, fillcolor = lightgray]\n\n    # Define edges\n    A -> B\n    B -> A\n    B -> C\n    C -> B\n    C -> A\n    A -> C\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+
+---
+
+## Machine Learning vs. Data Mining
+
+- **Data Mining**: Focuses on finding patterns within large datasets that humans use to solve problems.
+
+- **Machine Learning**: More focused on teaching computers to solve problems independently through data analysis.
+
+- **Overlap**: Both fields use similar techniques but differ in application focus.
+
+---
+
+## Machine Learning vs. AI vs. Traditional Statistics
+
+|                             | Traditional Statistics      | Machine Learning                  | Artificial Intelligence       |
+|-----------------------------|------------------------------------|-------------------------------|-------------------------------|
+| **Application**             | Hypothesis testing and insight    | Prediction and knowledge generation | Automation                  |
+| **Success Criterion**       | Greater understanding             | Ability to intervene before things happen | Efficiency and cost savings |
+| **Success Metric**          | Statistical significance          | Trustworthiness of predictions | Return on investment (ROI)  |
+| **Input Data Size**         | Smaller data                      | Medium data                   | Bigger data                  |
+| **Implementation**          | Reports and presentations for knowledge sharing | Scoring databases or interventions in business practices | Custom applications and automated processes |
+
+
+
+---
+
+## Machine Learning vs. AI vs. Traditional Statistics
+
+- **Machine Learning**: Focuses on prediction and pattern recognition.
+- **AI**: Aims for automation and human-like decision-making capabilities.
+- **Traditional Statistics**: Emphasizes hypothesis testing and deriving insights from data.
+- **Key Differences**: Input size, application goals, and the degree of automation.
+
+.content-box-yellow[
+
+- Traditional statistics (or what we covered so far)
+
+`$$\text{non-statistical theory} \rightarrow model \rightarrow insights$$`
+- Machine learning
+
+`$$\text{statistical theory} \rightarrow model \rightarrow predictions$$`
+
+]
+
+---
+
+## Uses of Machine Learning
+
+- **Examples**:
+  - Email spam detection.
+  - Predictive maintenance in manufacturing.
+  - Fraud detection in finance.
+  - Personalized recommendations in e-commerce.
+  
+  - But also, predicting atrocity and genocide&lt;sup&gt;1&lt;/sup&gt;.
+  
+- **Success Criteria**: 
+
+1. Accuracy, 
+2. efficiency, and 
+3. scalability.
+
+.footnote[[1] Goldsmith, B. E., Butcher, C. R., Semenovich, D., &amp; Sowmya, A. (2013). Forecasting the onset of genocide and politicide: Annual out-of-sample forecasts on a global dataset, 1988–2003. *Journal of Peace Research*, 50(4), 437–452. https://doi.org/10.1177/0022343313484167
+]
+
+---
+
+## Machine Learning’s Ethical Challenges
+
+### Potential Harms: Unintended consequences like perpetuating biases or privacy violations.
+
+**Case 1: Amazon's AI recruiting tool exhibited gender bias**:&lt;sup&gt;1&lt;/sup&gt; Amazon developed an AI-based recruiting tool to automate resume screening, but it showed a preference for male candidates due to biased training data predominantly sourced from male applicants. The system penalised resumes that included terms like "women's" or references to women’s colleges, highlighting the pitfalls of biased training data in machine learning models.
+
+
+.footnote[[1] Dastin, J. (2018, October 10). Amazon scraps secret AI recruiting tool that showed bias against women. *Reuters*. https://www.reuters.com/article/us-amazon-com-jobs-automation-insight-idUSKCN1MK08G
+]
+
+---
+
+## Machine Learning’s Ethical Challenges
+
+### Using Machine learning in weapon systems
+
+**Case 2: ML-Driven Targeting in Warfare** The Israeli military has allegedly&lt;sup&gt;1&lt;/sup&gt; developed a ML (maybe AI?) system called “Lavender” that identifies potential targets for airstrikes in Gaza, marking tens of thousands of individuals, including many civilians, as suspects for assassination with minimal human oversight. The AI’s decisions were often treated as final, resulting in high casualty rates.
+
+**Lack of Human Oversight and High Civilian Casualties**: The system was used with minimal checks, often targeting individuals in their homes with their families present, leading to significant collateral damage. Human oversight was reduced to a cursory check, sometimes taking only seconds, and errors in the AI’s judgment frequently led to the deaths of uninvolved civilians.
+
+.footnote[[1] Iraqi, A. (2024, April 3). ‘Lavender’: The AI machine directing Israel’s bombing spree in Gaza. *+972 Magazine*. https://www.972mag.com/lavender-ai-israeli-army-gaza/]
+
+---
+
+## Machine Learning Success Stories
+
+- **Key Successes**:
+  - Medical diagnostics aiding doctors in detecting diseases early.
+  - Autonomous driving systems in vehicles.
+  - Climate prediction models forecasting weather and environmental changes.
+  
+- **Augmentation vs. Replacement**: In general, ML works best when augmenting human expertise and not replacing it.
+
+---
+
+## Limits of Machine Learning
+
+- **Algorithmic Limitations**: 
+
+  - Limited flexibility, 
+  - context understanding, and
+  - lack of common sense.
+  
+- **Reality Check**: Machine learning is powerful but not infallible.
+
+---
+
+## The Double-Edged Sword
+
+- **Potential**: Machine learning offers immense benefits when carefully directed and ethically applied.
+
+- **Risks**: Unchecked use can lead to automation of harmful biases or unethical outcomes.
+
+- **Future Directions**: Continuous oversight, ethical considerations, and careful application are essential.
+
+---
+
+class: inverse, center, middle
+
+# How Machines Learn
+
+---
+
+## How Machines Learn
+
+
+- **Learning from Data:**
+  - Machines learn by identifying patterns in data and using these patterns to make predictions or decisions.
+  
+- **Key Elements:**
+  - **Data Input:** Data is fed into the system.
+  - **Learning Algorithm:** The core method that finds patterns in the data.
+  - **Model Output:** The algorithm produces a model that can make predictions or classifications based on new data.
+
+---
+
+## How Machines Learn
+
+.center[&lt;img src = '../img/brett-2023-01.png'&gt;&lt;/img&gt;]
+
+.footnote[(Lantz, 2023, p. 15)]
+
+---
+
+## Abstraction and Generalisation
+
+.center[&lt;img src = '../img/brett-2023-01.png' width = '60%'&gt;&lt;/img&gt;]
+
+- **Abstraction:**
+  - The process of simplifying complex problems by focusing on essential details while ignoring irrelevant information.
+  - Helps the model understand underlying patterns rather than memorizing specific instances.
+- **Generalisation:**
+  - The ability of a machine learning model to perform well on unseen data.
+  - A model that generalizes well can apply what it has learned from the training data to make accurate predictions on new, unseen data.
+
+---
+
+## Evaluation
+
+.center[&lt;img src = '../img/brett-2023-01.png' width = '60%'&gt;&lt;/img&gt;]
+
+- **Evaluating Model Performance:**
+  - Essential to ensure that the model is not just fitting the training data but also performing well on new data.
+- **Common Evaluation Metrics:**
+  - **Accuracy:** Measures how often the model makes correct predictions.
+  - **Precision and Recall:** Important for tasks with imbalanced classes.
+  - **Cross-Validation:** A method to test the model’s performance using multiple subsets of the data to avoid overfitting.
+
+---
+
+## Types of Machine Learning Algorithms
+
+- **Supervised Learning:**
+  - Algorithms learn from labeled data and make predictions based on it (e.g., regression, classification).
+- **Unsupervised Learning:**
+  - Algorithms find hidden patterns or intrinsic structures in input data without labeled responses (e.g., clustering, association).
+- **Reinforcement Learning:**
+  - Algorithms learn by interacting with an environment and receiving feedback (rewards or punishments) to achieve a goal (e.g., robotics, game AI).
+
+---
+
+## Classification vs. Numerical Prediction
+
+.pull-left[
+
+**Classification:**
+- **Definition:** A type of predictive modeling task where the output variable is a category or label.
+- **Purpose:** Assigns input data to predefined classes or groups.
+- **Examples:**
+  - Email spam detection (spam vs. not spam).
+  - Diagnosing a disease (disease vs. no disease).
+- **Algorithms Used:** K-Nearest Neighbors, Logistic Regression.
+]
+
+.pull-right[
+
+**Numerical Prediction:**
+- **Definition:** A type of predictive modelling where the output variable is a continuous numerical value.
+- **Purpose:** Predicts numerical outcomes based on input features.
+- **Examples:**
+  - Forecasting house prices.
+  - Predicting stock prices or sales figures.
+- **Algorithms Used:** Linear Regression.
+  
+]
+
+- **Key Difference:**
+  - **Classification** deals with categorizing data into discrete labels.
+  - **Numerical Prediction** involves predicting continuous quantities.
+  
+---
+
+class: inverse, center, middle
+
+# R LAB
+
+### Numeric prediction of continuous outcome: Linear regression (`lm()`)
+### Classification for binary outcome: Logistic regression: (`glm(family = "binomial")`)
+### Classification for categorical outcome: k-Nearest Neighbors (k-NN)
+  
+---
+
+class: inverse, center, middle
+
+# Numeric prediction of continuous outcome: Linear regression (`lm()`)
+
+---
+
+class: inverse, center, middle
+
+# Classification for binary outcome: Logistic regression: (`glm(family = "binomial")`)
+
+---
+
+class: inverse, center, middle
+
+# Classification for categorical outcome: k-Nearest Neighbors (k-NN) (`knn()`)
+
+
+---
+
+## Introduction to Lazy Learning
+
+- **What is Lazy Learning?**
+  - Lazy learning algorithms delay processing until a query is made to the system.
+  - They do not create a model during training but use the training data directly for prediction.
+- **Key Characteristics:**
+  - Minimal training time, but more computation is required during prediction.
+  - Examples include k-Nearest Neighbours (k-NN).
+
+---
+
+## k-Nearest Neighbors (k-NN) Overview
+
+- **What is k-NN?**
+  - A simple, instance-based learning algorithm that classifies data points based on the classes of their nearest neighbors.
+  - **k** represents the number of nearest neighbours considered in the decision.
+- **How it Works:**
+  - Finds the k closest training examples to the new data point.
+  - Classifies the new data point based on the majority class of its neighbours.
+  
+
+---
+
+### Food data
+
+
+``` r
+food_data &lt;- 
+  data &lt;- data.frame(
+    Ingredient = c("Apple", "Bacon", "Banana", "Carrot", "Celery", 
+                   "Lettuce", "Cucumber", "Green Bean", "Nuts", 
+                   "Shrimp", "Fish", "Cheese", "Pear", "Grape", 
+                   "Orange"),
+    Sweetness = c(10, 1, 10, 7, 3, 2, 3, 3, 2, 2, 1, 1, 9, 9, 8),
+    Crunchiness = c(9, 4, 1, 10, 10, 9, 8, 6, 6, 4, 3, 2, 6, 2, 2),
+    Food_type = c("Fruit", "Protein", "Fruit", "Vegetable", "Vegetable", 
+                  "Vegetable", "Vegetable", "Vegetable", "Protein", 
+                  "Protein", "Protein", "Protein", "Fruit", "Fruit", 
+                  "Fruit")
+  )
+
+head(food_data)
+```
+
+```
+##   Ingredient Sweetness Crunchiness Food_type
+## 1      Apple        10           9     Fruit
+## 2      Bacon         1           4   Protein
+## 3     Banana        10           1     Fruit
+## 4     Carrot         7          10 Vegetable
+## 5     Celery         3          10 Vegetable
+## 6    Lettuce         2           9 Vegetable
+```
+
+---
+
+### Food data, no missing the type!
+
+
+``` r
+food_unknown &lt;- 
+  data.frame(Ingredient =  "Tomato",
+             Sweetness = 6,
+             Crunchiness = 4,
+             Food_type = "unknown")
+head(food_unknown)
+```
+
+```
+##   Ingredient Sweetness Crunchiness Food_type
+## 1     Tomato         6           4   unknown
+```
+
+---
+
+### Let's plot
+
+
+``` r
+dplyr::bind_rows(food_data, food_unknown) |&gt;
+  ggplot(aes(x=Sweetness, y=Crunchiness)) + 
+  geom_point(aes(color=Food_type), size = 5) +
+  ggrepel::geom_text_repel(aes(label=Ingredient))
+```
+
+&lt;img src="week-09_files/figure-html/unnamed-chunk-4-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Let's classify
+
+### Classification problem: What type of food is tomato?
+
+Note: I have three possible types (i.e., classes): Fruit, Protein, Vegetable
+
+
+``` r
+library(class)
+pred &lt;- 
+  class::knn(train = dplyr::select(food_data, Sweetness, Crunchiness),
+             test = dplyr::select(food_unknown, Sweetness, Crunchiness),
+             cl = food_data$Food_type, # true classification
+             k=3) # number of neighbours considered
+```
+
+And our prediction or classification for tomato is ...
+
+--
+
+
+``` r
+pred
+```
+
+```
+## [1] Fruit
+## Levels: Fruit Protein Vegetable
+```
+
+
+---
+
+### Of course, this was a toy example. 
+
+- I can train my k-NN classifier using more than just two dimensions. In fact, ML models tend to have a very large number of dimensions.
+
+- I can use my k-NN classifier for more than just three classes. 
+
+---
+
+### So, why is the k-NN Algorithm Lazy?
+
+#### Lazy Learning Defined:
+- k-NN is considered a lazy learning algorithm because it skips the **abstraction** and **generalization** processes typically involved in learning.
+- No model is built during training; instead, it stores the training data verbatim.
+- **Training Phase:**
+  - Fast because no actual training occurs—just storing data.
+- **Prediction Phase:**
+  - Slow because it relies heavily on comparing new data to all stored instances.
+
+#### Instance-Based Learning:
+- Also known as rote learning, k-NN is **non-parametric**, meaning it does not learn parameters or generate theories about the data.
+  
+---
+
+## Non-Parametric Nature of k-NN
+
+- **Non-Parametric Learning:**
+  - No assumptions about the data distribution are made, allowing the learner to find natural patterns in the data.
+  - Unlike parametric methods, it does not create an abstracted model that could introduce biases.
+
+- **Limitations and Strengths:**
+  - **Limitations:** 
+    - Lack of model makes it difficult to understand how decisions are made - there is no coefficient (i.e. parameter) to interpret.
+  - **Strengths:** 
+    - Can still make useful predictions without needing to fit the data into a specific model.
+    - **Powerful in applications where the focus is on pattern recognition over model interpretation**.
+    
+---
+
+## Parametric Models instead...
+
+.small[
+
+- **Parametric Models:**
+  - **Definition:** Models that make assumptions about the data’s underlying structure and learn parameters during training.
+  - **Example: Linear Regression**
+    - Assumes a linear relationship between input variables (features) and the output (target).
+    - **Parameters Learned:** Coefficients (slopes) `\(\hat\beta\)` and intercept `\(\hat\alpha\)` that define the best-fit line.
+    - **Advantages:**
+      - Simple and fast; easy to interpret and understand.
+      - Efficient with smaller datasets since it simplifies the data into a defined form.
+    - **Limitations:**
+      - Struggles with complex patterns that don't fit the assumed structure (e.g., non-linear relationships).
+
+]
+
+---
+
+## Let's try  k-NN on a more interesting problem using the AES 2022 data
+
+### Is it possible to predict party affiliation from 
+
+1. Age
+2. Gender (as binary)
+3. Years in tertiary education
+4. Left-right leaning (on 1-to-10 scale)
+5. Opinion on degree of government efforts to make people's incomes more equal (on a 1-to-10 scale)
+
+Remember: k-NN classifies a categorical outcome BUT only works with continuous variables or variables that can be treated as continuous (e.g., Likert-scale) because k-NN uses a **distance function**.
+
+---
+
+### 0. Let's load the data selecting only the variables I need (I also rename the variable)
+
+
+``` r
+library(haven)
+library(tidyverse)
+aes22_raw &lt;- 
+  haven::read_sav("../data/aes22_unrestricted_v2.sav") |&gt;
+  dplyr::select(party = B1, age = AGE, gender = H1, 
+                edu = G2, lr = B8_1, equal = D12)
+```
+
+#### 1. Parties as factors, not numbers
+
+
+``` r
+aes22_raw$party &lt;- haven::as_factor(aes22_raw$party)
+```
+ 
+- I use the function `haven::as_factor` to convert labelled values into character values. This will make interpreting the results easier.
+
+---
+
+#### 2. Now some recoding to label missing values of numerical variables correctly as NA
+
+
+``` r
+aes22_recoded &lt;-
+  aes22_raw |&gt;
+  dplyr::mutate(age = ifelse(age==999, NA, age),
+                gender = ifelse(gender==999, NA, gender),
+                edu = ifelse(edu==999, NA, edu),
+                lr = ifelse(lr==999, NA, lr),
+                equal = ifelse(equal==999, NA, equal))
+```
+
+---
+
+#### 3. Some more recoding for the `party` variable (which is now a factor variable, with labels instead of numebers)
+
+I have other responses that I want to set as `NA`
+
+- I don't know how to interpret these responses within a party list, so I just consider them as missing.
+
+
+``` r
+aes22_recoded &lt;- 
+  aes22_recoded |&gt;
+  dplyr::mutate(party = 
+                  dplyr::case_when(party == "Swing Voter" ~ NA, 
+                                   party == "No party" ~ NA,
+                                   party == "Item skipped" ~ NA, 
+                                   party == "Other party (not specified)" ~ NA, 
+                                   party == "Does not apply" ~ NA, 
+                                   party == "Item skipped" ~ NA, 
+                                   TRUE ~ party))
+```
+
+---
+
+### This is the summary of all the variable in my data after the recoding
+
+
+``` r
+summary(aes22_recoded)
+```
+
+```
+##             party          age            gender           edu        
+##  Liberal       :855   Min.   : 18.0   Min.   :1.000   Min.   : 0.000  
+##  Labor         :836   1st Qu.: 45.0   1st Qu.:1.000   1st Qu.: 1.000  
+##  No party      :391   Median : 60.0   Median :2.000   Median : 4.000  
+##  Greens        :269   Mean   : 57.3   Mean   :1.532   Mean   : 3.735  
+##  National Party: 73   3rd Qu.: 70.0   3rd Qu.:2.000   3rd Qu.: 5.000  
+##  Independent   : 18   Max.   :107.0   Max.   :3.000   Max.   :32.000  
+##  (Other)       : 66   NA's   :83      NA's   :45      NA's   :242     
+##        lr             equal       
+##  Min.   : 0.000   Min.   : 0.000  
+##  1st Qu.: 3.000   1st Qu.: 3.000  
+##  Median : 5.000   Median : 5.000  
+##  Mean   : 4.803   Mean   : 4.609  
+##  3rd Qu.: 6.000   3rd Qu.: 7.000  
+##  Max.   :10.000   Max.   :10.000  
+##  NA's   :88       NA's   :42
+```
+
+---
+
+#### 4. I still need to deal with `gender`. 
+
+- The variable can take three values (1 = "Male", 2 = "Female" or 3 = "Other").
+1. First, I need a continuous (or binary) binary variable. But as it is now, it doesn't make any sense as a continuous variable. "Other" is not an "higher" value than "Male" or "Female" and "Female" is not equally placed on a continuous scale between "Male" and "Other". 
+2. I can't use categorical variables with k-NN (remember: I must measure the distance between my observations!)
+
+Let's create a new binary variable `female` and set "male" to `0`, "female" to `1` and "Other" to `NA`.
+
+
+``` r
+aes22_recoded &lt;- 
+  aes22_recoded |&gt;
+  dplyr::mutate(female = dplyr::case_when(gender == 1 ~ 0,
+                                          gender == 2 ~ 1)) 
+# All values not explicitly mentioned are set to `NA` by default
+```
+
+---
+
+### And the resulting data
+
+
+``` r
+summary(aes22_recoded)
+```
+
+```
+##             party          age            gender           edu        
+##  Liberal       :855   Min.   : 18.0   Min.   :1.000   Min.   : 0.000  
+##  Labor         :836   1st Qu.: 45.0   1st Qu.:1.000   1st Qu.: 1.000  
+##  No party      :391   Median : 60.0   Median :2.000   Median : 4.000  
+##  Greens        :269   Mean   : 57.3   Mean   :1.532   Mean   : 3.735  
+##  National Party: 73   3rd Qu.: 70.0   3rd Qu.:2.000   3rd Qu.: 5.000  
+##  Independent   : 18   Max.   :107.0   Max.   :3.000   Max.   :32.000  
+##  (Other)       : 66   NA's   :83      NA's   :45      NA's   :242     
+##        lr             equal            female      
+##  Min.   : 0.000   Min.   : 0.000   Min.   :0.0000  
+##  1st Qu.: 3.000   1st Qu.: 3.000   1st Qu.:0.0000  
+##  Median : 5.000   Median : 5.000   Median :1.0000  
+##  Mean   : 4.803   Mean   : 4.609   Mean   :0.5245  
+##  3rd Qu.: 6.000   3rd Qu.: 7.000   3rd Qu.:1.0000  
+##  Max.   :10.000   Max.   :10.000   Max.   :1.0000  
+##  NA's   :88       NA's   :42       NA's   :58
+```
+
+
+---
+
+### Let's now predict `party` using the other variables!
+
+#### 5. Let's drop all the missing values (`NA`) using `drop_na()` 
+
+- `knn` does like any missing value in your data
+
+
+``` r
+aes22_recoded_no_na &lt;-
+  aes22_recoded |&gt;
+  tidyr::drop_na()
+```
+
+- How many observations we are left with?
+
+
+``` r
+nrow(aes22_recoded_no_na)
+```
+
+```
+## [1] 2157
+```
+
+
+---
+
+#### 6. Let's create a "train" and a "test" dataset.
+
+- Remember, ML algorithms are trained on some data and then their accuracy if measured on some test data.
+
+- We must then split our data into two, a train dataset and a test dataset.
+
+- We must make sure that observations are **randomly** assigned to train and test.
+
+#### 6.1 Let's shuffle the order of the dataset using `sample()` (because it might be ordered on something...)
+
+
+``` r
+aes22_recoded_no_na &lt;- aes22_recoded_no_na[sample(1815),]
+```
+
+- `sample()` will return any vector in a random order!
+
+
+``` r
+sample(c("A", "B", "C"))
+```
+
+```
+## [1] "A" "C" "B"
+```
+
+---
+
+#### 6.2 Let's create train and test
+
+Since we have 1815 observations (and `\(\frac{1815}{2} \approx 907\)`), we do...
+
+
+``` r
+aes22_train &lt;- 
+  aes22_recoded_no_na[1:907,]
+```
+
+and 
+
+
+``` r
+aes22_test &lt;- 
+  aes22_recoded_no_na[908:1815,]
+```
+
+
+---
+
+#### 7. Let's train and test using k-nearest neighbour classification (`knn()`)
+
+
+
+``` r
+pred &lt;- 
+  class::knn(train = dplyr::select(aes22_train, female, age, edu, lr, equal),
+             test = dplyr::select(aes22_test, female, age, edu, lr, equal),
+             cl = aes22_train$party,
+             k = 5) # You can vary this
+```
+
+#### 8. How accurate it is?
+
+Remember `$$accuracy = \frac{\text{correct predictions}}{\text{number of predictions}}$$`
+
+
+``` r
+sum(pred == aes22_test$party) / nrow(aes22_test)
+```
+
+```
+## [1] 0.4856828
+```
+
+Not great, but also not too bad since we are classifying over 17 different parties!
+
+---
+
+#### 9. Let's focus on predicting only the four major parties
+
+
+``` r
+aes22_recoded_major_parties &lt;-
+  aes22_recoded_no_na |&gt; dplyr::filter(party %in% c("Labor","Liberal","Greens", "National Party"))
+nrow(aes22_recoded_major_parties)
+```
+
+```
+## [1] 1500
+```
+
+``` r
+aes22_train &lt;- aes22_recoded_major_parties[1:750,]
+aes22_test &lt;- aes22_recoded_major_parties[751:1500,]
+```
+
+
+``` r
+pred &lt;- 
+  class::knn(train = dplyr::select(aes22_train, female, age, edu, lr, equal),
+             test = dplyr::select(aes22_test, female, age, edu, lr, equal),
+             cl = aes22_train$party, k = 5)
+sum(pred == aes22_test$party) / nrow(aes22_test)
+```
+
+```
+## [1] 0.6186667
+```
+
+
+---
+
+#### And here our confusion matrix
+
+
+``` r
+table(`true value` = as.character(aes22_test$party), 
+      `prediction` = as.character(pred))
+```
+
+```
+##                 prediction
+## true value       Greens Labor Liberal National Party
+##   Greens             23    64      17              1
+##   Labor              27   227      67              1
+##   Liberal             5    83     213              2
+##   National Party      0     7      12              1
+```
+
+- With proportional values
+
+
+``` r
+prop.table(table(`true value` = as.character(aes22_test$party), 
+                 `prediction` = as.character(pred)), 
+           margin = 1) # margin = 1 indicates rows, 
+```
+
+```
+##                 prediction
+## true value           Greens      Labor    Liberal National Party
+##   Greens         0.21904762 0.60952381 0.16190476     0.00952381
+##   Labor          0.08385093 0.70496894 0.20807453     0.00310559
+##   Liberal        0.01650165 0.27392739 0.70297030     0.00660066
+##   National Party 0.00000000 0.35000000 0.60000000     0.05000000
+```
+
+``` r
+                      # i.e. sum of rows is 100%
+```
+
+---
+
+#### 10. Let's focus on predicting only the two major parties
+
+
+``` r
+aes22_recoded_major_parties &lt;-
+  aes22_recoded_no_na |&gt; dplyr::filter(party %in% c("Labor","Liberal"))
+nrow(aes22_recoded_major_parties)
+```
+
+```
+## [1] 1257
+```
+
+``` r
+aes22_train &lt;- aes22_recoded_major_parties[1:628,]
+aes22_test &lt;- aes22_recoded_major_parties[629:1257,]
+```
+
+
+``` r
+pred &lt;- 
+  class::knn(train = dplyr::select(aes22_train, female, age, edu, lr, equal),
+             test = dplyr::select(aes22_test, female, age, edu, lr, equal),
+             cl = aes22_train$party, k = 5)
+sum(pred == aes22_test$party) / nrow(aes22_test)
+```
+
+```
+## [1] 0.7631161
+```
+
+
+---
+
+#### And here our confusion matrix
+
+
+``` r
+table(`true value` = as.character(aes22_test$party), 
+      `prediction` = as.character(pred))
+```
+
+```
+##           prediction
+## true value Labor Liberal
+##    Labor     259      65
+##    Liberal    84     221
+```
+
+- With proportional values
+
+
+``` r
+prop.table(table(`true value` = as.character(aes22_test$party), 
+                 `prediction` = as.character(pred)), 
+           margin = 1) # margin = 1 indicates rows, 
+```
+
+```
+##           prediction
+## true value     Labor   Liberal
+##    Labor   0.7993827 0.2006173
+##    Liberal 0.2754098 0.7245902
+```
+
+``` r
+                      # i.e. sum of rows is 100%
+```
+
+
+---
+
+# After a non-parametric model (k-NN), let's check a parametric model instead... 
+
+# The linear regression!
+
+---
+
+## If k-NN can be used to predict multiple classes (e.g., parties), the linear regression is used to predict a continuous variable. 
+
+#### Using the AES 2022 dataset, let's predict respondent's left-right position using the variables we already recoded.
+
+Note: `lm()` will automatically drop records with missing values, so `drop_na()` is not technically required
+
+
+``` r
+head(aes22_recoded)
+```
+
+```
+## # A tibble: 6 × 7
+##   party      age gender   edu    lr equal female
+##   &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Liberal     78      1     4     5     5      0
+## 2 Labor       58      2     2     2     5      1
+## 3 Labor       57      1    10     5    10      0
+## 4 No party    60      1     5     5     3      0
+## 5 Liberal     38      2     5     4    10      1
+## 6 Liberal     82      1     3     8     8      0
+```
+
+---
+
+#### 1. Since, the data has been already cleaned and prepared, I can run `lm()`
+
+
+``` r
+fit &lt;- lm(lr ~ factor(gender) + edu + equal, data = aes22_recoded)
+```
+
+- Wait a minute, why don't we use the binary variable `female` and instead we use `factor(gender)`? 
+
+- `lm()` requires a **numeric** outcome variable, but it can take **categorical** as well **numeric** predictors. 
+
+.content-box-yellow[
+
+- Importantly, here `gender` should not be treated as numeric since its values are not to be intended as values on a continuous scale! The value `3` = 'Other'  does not inherently represent a value three times larger than `1` = "Male". So we must treat it as a `factor()`, or categorical variable. 
+
+]
+
+---
+
+#### 2. Let's check the coefficients (or the parameters of this model) and their statistical significance
+
+
+``` r
+summary(fit)
+```
+
+```
+## 
+## Call:
+## lm(formula = lr ~ factor(gender) + edu + equal, data = aes22_recoded)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.7994 -1.4038 -0.0692  1.2618  8.2961 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      3.73823    0.11972  31.226  &lt; 2e-16 ***
+## factor(gender)2 -0.57092    0.08978  -6.359 2.46e-10 ***
+## factor(gender)3 -0.47622    0.60525  -0.787    0.431    
+## edu             -0.06653    0.01465  -4.541 5.90e-06 ***
+## equal            0.33273    0.01608  20.688  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.076 on 2185 degrees of freedom
+##   (318 observations deleted due to missingness)
+## Multiple R-squared:  0.2013,	Adjusted R-squared:  0.1999 
+## F-statistic: 137.7 on 4 and 2185 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+#### 3. How do we interpret our model summary stats and the model parameters (coefficients)?
+
+1. `\(R^2: 0.2013\)`. This means that 80% of the variation in the dependent variable `lr` is .content-box-purple[**NOT**] explained/predicted from the independent variables of the model.
+2. Being a female .content-box-purple[**instead**] of a male, (`gender` = 2) is statistically associated with being more left-wing (by .57 on the 0-to-10 scale of the DV).
+3. Being other instead of a male (remember in the case of categorical IV, compare with the base level!), is associated with being more left-wing but this association is not statistically significant.
+4. For every extra year in tertiary education, Australian voters are expected to move left-wing by .06, and this association is statistically significant.
+5. For each extra point on the `equal` scale, Australian voters are expected to move right-wing by .33 on the `lr` scale.
+
+---
+
+#### 4. Can we predict where an Australian woman does identify on average on the left-right scale for number of years in teritiry education?
+
+Let's first check the distribution of the variables
+
+
+``` r
+summary(aes22_recoded)
+```
+
+```
+##             party          age            gender           edu        
+##  Liberal       :855   Min.   : 18.0   Min.   :1.000   Min.   : 0.000  
+##  Labor         :836   1st Qu.: 45.0   1st Qu.:1.000   1st Qu.: 1.000  
+##  No party      :391   Median : 60.0   Median :2.000   Median : 4.000  
+##  Greens        :269   Mean   : 57.3   Mean   :1.532   Mean   : 3.735  
+##  National Party: 73   3rd Qu.: 70.0   3rd Qu.:2.000   3rd Qu.: 5.000  
+##  Independent   : 18   Max.   :107.0   Max.   :3.000   Max.   :32.000  
+##  (Other)       : 66   NA's   :83      NA's   :45      NA's   :242     
+##        lr             equal            female      
+##  Min.   : 0.000   Min.   : 0.000   Min.   :0.0000  
+##  1st Qu.: 3.000   1st Qu.: 3.000   1st Qu.:0.0000  
+##  Median : 5.000   Median : 5.000   Median :1.0000  
+##  Mean   : 4.803   Mean   : 4.609   Mean   :0.5245  
+##  3rd Qu.: 6.000   3rd Qu.: 7.000   3rd Qu.:1.0000  
+##  Max.   :10.000   Max.   :10.000   Max.   :1.0000  
+##  NA's   :88       NA's   :42       NA's   :58
+```
+
+---
+
+... then, let's predict while setting `equal` to 5, the median of the sample and `gender` to 2.
+
+
+``` r
+pred &lt;- 
+  predict(fit, newdata = data.frame(gender = 2, edu = 0:10, equal = 5))
+```
+
+
+``` r
+pred
+```
+
+```
+##        1        2        3        4        5        6        7        8 
+## 4.830943 4.764417 4.697892 4.631366 4.564841 4.498316 4.431790 4.365265 
+##        9       10       11 
+## 4.298739 4.232214 4.165688
+```
+
+- The average woman with 0 years of tertiary education and the median opinion on the `equal` question (i.e. 5) is expected to be slightly on the left-hand side of the spectrum (4.83, with 5 being the mid value).
+
+- As the average woman gets to spend more time on her tertiary education, she expected to move left-wing (note that this is a linear regression, so everything will change linearly!).
+
+---
+
+#### 5. What about Australian men?
+
+
+
+``` r
+pred &lt;- 
+  predict(fit, newdata = data.frame(gender = 1, edu = 0:10, equal = 5))
+```
+
+
+``` r
+pred
+```
+
+```
+##        1        2        3        4        5        6        7        8 
+## 5.401861 5.335335 5.268810 5.202284 5.135759 5.069233 5.002708 4.936183 
+##        9       10       11 
+## 4.869657 4.803132 4.736606
+```
+
+- On average an Australian men with a median opinion on `equal`, will move to the left-hand side of the spectrum only after six years of tertiary education. 
+
+
+---
+class: inverse, center, middle
+
+### What we do when the outcome variable is binary (e.g., what does predict if voter is a female)?
+
+# The Logistic Regression
+
+---
+
+## Introduction to Logistic Regression
+
+- **What is Logistic Regression?**
+  - A statistical model used for binary classification problems (e.g., yes/no, success/failure).
+  - Unlike k-NN and linear regression, logistic regression predicts the probability of an outcome that can only be one of two values.
+- **Key Concept:**
+  - Predicts the **probability** that a given input point belongs to a particular class using a logistic function (*sigmoid curve*).
+
+---
+
+## The Logistic Function
+
+- **Sigmoid Function:**
+  - Converts any real-valued number into a value between 0 and 1, representing probability.
+  - **Equation:**  
+    
+    `$$p(X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1X)}}$$`
+  - **Interpretation:**  
+    - Output close to 0: Low probability of being in the positive class.
+    - Output close to 1: High probability of being in the positive class.
+
+---
+
+## How Logistic Regression Works
+
+- **Model Training:**
+  - Fits the logistic function to the data by adjusting coefficients `\(\beta\)` to minimize error.
+- **Decision Boundary:**
+  - Separates data points into different classes based on the fitted model.
+  - For binary classification, it typically sets a threshold (e.g., 0.5) to classify points.
+- **Log-Loss (Cross-Entropy):**
+  - The loss function used to optimize the model during training, penalizing wrong classifications more heavily.
+
+---
+
+## Applications of Logistic Regression
+
+- **Some Use Cases:**
+  - **War or Peace:** Predicts the probability of a conflict between two countries.
+  - **Male or Female:** Classifies gender (if binary).
+  - **Spam or Ham:** Classifies spam emails.
+  -  **Medical Diagnosis**: Predicts the presence or absence of a disease.
+- **Advantages:**
+  - Easy to implement and interpret (it is a parametric model - so we get coefficients!).
+  - Performs well on linearly separable data.
+
+---
+
+## Let's predict gender (female = 0 or male = 1) from a person's height in cm...
+
+&lt;img src="week-09_files/figure-html/unnamed-chunk-38-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### 1. As seen, we can use the a linear regression to predict a binary variable (wich we treat as a continuous). 
+
+- Our regression line for the prediction will look like this
+
+&lt;img src="week-09_files/figure-html/unnamed-chunk-39-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+``` r
+fit &lt;- lm(Female ~ Height, data = train)
+```
+
+
+``` r
+pred &lt;- predict(fit, newdata = dplyr::select(test, Female, Height))
+```
+
+&lt;img src="week-09_files/figure-html/unnamed-chunk-42-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, center, middle
+
+# Individual in-class Problem set (with peer-review)
+
+<div class="countdown" id="timer_5c800b99" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week with Machine Learning!
+
+&lt;iframe src="https://giphy.com/embed/IZY2SE2JmPgFG" width="480" height="274" style="" frameBorder="0" class="giphy-embed" allowFullScreen&gt;&lt;/iframe&gt;&lt;p&gt;&lt;a href="https://giphy.com/gifs/terminator-IZY2SE2JmPgFG"&gt;via GIPHY&lt;/a&gt;&lt;/p&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="assets/remark-zoom.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
