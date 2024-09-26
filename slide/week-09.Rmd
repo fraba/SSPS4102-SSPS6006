@@ -1035,11 +1035,127 @@ pred <- predict(fit, newdata = dplyr::select(test, Female, Height))
 test$pred <- pred
 test |>
   ggplot(aes(y = Female, x = Height)) +
-  geom_jitter(height = 0, aes(colour = pred)) +
+  geom_jitter(height = 0, aes(colour = pred), size = 5) +
   scale_y_continuous(breaks = c(0, .5, 1)) +
   geom_smooth(method = "lm",
               se = FALSE) +
   scale_color_distiller(palette = "RdBu")
+```
+
+---
+
+### 2. But a different curve will probably be more appropriate to fit the data...
+
+- Enters the sigmoid curve
+
+```{r echo = FALSE, out.width='100%', fig.width = 7, fig.height=4}
+train |>
+  ggplot(aes(y = Female, x = Height)) +
+  geom_jitter(height = 0, alpha = .5, aes(colour = factor(Female))) +
+  scale_y_continuous(breaks = c(0, .5, 1)) +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"), 
+              se = FALSE)
+```
+
+---
+
+```{r}
+fit <- glm(Female ~ Height, data = train, family = 'binomial')
+```
+
+```{r}
+pred <- predict(fit, newdata = dplyr::select(test, Female, Height), 
+                type = "response")
+```
+
+```{r echo = FALSE, out.width='100%', fig.width = 7, fig.height=4}
+test$pred <- pred
+test |>
+  ggplot(aes(y = Female, x = Height)) +
+  geom_jitter(height = 0, aes(colour = pred), size = 5) +
+  scale_y_continuous(breaks = c(0, .5, 1)) +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"), 
+              se = FALSE) +
+  scale_color_distiller(palette = "RdBu", limits = c(0,1))
+```
+
+---
+
+## How and when to use the logistic regression
+
+- The logistic regression is a regression, so conceptually very similar to the linear regression.
+
+- The logistic regression is parametric, so like the linear regression does provide a parameter $\beta$ (a.k.a. the coefficient) for each independent variable.
+
+.content-box-yellow[
+
+- Use the logistic regression instead of the linear regression when you have a **binary outcome** (i.e. dependent) **variable**.
+
+]
+
+---
+
+## 1. Let's run a logistic regression to predict if an Australian voter is a female
+
+- For the logistic regression we use the R function `glm()`, generalised linear models 
+
+- We specify that we want a "binomial" link function, with `family = binomial`.
+
+- We specify the `formula = y ~ x` as we do for `lm()`
+
+```{r}
+fit <- 
+  glm(formula = female ~ lr + edu + equal, 
+      family = binomial, # Remember to specify this
+      data = aes22_recoded)
+```
+
+
+---
+
+## 2. Let's summary the regression stats
+
+.small[
+
+```{r}
+summary(fit)
+```
+
+]
+
+---
+
+## 3. Interpreting the results of a logistic regression
+
+1. The interpretation of the p-value is exactly as for the linear regression.
+
+2. The interpretation of the coefficient is also similar (if positive, positive association, etc.), yet the coefficient is not in the unit of the predictor but in log-odds: the estimate is the .content-box-purple[**log-odds change**] for each unit increase in the predictor.
+
+   - The log-odds is **logit of the probability of the event**.  
+
+3. We don't have an $R^2$ but an AIC (Lower AIC suggests a better model)
+
+---
+
+## 4. The coefficient value is not easily intepretable in relation to the unit of the variables
+
+- We can use to predict to say something meaningful.
+
+- What is the .content-box-red[**probability**] - not the log-odds - of a voter being a woman if ...
+
+```{r}
+pred <- 
+  predict(fit, 
+          newdata = data.frame(lr = 4, 
+                               edu = 4,
+                               equal = 5),
+          type = "response") # By adding this we get the probability 
+```
+
+```{r}
+pred
 ```
 
 
@@ -1067,6 +1183,4 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# See you next week with Machine Learning!
-
-<iframe src="https://giphy.com/embed/IZY2SE2JmPgFG" width="480" height="274" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/terminator-IZY2SE2JmPgFG">via GIPHY</a></p>
+# See you next week Text Analysis!
