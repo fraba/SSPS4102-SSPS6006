@@ -78,6 +78,18 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ## Today's class
 
+| Time        | Content                         |
+|-------------|---------------------------------|
+| 11:00-11:40 | Machine learning                |
+| 11:40-12:00 | Lab: k-NN                       |
+| 12:00-12:15 | Individual quiz/tutorial Part 1 |
+| 12:15-12:30 | Lab: linear regression (again!) |
+| 12:30-12:45 | Individual ex. with peer-review |
+| 12:45-1:00  | Lab: logistic regression        |
+| 13:00-13:10 | Individual quiz/tutorial Part 2 |
+| 13:10-14:00 | Group in-class problem set      |
+
+
 
 ---
 
@@ -827,6 +839,17 @@ prop.table(table(`true value` = as.character(aes22_test$party),
 
 
 ---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 1
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 15, seconds = 00)
+```
+
+---
 
 # After a non-parametric model (k-NN), let's check a parametric model instead... 
 
@@ -923,6 +946,18 @@ pred
 
 - On average an Australian men with a median opinion on `equal`, will move to the left-hand side of the spectrum only after six years of tertiary education. 
 
+---
+class: inverse, center, middle
+
+# Individual exercise with peer-review
+
+# Reading a regression table
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 5, seconds = 00)
+```
 
 ---
 class: inverse, center, middle
@@ -1162,7 +1197,7 @@ pred
 ---
 class: inverse, center, middle
 
-# Individual in-class Problem set (with peer-review)
+# Individual quiz/tutorial Part 2
 
 ```{r echo = FALSE}
 library(countdown)
