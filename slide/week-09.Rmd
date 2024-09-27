@@ -62,7 +62,6 @@ ggplot2::theme_set(theme_bw())
 ## Acknowledgement of Country
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
-
 ---
 
 ## Recap from last week
@@ -90,6 +89,10 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 | 13:10-14:00 | Group in-class problem set      |
 
 
+---
+class: inverse, center, middle
+
+# Closing the loop on Week 08 qualitative feedback
 
 ---
 
@@ -1208,7 +1211,7 @@ countdown(minutes = 10, seconds = 00)
 ---
 class: inverse, center, middle
 
-# Group in-class problem set
+# Individual in-class problem set
 
 ---
 class: inverse, center, middle

@@ -68,7 +68,6 @@ pre code {
 ## Acknowledgement of Country
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
-
 ---
 
 ## Recap from last week
@@ -96,6 +95,10 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 | 13:10-14:00 | Group in-class problem set      |
 
 
+---
+class: inverse, center, middle
+
+# Closing the loop on Week 08 qualitative feedback
 
 ---
 
@@ -152,8 +155,8 @@ Machine learning is the study of
 - **Data, Methods, and Computing Power**: A loop where increased data drives the development of new methods and computational needs.
 - **Impact**: Enables larger, more complex datasets to be analysed, spurring new discoveries and capabilities in machine learning.
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-4730d908c794df30babe" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-4730d908c794df30babe">{"x":{"diagram":"\n  digraph {\n    graph [layout = circo]\n\n    # Define nodes\n    A [label = \"Available Data\", shape = circle, style = filled, fillcolor = lightgray]\n    B [label = \"Statistical Methods\", shape = circle, style = filled, fillcolor = lightgray]\n    C [label = \"Computing Power\", shape = circle, style = filled, fillcolor = lightgray]\n\n    # Define edges\n    A -> B\n    B -> A\n    B -> C\n    C -> B\n    C -> A\n    A -> C\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-c0401664f975fab1600f" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-c0401664f975fab1600f">{"x":{"diagram":"\n  digraph {\n    graph [layout = circo]\n\n    # Define nodes\n    A [label = \"Available Data\", shape = circle, style = filled, fillcolor = lightgray]\n    B [label = \"Statistical Methods\", shape = circle, style = filled, fillcolor = lightgray]\n    C [label = \"Computing Power\", shape = circle, style = filled, fillcolor = lightgray]\n\n    # Define edges\n    A -> B\n    B -> A\n    B -> C\n    C -> B\n    C -> A\n    A -> C\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -783,7 +786,7 @@ sample(c("A", "B", "C"))
 ```
 
 ```
-## [1] "C" "A" "B"
+## [1] "B" "C" "A"
 ```
 
 ---
@@ -831,10 +834,10 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.4812775
+## [1] 0.4878855
 ```
 
-Not great, but also not too bad since we are classifying over 17 different parties!
+Not great, but also not too bad since we are classifying over 18 different parties!
 
 ---
 
@@ -866,7 +869,7 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.608
+## [1] 0.6093333
 ```
 
 
@@ -883,10 +886,10 @@ table(`true value` = as.character(aes22_test$party),
 ```
 ##                 prediction
 ## true value       Greens Labor Liberal National Party
-##   Greens             21    64       8              0
-##   Labor              30   203      92              1
-##   Liberal             6    69     232              1
-##   National Party      1     6      16              0
+##   Greens             23    66       5              0
+##   Labor              38   205      88              0
+##   Liberal             6    67     229              3
+##   National Party      0     4      16              0
 ```
 
 - With proportional values
@@ -901,10 +904,10 @@ prop.table(table(`true value` = as.character(aes22_test$party),
 ```
 ##                 prediction
 ## true value            Greens       Labor     Liberal National Party
-##   Greens         0.225806452 0.688172043 0.086021505    0.000000000
-##   Labor          0.092024540 0.622699387 0.282208589    0.003067485
-##   Liberal        0.019480519 0.224025974 0.753246753    0.003246753
-##   National Party 0.043478261 0.260869565 0.695652174    0.000000000
+##   Greens         0.244680851 0.702127660 0.053191489    0.000000000
+##   Labor          0.114803625 0.619335347 0.265861027    0.000000000
+##   Liberal        0.019672131 0.219672131 0.750819672    0.009836066
+##   National Party 0.000000000 0.200000000 0.800000000    0.000000000
 ```
 
 ``` r
@@ -941,7 +944,7 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.7313196
+## [1] 0.7376789
 ```
 
 
@@ -958,8 +961,8 @@ table(`true value` = as.character(aes22_test$party),
 ```
 ##           prediction
 ## true value Labor Liberal
-##    Labor     230      94
-##    Liberal    75     230
+##    Labor     234      93
+##    Liberal    72     230
 ```
 
 - With proportional values
@@ -974,8 +977,8 @@ prop.table(table(`true value` = as.character(aes22_test$party),
 ```
 ##           prediction
 ## true value     Labor   Liberal
-##    Labor   0.7098765 0.2901235
-##    Liberal 0.2459016 0.7540984
+##    Labor   0.7155963 0.2844037
+##    Liberal 0.2384106 0.7615894
 ```
 
 ``` r
@@ -988,7 +991,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 1
 
-<div class="countdown" id="timer_86e070ac" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_d8ca40d5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">15</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1175,7 +1178,7 @@ class: inverse, center, middle
 
 # Reading a regression table
 
-<div class="countdown" id="timer_abf29d9b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_b3f97859" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1402,7 +1405,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_cf2913b6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_016ce1d1" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1410,7 +1413,7 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# Group in-class problem set
+# Individual in-class problem set
 
 ---
 class: inverse, center, middle
