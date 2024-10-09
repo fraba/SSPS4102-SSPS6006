@@ -1,0 +1,450 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 10</br>Textual Data: Natural Language Features"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+library(ggrepel)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+---
+
+## Recap from last week
+
+- Machine learning
+- K-nearest neighbors algorithm (k-NN) classification (2+ classes)
+- Linear regression (again!) for numeric prediction
+- Logistic regression for binary classification (2 classes)
+
+
+---
+
+## Today's class
+
+
+
+
+---
+
+class: inverse, center, middle
+
+# Textual Data: Natural Language Features
+
+
+.footnote[Slides adapted from Hvitfeldt, E., & Silge, J. (2021). *Supervised machine learning for text analysis in R*. Chapman and Hall/CRC. https://doi.org/10.1201/9781003093459
+]
+
+---
+class: inverse, center, middle
+# Introduction to these two weeks on Text Analysis
+
+---
+
+## Supervised Modeling for Text Analysis
+
+### Modelling as a Statistical Practice
+
+As seen .content-box-green[*modelling*] can include a wide range of activities; over these two weeks we introduce supervised or predictive modelling **using text data to make predictions about the world**.
+
+### Types of Models (next week)
+
+1. **Regression Models**: Predict numeric or continuous outcomes (e.g., predicting the year of a U.S. Supreme Court opinion based on its text).
+2. **Classification Models**: Predict discrete outcomes or class labels (e.g., classifying news articles to study media bias).
+
+---
+
+## Supervised Modeling for Text Analysis
+
+###  Importance of Text Data
+
+Text data is vital across fields—from healthcare to digital humanities and social sciences However, specialised methods are essential to transform natural language into a machine-readable format.
+
+### Text Preprocessing (this week)
+
+*This week* we explore typical preprocessing steps from scratch, illustrating the use of the "textrecipes" package to prepare text data within a modelling pipeline, making language data ready for computation (which we will cover *next week*).
+
+
+---
+class: inverse, center, middle
+
+# Language and modeling
+
+---
+
+## Introduction
+
+- **Text Analysis and Linguistics**: Machine learning and deep learning models are powerful tools for text analysis, but they are fundamentally shaped by human understanding of language.
+
+- **Bridging the Gap**: Data scientists, often without formal training in linguistics, can benefit greatly from understanding how language works to build more effective text analysis models.
+
+---
+
+## The Role of Linguistics in Text-Based Machine Learning
+
+### Why Linguistics Matters:
+
+- Language is complex, ambiguous, and contextual, impacting the reliability of machine learning models.
+
+  - "Include Your Children When Baking Cookies"
+
+- By leveraging linguistic knowledge, we **create better features** that allow models to handle nuances in text data.
+
+**Example**: Understanding sentence structures or word formations can lead to more accurate text representations in models.
+
+---
+
+## A text analysis pipeline
+
+```{r echo = F, out.width='100%'}
+library(DiagrammeR)
+
+# Create the flowchart
+grViz("
+digraph text_analysis_workflow {
+  
+  # Define graph attributes
+  graph [layout = dot, rankdir = LR]
+  
+  # Define node styles and labels
+  node [shape = box, style = filled, color = lightgrey]
+  
+  text_data      [label = 'Text Data']
+  preprocessing  [label = 'Preprocessing\nTokenization, Stemming, Stop words']
+  feature_extraction [label = 'Feature Extraction']
+  model          [label = 'Model']
+  classification  [label = 'Classification']
+  prediction     [label = 'Prediction']
+  
+  # Define edges to show the flow
+  text_data -> preprocessing
+  preprocessing -> feature_extraction
+  feature_extraction -> model
+  model -> classification
+  model -> prediction
+}
+")
+```
+
+
+---
+
+## Key Linguistic Subfields Relevant to Text Analysis
+
+Text processing benefits from understanding different linguistic levels, from sounds to sentence structure.
+
+| Subfield      | Focus                                 | Example Usage in Text Analysis               |
+|---------------|---------------------------------------|----------------------------------------------|
+| Phonetics     | Sounds used in language               | N/A for text (but relevant for speech data)  |
+| Morphology    | Structure and formation of words      | Stemming, lemmatization                      |
+| Syntax        | Formation of sentences                | Part-of-speech tagging, dependency parsing   |
+| Semantics     | Meaning of words and sentences        | Sentiment analysis                           |
+| Pragmatics    | Contextual language use               | Disambiguation, context analysis             |
+
+---
+
+## Morphology - Transforming Words for Analysis
+
+
+.content-box-yellow[
+
+**Morphology** studies the structure of words, including morphemes, which are the smallest units of meaning.
+
+]
+
+Different languages vary in their use of morphemes, impacting model performance based on language-specific processing needs.
+
+**Example**: English has fewer morphemes per word, while languages like Turkish and Russian have more, influencing how we preprocess text for each.
+
+---
+
+## Morphological Processing in R - Tokenization and Stemming (more on this later)
+
+#### Step 1
+
+```{r}
+library(tidytext)
+library(dplyr)
+library(SnowballC)
+
+# Sample text
+text <- 
+  c("Text analysis in machine learning can benefit from morphological processing.")
+text_df <- 
+  data.frame(line = 1, text = text)
+text_df
+```
+
+---
+
+#### Step 2
+
+```{r}
+# Tokenize text into individual words
+tokens <- text_df |>
+  unnest_tokens(word, text)
+tokens
+```
+
+---
+
+#### Step 3
+
+```{r}
+# Apply stemming to reduce words to their root form
+tokens |>
+  mutate(stem = wordStem(word))
+```
+
+---
+
+## Morphological Processing in R - Tokenization and Stemming (more on this later)
+
+1. **Tokenization**: Breaks down text into individual words (tokens).
+
+2. **Stemming**: Reduces words to their base or *root* form, standardising variations (e.g., "running" to "run"). So words with the same *root* are comparable.
+
+
+---
+
+## Handling Language Diversity in Machine Learning Models
+
+.content-box-red[
+
+Machine learning models often fail to generalize across different languages or dialects.
+
+]
+
+- For example, a model trained on English may struggle with dialects like African American Vernacular English (AAVE), falsely identifying benign terms as harmful.
+
+**Best Practice**:
+
+- Explicitly state the language in model documentation.
+
+- If working with multiple dialects, ensure the model includes training data representative of each.
+
+---
+
+## Text Context and Domain-Specific Language
+
+- Text varies greatly by context; models trained on one type (e.g., tweets) may perform poorly on another (e.g., medical texts).
+
+- For domain-specific tasks, tailored training data is crucial for accurate predictions.
+
+**Example**: A sentiment model trained on social media text may misinterpret neutral medical terms as negative if applied to clinical documents.
+
+**Best Practice**: Use context-specific text data for training to avoid bias and improve model performance.
+
+---
+
+## Limitations of Text-Based Models
+
+
+- Text data cannot fully capture the **high-dimensional nature of language**, leading to inherent model limitations.
+
+- Modelling assumes simplifications, which may omit crucial context or meaning.
+
+**Implications**:
+
+1. Accept that machine learning models have limitations based on the training data and the linguistic features used.
+
+2. Regularly update and retrain models with recent, contextually relevant data to maintain accuracy.
+
+---
+class: inverse, center, middle
+
+# Tokenization
+
+---
+
+## Tokenization - Turning Text into Tokens
+
+**What for**? To Transform raw text into structured tokens to create features for machine learning.
+
+### Overview
+
+- Tokenization splits text into meaningful units (tokens) for computational analysis.
+
+- Tokens can be words, characters, n-grams, and more.
+
+---
+
+## What is a Token?
+
+.content-box-yellow[**Definition**: A token is a *unit of text*, often a word, used in analysis.]
+
+**Examples**:
+
+- **Character Tokens**: Individual letters (e.g., "m", "a", "c").
+- **Word Tokens**: Single words (e.g., "machine").
+- **Sentence Tokens**: Single sentence (e.g., "This machine is broken.").
+- **Paragraph Tokens**: Single paragraph.
+- **N-grams**: Sequences of words or characters.
+
+
+---
+
+## Tokenizing Text Data
+
+**Objective**: Break down text for analysis using tokens.
+
+**Example**: Let's use Mary Shelley's Frankestein for the analysis.
+
+```{r eval = FALSE}
+install.packages("gutenbergr")
+```
+
+Note: gutenbergr download books into data frames where each row is a book's line.
+
+```{r}
+library(gutenbergr)
+frankenstein <- 
+  gutenberg_works(title == "Frankenstein; Or, The Modern Prometheus") |>
+  gutenberg_download()
+frankenstein$text
+```
+
+---
+
+## Word Tokenization
+
+**Purpose**: Split text into individual words.
+
+We use the function `tokenize_words` from the *tokenizers* package to split the 49th line of the book.
+
+```{r eval = FALSE}
+install.packages("tokenizers")
+```
+
+
+```{r}
+frankenstein$text[49]
+```
+
+
+```{r}
+library(tokenizers)
+word_tokens <- tokenizers::tokenize_words(frankenstein$text[49])
+word_tokens
+```
+
+---
+
+## Tokenizing with tidytext
+
+**Tidytext Workflow**: Convert text into tidy data for seamless analysis with dplyr.
+
+.content-box-green[
+
+Remember that tidy data is a data frame where each row is one observation with its value.
+
+]
+
+```{r eval = FALSE}
+install.packages("tidytext")
+```
+
+---
+
+The `unnest_tokens` function takes a tidy data frame where each row contains some text, here `text`, in a dedicated column and additional information (i.e., metadata), here `book` with the title of the book
+
+```{r}
+library(tidytext)
+frankenstein |> # From before
+  tidytext::unnest_tokens(output = word, # Output column name
+                          input = text, # Input column with text
+                          token = "words") # Tokenize what?
+```
+
+---
+
+## Preprocessing of text
+
+We can probably already do some cleaning, by removing all the lines that are not properly part of the book using the dplyr function `slice`.
+
+```{r}
+frankenstein <-
+  frankenstein |>
+  dplyr::slice(46:n())
+```
+
+---
+
+And after some cleaning we tokenize again but this time we use n-grams
+
+```{r}
+library(tidytext)
+frankenstein |> # From before
+  tidytext::unnest_tokens(output = word, # Output column name
+                          input = text, # Input column with text
+                          token = "ngrams", # Tokenize what?
+                          n = 3) # How many grams?
+```
+
+
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week for the second week on Text Analysis!
+
+
