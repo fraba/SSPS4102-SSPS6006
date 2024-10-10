@@ -76,7 +76,18 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ## Today's class
 
-
+| Time        | Content                             |
+|-------------|-------------------------------------|
+| 11:00-11:15 | Language and Modelling              |
+| 11:15-11:45 | Tokenization, Stop Words & Stemming |
+| 11:45-11:55 | Individual quiz/tutorial Part 1     |
+| 11:55-12:00 | Break                               |
+| 12:00-12:15 | Sentiment analysis                  |
+| 12:15-12:30 | Document-Frequency Matrix           |
+| 12:30-12:40 | Word Embeddings                     |
+| 12:40-12:45 | Individual quiz/tutorial Part 2     |
+| 12:45-13:15 | Individual on A3 with peer-review   |
+| 13:15-14:00 | Individual problem Set              |
 
 
 ---
@@ -752,9 +763,23 @@ head(frankenstein_tokens)
 - **Example**: "running" -> "run"
 
 ---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 1 
+(to Stemming included)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
+
+---
 class: inverse, center, middle
 
 # Sentiment analysis
+
 
 ---
 
@@ -773,11 +798,11 @@ Sentiment analysis is about associating the words of a document with a **diction
 
 ---
 
-## Types of dictionaries for sentiment analysis 
+## Types of lexicons (or dictionaries) for sentiment analysis 
 
 .small[
 
-Let's downland four dictionaries available with the tidytext package
+Let's downland four lexicons available with the tidytext package
 
 ```{r}
 sent_bing <- tidytext::get_sentiments(lexicon = "bing")
@@ -1285,6 +1310,33 @@ For example,
 - the `embedding_glove840b()` function will download a 840 billion token models 4.03 GB
 
 Once downloaded, you can use the vectors for the words of your corpus for your analysis (instead of calculating these vectors yourself)
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 2
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 30, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Individual problem set
 
 
 ---

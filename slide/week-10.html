@@ -11,6 +11,8 @@
     <script src="week-10_files/viz/viz.js"></script>
     <link href="week-10_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
     <script src="week-10_files/grViz-binding/grViz.js"></script>
+    <link href="week-10_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-10_files/countdown/countdown.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         TeX: { equationNumbers: { autoNumber: "AMS" } },
@@ -80,7 +82,18 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ## Today's class
 
-
+| Time        | Content                             |
+|-------------|-------------------------------------|
+| 11:00-11:15 | Language and Modelling              |
+| 11:15-11:45 | Tokenization, Stop Words &amp; Stemming |
+| 11:45-11:55 | Individual quiz/tutorial Part 1     |
+| 11:55-12:00 | Break                               |
+| 12:00-12:15 | Sentiment analysis                  |
+| 12:15-12:30 | Document-Frequency Matrix           |
+| 12:30-12:40 | Word Embeddings                     |
+| 12:40-12:45 | Individual quiz/tutorial Part 2     |
+| 12:45-13:15 | Individual on A3 with peer-review   |
+| 13:15-14:00 | Individual problem Set              |
 
 
 ---
@@ -154,8 +167,8 @@ class: inverse, center, middle
 
 ## A text analysis pipeline
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-88b7bcbb50f6bdd0fb51" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-88b7bcbb50f6bdd0fb51">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-a801e281baf078832a0f" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-a801e281baf078832a0f">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -929,9 +942,22 @@ head(frankenstein_tokens)
 - **Example**: "running" -&gt; "run"
 
 ---
+
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 1 
+(to Stemming included)
+
+<div class="countdown" id="timer_ad022ee3" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
 class: inverse, center, middle
 
 # Sentiment analysis
+
 
 ---
 
@@ -950,11 +976,11 @@ Sentiment analysis is about associating the words of a document with a **diction
 
 ---
 
-## Types of dictionaries for sentiment analysis 
+## Types of lexicons (or dictionaries) for sentiment analysis 
 
 .small[
 
-Let's downland four dictionaries available with the tidytext package
+Let's downland four lexicons available with the tidytext package
 
 
 ``` r
@@ -1008,23 +1034,23 @@ sent_bing %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word          sentiment
-##    &lt;chr&gt;         &lt;chr&gt;    
-##  1 bliss         positive 
-##  2 ambitiously   positive 
-##  3 amazes        positive 
-##  4 acclaim       positive 
-##  5 scolding      negative 
-##  6 distaste      negative 
-##  7 superficially negative 
-##  8 immoral       negative 
-##  9 reconcile     positive 
-## 10 strangely     negative 
-## 11 improbability negative 
-## 12 detraction    negative 
-## 13 illogically   negative 
-## 14 overemphasize negative 
-## 15 ignore        negative
+##    word              sentiment
+##    &lt;chr&gt;             &lt;chr&gt;    
+##  1 mercifully        positive 
+##  2 misrepresentation negative 
+##  3 quiet             positive 
+##  4 flawlessly        positive 
+##  5 tingle            positive 
+##  6 unproved          negative 
+##  7 pardon            positive 
+##  8 shocked           negative 
+##  9 attentive         positive 
+## 10 allege            negative 
+## 11 drones            negative 
+## 12 dislike           negative 
+## 13 repugnance        negative 
+## 14 shameless         negative 
+## 15 hiss              negative
 ```
 
 ---
@@ -1037,23 +1063,23 @@ sent_afinn %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word        value
-##    &lt;chr&gt;       &lt;dbl&gt;
-##  1 defer          -1
-##  2 loathes        -3
-##  3 died           -3
-##  4 stereotyped    -2
-##  5 infected       -2
-##  6 grave          -2
-##  7 glamorous       3
-##  8 frightened     -2
-##  9 hacked         -1
-## 10 worsening      -3
-## 11 abduction      -2
-## 12 soothing        3
-## 13 powerful        2
-## 14 frustrate      -2
-## 15 downcast       -2
+##    word            value
+##    &lt;chr&gt;           &lt;dbl&gt;
+##  1 racism             -3
+##  2 terrorizes         -3
+##  3 ominous             3
+##  4 anti               -1
+##  5 interruption       -2
+##  6 errors             -2
+##  7 humiliation        -3
+##  8 brave               2
+##  9 warmth              2
+## 10 gag                -2
+## 11 perfectly           3
+## 12 grand               3
+## 13 indignant          -2
+## 14 justice             2
+## 15 right direction     3
 ```
 
 ---
@@ -1066,23 +1092,23 @@ sent_loughran %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word            sentiment   
-##    &lt;chr&gt;           &lt;chr&gt;       
-##  1 destabilization negative    
-##  2 contractholders litigious   
-##  3 confesses       negative    
-##  4 moratorium      negative    
-##  5 libel           litigious   
-##  6 randomizing     uncertainty 
-##  7 detrimentally   negative    
-##  8 sues            negative    
-##  9 breached        litigious   
-## 10 prevent         constraining
-## 11 confiscating    negative    
-## 12 abuse           negative    
-## 13 redetermination superfluous 
-## 14 stopped         negative    
-## 15 hinges          uncertainty
+##    word          sentiment   
+##    &lt;chr&gt;         &lt;chr&gt;       
+##  1 prohibit      constraining
+##  2 objectionably negative    
+##  3 might         uncertainty 
+##  4 unfunded      negative    
+##  5 debarments    negative    
+##  6 entails       constraining
+##  7 illegality    negative    
+##  8 alienated     negative    
+##  9 forfeits      negative    
+## 10 distressed    negative    
+## 11 convictions   litigious   
+## 12 relinquishes  negative    
+## 13 overbuild     negative    
+## 14 almost        uncertainty 
+## 15 excessive     negative
 ```
 
 ---
@@ -1097,21 +1123,21 @@ sent_nrc %&gt;%
 ## # A tibble: 15 × 2
 ##    word          sentiment   
 ##    &lt;chr&gt;         &lt;chr&gt;       
-##  1 neurotic      fear        
-##  2 bomb          anger       
-##  3 excitable     positive    
-##  4 precipice     fear        
-##  5 inviting      surprise    
-##  6 sorcery       surprise    
-##  7 futile        negative    
-##  8 sermon        positive    
-##  9 divination    anticipation
-## 10 lick          negative    
-## 11 smite         fear        
-## 12 discontinuity fear        
-## 13 wizard        anticipation
-## 14 worry         anticipation
-## 15 bearish       anger
+##  1 anarchist     anger       
+##  2 supplies      positive    
+##  3 elf           disgust     
+##  4 unfriendly    anger       
+##  5 baptism       positive    
+##  6 goodness      surprise    
+##  7 restorative   joy         
+##  8 sonata        positive    
+##  9 smitten       positive    
+## 10 unsurpassed   joy         
+## 11 sin           fear        
+## 12 weary         negative    
+## 13 entertaining  anticipation
+## 14 productivity  positive    
+## 15 transcendence positive
 ```
 
 ---
@@ -1332,7 +1358,7 @@ trump_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-39-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-40-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1346,7 +1372,7 @@ clinton_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-40-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-41-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1460,7 +1486,7 @@ trump_clinton_2016_freq |&gt;
   labs(x = "frequency", y = NULL)
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-45-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-46-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -1777,6 +1803,31 @@ For example,
 - the `embedding_glove840b()` function will download a 840 billion token models 4.03 GB
 
 Once downloaded, you can use the vectors for the words of your corpus for your analysis (instead of calculating these vectors yourself)
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 2
+
+<div class="countdown" id="timer_712f36be" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+<div class="countdown" id="timer_8b463f3d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Individual problem set
 
 
 ---
