@@ -164,7 +164,7 @@ digraph text_analysis_workflow {
   node [shape = box, style = filled, color = lightgrey]
   
   text_data      [label = 'Text Data']
-  preprocessing  [label = 'Preprocessing\nTokenization, Stemming, Stop words']
+  preprocessing  [label = 'Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words']
   feature_extraction [label = 'Feature Extraction']
   model          [label = 'Model']
   classification  [label = 'Classification']
@@ -390,7 +390,7 @@ word_tokens
 
 .content-box-green[
 
-Remember that tidy data is a data frame where each row is one observation with its value.
+Remember that tidy data is a data frame where each row is one observation (or unit of analysis) with its value.
 
 ]
 
@@ -398,9 +398,46 @@ Remember that tidy data is a data frame where each row is one observation with i
 install.packages("tidytext")
 ```
 
+.small[
+
+.pull-left[
+In this example a row or unit of analysis is a single word.
+]
+
+.pull-right[
+.center[
+
+| line | word   |
+|------|--------|
+| 1    | machine|
+| 1    | learning|
+| 1    | in     |
+| 1    | text   |
+| 1    | analysis|
+| 1    | is     |
+| 1    | exciting|
+
+]
+
+]
+]
+
 ---
 
-The `unnest_tokens` function takes a tidy data frame where each row contains some text, here `text`, in a dedicated column and additional information (i.e., metadata), here `book` with the title of the book
+## The three rules of tidy data
+
+1. Each variable must have its own column.
+2. Each observation must have its own row.
+3. Each value must have its own cell.
+
+<img src = 'https://d33wubrfki0l68.cloudfront.net/6f1ddb544fc5c69a2478e444ab8112fb0eea23f8/91adc/images/tidy-1.png'></img>
+
+.footnote[Wickham, H., Çetinkaya-Rundel, M., & Grolemund, G. (2023). R for data science: Import, tidy, transform, visualize, and model data (2nd edition). O’Reilly Media, Inc. https://r4ds.had.co.nz/tidy-data.html]
+
+---
+.small[
+The `unnest_tokens` function takes a tidy data frame where each row contains some text, here `text`, in a dedicated column and additional information (i.e., metadata), here `book` with the title of the book and return another tidy data frame where the text column is replaced by the tokenised text (in this case using "words").  
+]
 
 ```{r}
 library(tidytext)
@@ -412,15 +449,26 @@ frankenstein |> # From before
 
 ---
 
-## Preprocessing of text
+## Additional preprocessing of text
 
 We can probably already do some cleaning, by removing all the lines that are not properly part of the book using the dplyr function `slice`.
 
 ```{r}
 frankenstein <-
   frankenstein |>
-  dplyr::slice(46:n())
+  dplyr::slice(46:dplyr::n()) 
+  # this will only include rows from 46 to the last row.
+  # which we get with the function `n()`
 ```
+
+
+.content-box-red[
+
+Preprocessing your text is critical. Text often comes with textual information you don't want to include because is not really part of the document.
+
+]
+
+- Preprocessing might also include set all characters to lower-case (this is done by the `unnest_tokens` function)
 
 ---
 
@@ -435,6 +483,482 @@ frankenstein |> # From before
                           n = 3) # How many grams?
 ```
 
+---
+
+## Difference between `token = "words"` and `token = "ngrams"`
+
+.small[
+
+- Note that the word "preface", which now appears on the first row of the data frame `frankenstein` doesn't appear when we use tri-grams as is single word in its line. 
+
+.pull-left[
+
+#### Words
+
+```{r echo = FALSE}
+library(tidytext)
+frankenstein |> # From before
+  tidytext::unnest_tokens(output = word, # Output column name
+                          input = text, # Input column with text
+                          token = "words") 
+```
+
+]
+
+.pull-right[
+
+#### Trigrams (3-grams)
+
+```{r echo = FALSE}
+library(tidytext)
+frankenstein |> # From before
+  tidytext::unnest_tokens(output = word, # Output column name
+                          input = text, # Input column with text
+                          token = "ngrams", # Tokenize what?
+                          n = 3) # How many grams?
+```
+
+]
+
+]
+
+---
+
+## Understanding N-grams
+
+.small[
+
+**Definition**: N-grams are sequences of $n$ words that capture phrase-level patterns.
+
+Note that words in bi-grams and tri-grams overlap. 
+
+```{r}
+frankenstein$text[4]
+tokenize_ngrams(frankenstein$text[4], n = 2)
+tokenize_ngrams(frankenstein$text[4], n = 3)
+```
+
+]
+
+---
+class: inverse, center, middle
+
+# Stop Words
+
+---
+
+## Introduction to Stop Words
+
+### What are Stop Words?
+
+- Common words in a language (e.g., "the," "and") that **carry little meaning** in NLP tasks.
+- Removing stop words can simplify text data, improving model efficiency.
+
+### History
+
+- Term coined by Hans Peter Luhn in 1960.
+- Initially used to reduce computation time in text mining.
+- Yet, Stop Words might play an important role in specific text, for example in *stylometry*, which is used to predict the authorship of documents (e.g., finding that the author of The Cuckoo’s Calling was in fact J.K. Rowling).    
+
+---
+
+## Treating text as a collection of features
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KS1xrYfGWuA?si=DKan_RMzt0F8i-JA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+---
+
+## Categories of Stop Words
+
+### Types of Stop Words:
+
+- **Global Stop Words**: Commonly uninformative words across many texts (e.g., "of," "in").
+- **Subject-Specific Stop Words**: Words that lack meaning in specific contexts (e.g., "bedroom" in real estate listings).
+- **Document Stop Words**: Low-information words unique to individual documents.
+
+---
+
+## Using Pre-Made Stop Word Lists
+
+.small[
+
+- Premade lists like SMART, Snowball, and ISO contain common stop words.
+- Different lists have varying lengths and words based on their intended use.
+
+```{r eval = F}
+install.packages('stopwords')
+```
+
+You can access "standard" lists of Stop Words installing the package *stopwords*.
+
+```{r}
+library(stopwords)
+length(stopwords(source = "smart"))      # SMART list
+length(stopwords(source = "snowball"))   # Snowball list
+length(stopwords(source = "stopwords-iso"))  # ISO list
+```
+
+]
+
+---
+
+## Removing Stop Words with R
+
+
+```{r}
+library(dplyr)
+library(tidytext)
+text_data <- data.frame(text = "The quick brown fox jumps over the lazy dog")
+text_data <- text_data |> tidytext::unnest_tokens(word, text)
+
+# Remove stop words using Snowball list
+clean_text <- text_data |>
+  dplyr::filter(!(word %in% stopwords(source = "snowball"))) 
+print(clean_text)
+```
+
+---
+
+## Creating Custom Stop Word Lists
+
+### Why Customise?
+
+.small[
+
+Premade lists may not fit your dataset's unique requirements.
+
+**Steps to Customise**:
+
+1. Identify high-frequency words that add no value to your model.
+2. Tailor the list to your domain (e.g., removing all animal names).
+
+```{r}
+# Custom stop words for real estate
+custom_stopwords <- c("fox", "dog")
+filtered_data <- text_data %>% filter(!(word %in% custom_stopwords))
+print(filtered_data)
+```
+
+]
+
+---
+
+## Considerations and Limitations
+
+**Key Takeaways**:
+
+- Stop word removal reduces data complexity but may lose context-specific information.
+- Always review premade stop word lists for accuracy and bias.
+- Experiment with different stop word lists and document the impact on model performance (and results).
+
+---
+class: inverse, center, middle
+
+# Stemming
+
+---
+
+## Introduction to Stemming
+
+### What is Stemming?
+
+- Stemming reduces words to their base or root form, known as the "stem."
+= Helps to group variations of words, such as "tree" and "trees."
+
+.content-box-yellow[
+
+**Purpose**: Simplifies text by reducing different forms of a word, decreasing the feature space.
+
+]
+
+(Remember that quantitative text analysis is all about bringing your texts into a **feature space** that you define).
+
+---
+
+## The Porter Stemming Algorithm
+
+- Most widely-used stemming algorithm for English, available via the *SnowballC* package in R.
+- Rules-based algorithm that systematically reduces words (e.g., "stories" becomes "stori").
+
+```{r}
+library(SnowballC)
+SnowballC::wordStem(c("win", "winning", "winner"))
+```
+
+
+---
+
+## Chaining tokenisation, stopwords and stemming in the same pipeline
+
+```{r}
+frankenstein_tokens <- 
+  frankenstein |>
+  # Tokenization
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::filter(!word %in% stopwords::stopwords(source = "snowball")) |>
+  # Stemming
+  dplyr::mutate(stemmed_word = SnowballC::wordStem(word))
+
+```
+
+---
+```{r}
+head(frankenstein_tokens)
+```
+
+---
+
+## Should You Use Stemming?
+
+- Stemming can reduce data sparsity but may discard important details.
+- Not always beneficial for certain text models, as it may overgeneralise.
+- In topic modeling, aggressive stemming can reduce coherence and topic stability.
+
+
+---
+
+## Difference Between Stemming and Lemmatisation
+
+### Stemming:
+
+- Reduces words to their base form without regard to meaning or grammatical role.
+- **Example**: "stories" -> "stori"
+
+### Lemmatization:
+
+- Converts words to their dictionary form (lemma) based on context.
+- Requires linguistic knowledge (e.g., part of speech) for accuracy.
+- **Example**: "running" -> "run"
+
+---
+class: inverse, center, middle
+
+# Word Embeddings
+
+---
+
+## What are embeddings?
+
+.content-box-yellow[
+**Embeddings** are a fundamental tool that bridges the gap between *qualitative* and *quantitative* data—especially useful in social sciences where important data is often textual or categorical (or visual).
+]
+
+- At their core, embeddings are **numerical representations** of data elements, such as words, sentences, documents, or even users, in a **continuous vector space**. 
+
+- This means we **convert qualitative data into a series of numbers** (vectors) that a computer can process mathematically.
+
+- For **Text Data**: Words or phrases are transformed into vectors of numbers.
+- For **Categorical Data**: Categories or classes are represented in a numerical format that *preserves their relationships*.
+
+---
+
+## Why Do We Need Embeddings?
+
+In data analytics, especially with machine learning algorithms, we need numerical inputs. Embeddings allow us to:
+
+- **Capture Semantic Meaning**: Words with similar meanings have vectors that are close together in the embedding space.
+- **Perform Mathematical Operations**: Enable calculations like measuring similarity or clustering data points.
+- **Reduce Dimensionality**: Compress high-dimensional data (with a too many features) into lower-dimensional space without losing significant information.
+
+---
+## How Do Embeddings Work?
+
+.small[
+
+#### 1. Representing Data in Vector Space
+
+- Imagine a multi-dimensional space where each dimension represents a **feature** of the data.
+
+- Each data element is a point in this space, defined by its **vector coordinates**.
+
+#### 2. Training Embeddings
+
+- Embeddings are learned from data using neural networks or other machine learning models.
+
+- Example: In natural language processing (NLP), models like Word2Vec are trained on large text corpora to learn word embeddings based on context.
+
+#### 3. Contextual Relationships
+
+- The position of each vector reflects the relationships between data elements.
+
+- **Semantic Proximity**: Words that appear in similar contexts are located near each other in the vector space.
+
+]
+---
+
+## Analogies to Understand Embeddings
+
+.content-box-yellow[
+
+###Think of Embeddings Like a Map
+
+- Cities and Distances: Each city is a point on a map with geographic coordinates. The distance between cities tells you how close they are geographically - if they are really close they might be part of the same community (e.g., state or nation).
+
+]
+
+
+---
+
+## Introduction to Word Embeddings
+
+.content-box-yellow[
+
+**Definition**: Word embeddings are dense vector representations of words that capture semantic meaning based on context.
+
+]
+
+> "You shall know a word by the company it keeps." — John Rupert Firth
+
+## But whyy do need word embeddings?
+
+Traditional text representations are sparse and high-dimensional. Word embeddings provide a dense, low-dimensional alternative that captures semantic similarity.
+
+---
+
+But let's first start from a different, alternative data structure to numerically represent your documents...
+
+## The Document-Frequency Matrix
+
+Let's say you have six *documents* you want to analyse. These six documents constitute your **collection** (a.k.a. **corpus**).
+
+```{r}
+documents <- c(
+  "Political parties influence policy decisions",
+  "Elections determine the political landscape",
+  "Governments implement policies for public welfare",
+  "Economic growth depends on consumer spending",
+  "Inflation affects purchasing power in the economy",
+  "Fiscal policy aims to stabilize economic fluctuations"
+)
+```
+
+--
+
+- **Problem**: you must **quantify** these documents **within the same space** so that you can analyse them together.
+
+- **Solution**: You can **count the frequency of each word** in each document (and create a document-frequency matrix, or DFM)!
+
+---
+
+## The Document-Frequency Matrix (DFM) in R
+
+Step 1. Our documents into a tidy data frame
+
+```{r}
+text_data <- 
+  data.frame(doc_id = 1:6, text = documents) # Our six documents are now in a df
+```
+
+Step 2. Let's count the **frequency of each word in each document**
+
+```{r}
+my_word_frequency <- 
+  text_data %>%
+  tidytext::unnest_tokens(word, text) |> # 1. Tokenise the documents
+  dplyr::filter(!word %in% stopwords::stopwords()) |> # 2. Remove Stop Words
+  dplyr::count(doc_id, word)
+head(my_word_frequency)
+```
+
+---
+
+Step 3. Let's create the document-term matrix
+
+.small[
+
+```{r}
+my_dfm <- 
+  my_word_frequency |>
+  # This requries install.packages('quanteda')
+  tidytext::cast_dfm(document = doc_id, # Column identifying the document
+                     term = word, # Column identifying the term
+                     value = n) # Column identifying the frequency value
+print(my_dfm)
+```
+
+DFM is commonly used but also inefficient because **sparse** (it's mostly zeros!).
+
+]
+
+---
+
+- **Problem**: Sparse matrices are memory-intensive and unsuitable for capturing context. Instead...
+- **Solution**: Word embeddings capture semantics by learning word relationships (more efficiently than DFM).
+
+> "Modern word embeddings are based on a statistical approach to modeling language, rather than a linguistics or rules-based approach."
+
+---
+
+## Creating Word Embeddings – An Overview
+
+Process: Word embeddings are learned by analysing the co-occurrence of words in a large text corpus.
+
+- **Step 1**: Process the corpus and identify word contexts (e.g., via sliding windows).
+- **Step 2**: Measure word association using statistical methods, such as Pointwise Mutual Information (PMI).
+- **Step 3**: Apply dimensionality reduction techniques (e.g., Singular Value Decomposition, SVD) to create embeddings.
+
+---
+
+## The Concept of Context – The Role of Windows
+
+### What is a Sliding Window?
+
+- A **window** is a defined span of text around each word, allowing the model to "see" a word's immediate neighbours.
+
+**Example**: In "The cat sat on the mat," a window size of 2 around "sat" includes ["cat", "on"].
+
+**Purpose**: Windows capture the local context around each word, encoding relationships that influence semantic meaning.
+
+---
+
+## How Windows Affect Word Embeddings
+
+### Window Size Implications:
+
+- **Small Windows** (e.g., 2-3 words): Capture *functional similarity*, such as words with similar grammatical roles (e.g., verbs near "run").
+- **Large Windows** (e.g., 10+ words): Capture **topical similarity**, meaning words related to the same theme or subject.
+**Key Insight**: Window size influences the type of relationship captured by embeddings, from grammatical to semantic.
+
+---
+
+## Creating Custom Embeddings – Window-Based Context
+
+### How It Works:
+
+- For each word in a text corpus, the model looks within a defined window to learn which words commonly co-occur.
+- Word pairs found within these windows influence the final vector representation of each word.
+
+### Why This Matters:
+
+**Windows help embeddings differentiate between words** with different contexts or meanings (e.g., "bank" in finance vs. nature).
+
+---
+
+## Word Co-Occurrence – Context in Action
+
+### Pointwise Mutual Information (PMI):
+
+- A statistical measure used to calculate how often two words appear together within a window.
+- Higher PMI values indicate strong associations (e.g., "coffee" and "cup").
+
+**Result**: Words with high co-occurrence within windows gain similar vector representations, capturing context-specific meaning.
+
+---
+
+Pre-Trained Word Embeddings – An Overview
+What Are They?
+
+Pre-trained embeddings are word vectors learned from large, publicly available corpora like Wikipedia or news articles.
+Examples include GloVe, Word2Vec, and FastText.
+
+```{r eval = F}
+library(word2vec)
+model <- word2vec(documents)
+embedding <- predict(model, c("political", "fluctuations"), type = "embedding")
+lookslike <- predict(model, c("bus", "toilet"), type = "nearest", top_n = 5)
+```
 
 
 ---
