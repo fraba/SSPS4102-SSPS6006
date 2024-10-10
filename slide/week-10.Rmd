@@ -116,7 +116,7 @@ Text data is vital across fields—from healthcare to digital humanities and soc
 
 ### Text Preprocessing (this week)
 
-*This week* we explore typical preprocessing steps from scratch, illustrating the use of the "textrecipes" package to prepare text data within a modelling pipeline, making language data ready for computation (which we will cover *next week*).
+*This week* we explore typical preprocessing steps from scratch making language data ready for computation and modelling (which we will cover *next week*).
 
 
 ---
@@ -218,7 +218,6 @@ Different languages vary in their use of morphemes, impacting model performance 
 
 ```{r}
 library(tidytext)
-library(dplyr)
 library(SnowballC)
 
 # Sample text
@@ -236,7 +235,7 @@ text_df
 ```{r}
 # Tokenize text into individual words
 tokens <- text_df |>
-  unnest_tokens(word, text)
+  tidytext::unnest_tokens(word, text)
 tokens
 ```
 
@@ -247,7 +246,7 @@ tokens
 ```{r}
 # Apply stemming to reduce words to their root form
 tokens |>
-  mutate(stem = wordStem(word))
+  mutate(stem = SnowballC::wordStem(word))
 ```
 
 ---
@@ -355,7 +354,6 @@ library(gutenbergr)
 frankenstein <- 
   gutenberg_works(title == "Frankenstein; Or, The Modern Prometheus") |>
   gutenberg_download()
-frankenstein$text
 ```
 
 ---
@@ -582,21 +580,33 @@ class: inverse, center, middle
 
 .small[
 
-- Premade lists like SMART, Snowball, and ISO contain common stop words.
+- Premade lists like SMART, Snowball, and onix contain common stop words.
 - Different lists have varying lengths and words based on their intended use.
 
 ```{r eval = F}
-install.packages('stopwords')
+data(stop_words) # load the data from the tidytext package
 ```
 
-You can access "standard" lists of Stop Words installing the package *stopwords*.
+You can access "standard" lists of Stop Words using the `stop_words` data frame.
+
+.pull-left[
 
 ```{r}
-library(stopwords)
-length(stopwords(source = "smart"))      # SMART list
-length(stopwords(source = "snowball"))   # Snowball list
-length(stopwords(source = "stopwords-iso"))  # ISO list
+head(stop_words)
 ```
+
+]
+
+.pull-right[
+
+```{r}
+table(stop_words$lexicon)
+```
+
+]
+
+
+
 
 ]
 
@@ -612,10 +622,19 @@ text_data <- data.frame(text = "The quick brown fox jumps over the lazy dog")
 text_data <- text_data |> tidytext::unnest_tokens(word, text)
 
 # Remove stop words using Snowball list
-clean_text <- text_data |>
-  dplyr::filter(!(word %in% stopwords(source = "snowball"))) 
+clean_text <- 
+  text_data |>
+  dplyr::anti_join(stop_words) # return all rows from x without a match in y.
 print(clean_text)
 ```
+
+
+---
+
+## More on joining tables with dplyr
+
+.center[<img src = "https://tavareshugo.github.io/r-intro-tidyverse-gapminder/fig/07-dplyr_joins.svg"></img>]
+
 
 ---
 
@@ -634,8 +653,8 @@ Premade lists may not fit your dataset's unique requirements.
 
 ```{r}
 # Custom stop words for real estate
-custom_stopwords <- c("fox", "dog")
-filtered_data <- text_data %>% filter(!(word %in% custom_stopwords))
+custom_stopwords <- data.frame(word = "fox", "dog") # col name is important!
+filtered_data <- text_data |> dplyr::anti_join(custom_stopwords)
 print(filtered_data)
 ```
 
@@ -697,7 +716,7 @@ frankenstein_tokens <-
   tidytext::unnest_tokens(output = word, input = text, 
                           token = "words", to_lower = TRUE) |>
   # Removing stop words
-  dplyr::filter(!word %in% stopwords::stopwords(source = "snowball")) |>
+  dplyr::anti_join(stop_words) |>
   # Stemming
   dplyr::mutate(stemmed_word = SnowballC::wordStem(word))
 
@@ -731,6 +750,378 @@ head(frankenstein_tokens)
 - Converts words to their dictionary form (lemma) based on context.
 - Requires linguistic knowledge (e.g., part of speech) for accuracy.
 - **Example**: "running" -> "run"
+
+---
+class: inverse, center, middle
+
+# Sentiment analysis
+
+---
+
+We already have the tools to conduct some simple sentiment analysis. 
+
+## Sentiment analysis
+
+### What is Sentiment Analysis?
+
+- A technique to determine the emotional tone (e.g., positive, negative, neutral) of text data.
+- Useful in understanding public opinion, customer feedback, social media posts, etc.
+
+.content-box-yellow[
+Sentiment analysis is about associating the words of a document with a **dictionary** where words are described in terms of sentiments, either on a continuous scale (from negative to positive) or with categories.
+]
+
+---
+
+## Types of dictionaries for sentiment analysis 
+
+.small[
+
+Let's downland four dictionaries available with the tidytext package
+
+```{r}
+sent_bing <- tidytext::get_sentiments(lexicon = "bing")
+sent_afinn <- tidytext::get_sentiments(lexicon = "afinn")
+sent_loughran <- tidytext::get_sentiments(lexicon = "loughran")
+sent_nrc <- tidytext::get_sentiments(lexicon = "nrc")
+```
+
+```{r}
+nrow(sent_bing)
+nrow(sent_afinn)
+nrow(sent_loughran)
+nrow(sent_nrc)
+```
+
+]
+---
+
+```{r}
+sent_bing %>%
+  dplyr::sample_n(15)
+```
+
+---
+
+```{r}
+sent_afinn %>%
+  dplyr::sample_n(15)
+```
+
+---
+
+```{r}
+sent_loughran %>%
+  dplyr::sample_n(15)
+```
+
+---
+
+```{r}
+sent_nrc %>%
+  dplyr::sample_n(15)
+```
+
+---
+
+## Let's compare the sentiment in the 2016 US presidential debate
+
+Let's load the data first...
+
+```{r}
+load("../data/debate_transcripts.rda")
+```
+
+```{r}
+head(debate_transcripts)
+```
+
+---
+
+## Donald Trump sentiment in 2016 (AFINN)
+
+```{r}
+trump_2016_afinn <- 
+  debate_transcripts |>
+  dplyr::filter(speaker == "Donald Trump", election_year == 2016) |>
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::anti_join(stop_words) |>
+  # Add sentiment
+  dplyr::inner_join(sent_afinn)
+trump_2016_afinn
+```
+
+---
+
+## Hillary Clinton sentiment in 2016 (AFINN)
+
+```{r}
+clinton_2016_afinn <- 
+  debate_transcripts |>
+  dplyr::filter(speaker == "Hillary Clinton", election_year == 2016) |>
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::anti_join(stop_words) |>
+  # Add sentiment
+  dplyr::inner_join(sent_afinn)
+clinton_2016_afinn
+```
+
+---
+
+## Who's more using more negative terms?
+
+```{r}
+median(trump_2016_afinn$value)
+mean(trump_2016_afinn$value)
+```
+
+```{r}
+median(clinton_2016_afinn$value)
+mean(clinton_2016_afinn$value)
+```
+
+---
+
+## Donald Trump sentiment in 2016 (NRC)
+
+```{r}
+trump_2016_nrc <- 
+  debate_transcripts |>
+  dplyr::filter(speaker == "Donald Trump", election_year == 2016) |>
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::anti_join(stop_words) |>
+  # Add sentiment
+  dplyr::inner_join(sent_nrc)
+trump_2016_nrc
+```
+
+---
+
+## Hillary Clinton sentiment in 2016 (NRC)
+
+```{r}
+clinton_2016_nrc <- 
+  debate_transcripts |>
+  dplyr::filter(speaker == "Hillary Clinton", election_year == 2016) |>
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::anti_join(stop_words) |>
+  # Add sentiment
+  dplyr::inner_join(sent_nrc)
+clinton_2016_nrc
+```
+
+---
+
+.pull-left[
+
+```{r out.width = "100%"}
+trump_2016_nrc |>
+  ggplot(aes(x = sentiment)) +
+  geom_bar() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+]
+
+.pull-right[
+
+```{r out.width = "100%"}
+clinton_2016_nrc |>
+  ggplot(aes(x = sentiment)) +
+  geom_bar() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+]
+
+
+
+---
+class: inverse, center, middle
+
+# The Document-Frequency Matrix
+
+---
+
+## The Document-Frequency Matrix
+
+Let's say you have six *documents* you want to analyse. These six documents constitute your **collection** (a.k.a. **corpus**).
+
+```{r}
+documents <- c(
+  "Political parties influence policy decisions",
+  "Elections determine the political landscape",
+  "Governments implement policies for public welfare",
+  "Economic growth depends on consumer spending",
+  "Inflation affects purchasing power in the economy",
+  "Fiscal policy aims to stabilize economic fluctuations"
+)
+```
+
+--
+
+- **Problem**: you must **quantify** these documents **within the same space** so that you can analyse them together.
+
+- **Solution**: You can **count the frequency of each word** in each document (and create a document-frequency matrix, or DFM)!
+
+---
+
+## The Document-Frequency Matrix (DFM) in R
+
+Step 1. Our documents into a tidy data frame
+
+```{r}
+text_data <- 
+  data.frame(doc_id = 1:6, text = documents) # Our six documents are now in a df
+```
+
+Step 2. Let's count the **frequency of each word in each document**
+
+```{r}
+my_word_frequency <- 
+  text_data %>%
+  tidytext::unnest_tokens(word, text) |> # 1. Tokenise the documents
+  dplyr::anti_join(stop_words) |> # 2. Remove Stop Words
+  dplyr::count(doc_id, word)
+head(my_word_frequency)
+```
+
+---
+
+Step 2-b Let's count the **frequency of each word in Trump and Clinton**
+
+```{r}
+trump_clinton_2016_freq <-
+  debate_transcripts |>
+  dplyr::filter(speaker %in% c("Donald Trump",
+                               "Hillary Clinton"), 
+                election_year == 2016) |>
+  tidytext::unnest_tokens(output = word, input = text, 
+                          token = "words", to_lower = TRUE) |>
+  # Removing stop words
+  dplyr::anti_join(stop_words) |>
+  dplyr::count(speaker, word)
+head(trump_clinton_2016_freq)
+```
+
+---
+
+```{r out.width = "70%", fig.width=4, fig.width=6}
+trump_clinton_2016_freq |>
+  group_by(speaker) |>
+  slice_max(n, n = 15) |>
+  ungroup() |>
+  ggplot(aes(n, fct_reorder(word, n), fill = speaker)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~speaker, ncol = 2, scales = "free") +
+  labs(x = "frequency", y = NULL)
+```
+
+
+
+---
+
+Step 3. Let's create the document-term matrix
+
+.small[
+
+```{r}
+my_dfm <- 
+  my_word_frequency |>
+  # This requries install.packages('quanteda')
+  tidytext::cast_dfm(document = doc_id, # Column identifying the document
+                     term = word, # Column identifying the term
+                     value = n) # Column identifying the frequency value
+print(my_dfm)
+```
+
+DFM is commonly used but also inefficient because **sparse** (it's mostly zeros!).
+
+]
+
+---
+
+## Term Frequency-Inverse Document Frequency
+
+So far we have created a document-frequency matrix using the simple frequency of words in a document. If a word (or term) appears 4 times in a document, the reported value will be 4. 
+
+Yet it is probably possible to do better than that especially if we want to identify and weight up words that are more important to set documents apart.
+
+- Think about words that only appears in one or two documents, and non in the rest of the corpus.
+
+**Definition**: TF-IDF stands for .content-box-yellow[Term Frequency-Inverse Document Frequency], a statistical measure used to evaluate the importance of a word in a document relative to a collection (corpus) of documents.
+
+**Purpose**: Highlights words that are unique or distinctive to specific documents while down-weighting common words (e.g., "the," "and").
+
+---
+
+## Understanding Term Frequency (TF) and Inverse Document Frequency (IDF)
+
+- **Term Frequency (TF)**: Measures how often a word appears in a document.
+
+$$TF = \frac{\text{Total terms in document}}{Number of times term appears in document}$$
+
+- **Inverse Document Frequency (IDF)**: Reduces the weight of terms that frequently appear across many documents.
+
+$$IDF = log \left( \frac{\text{Total number of documents}}{\text{Number of documents containing term}} \right) $$
+
+ 
+---
+
+## Calculating TF-IDF
+
+$$TF-IDF=TF\timesIDF$$
+
+### Interpretation:
+
+- **High TF-IDF scores**: Words that are unique to a particular document and carry more meaning within that context.
+- **Low TF-IDF scores**: Common words across the corpus, often less meaningful for distinguishing documents.
+
+### Example:
+
+Words like "algorithm" in a tech-focused document corpus will have higher TF-IDF scores than words like "the" or "is."
+
+---
+
+## TF-IDF in R
+
+To calculate TF-IDF you can use `bind_tf_idf()` from the tidytext package
+
+```{r}
+my_word_tfidf <- 
+  text_data |>
+  tidytext::unnest_tokens(word, text) |> # 1. Tokenise the documents
+  dplyr::filter(!word %in% stopwords::stopwords()) |> # 2. Remove Stop Words
+  dplyr::count(doc_id, word) |> # 3. Count the frequency
+  tidytext::bind_tf_idf(word, doc_id, n) # 4. Calculate and Bind TF-IDF column
+head(my_word_tfidf)
+```
+
+---
+
+You can then create your document-term matrix with the same function seen above (`tidytext::cast_dfm()`).
+
+```{r}
+my_word_tfidf |>
+    tidytext::cast_dfm(document = doc_id, # Column identifying the document
+                     term = word, # Column identifying the term
+                     value = tf_idf) # Column identifying the frequency value
+```
+
+---
+
+- **Problem**: Sparse matrices are memory-intensive and unsuitable for capturing context. Instead...
+- **Solution**: Word embeddings capture semantics by learning word relationships (more efficiently than DFM).
+
+> "Modern word embeddings are based on a statistical approach to modeling language, rather than a linguistics or rules-based approach."
 
 ---
 class: inverse, center, middle
@@ -811,83 +1202,9 @@ In data analytics, especially with machine learning algorithms, we need numerica
 
 > "You shall know a word by the company it keeps." — John Rupert Firth
 
-## But whyy do need word embeddings?
+## But why do need word embeddings?
 
 Traditional text representations are sparse and high-dimensional. Word embeddings provide a dense, low-dimensional alternative that captures semantic similarity.
-
----
-
-But let's first start from a different, alternative data structure to numerically represent your documents...
-
-## The Document-Frequency Matrix
-
-Let's say you have six *documents* you want to analyse. These six documents constitute your **collection** (a.k.a. **corpus**).
-
-```{r}
-documents <- c(
-  "Political parties influence policy decisions",
-  "Elections determine the political landscape",
-  "Governments implement policies for public welfare",
-  "Economic growth depends on consumer spending",
-  "Inflation affects purchasing power in the economy",
-  "Fiscal policy aims to stabilize economic fluctuations"
-)
-```
-
---
-
-- **Problem**: you must **quantify** these documents **within the same space** so that you can analyse them together.
-
-- **Solution**: You can **count the frequency of each word** in each document (and create a document-frequency matrix, or DFM)!
-
----
-
-## The Document-Frequency Matrix (DFM) in R
-
-Step 1. Our documents into a tidy data frame
-
-```{r}
-text_data <- 
-  data.frame(doc_id = 1:6, text = documents) # Our six documents are now in a df
-```
-
-Step 2. Let's count the **frequency of each word in each document**
-
-```{r}
-my_word_frequency <- 
-  text_data %>%
-  tidytext::unnest_tokens(word, text) |> # 1. Tokenise the documents
-  dplyr::filter(!word %in% stopwords::stopwords()) |> # 2. Remove Stop Words
-  dplyr::count(doc_id, word)
-head(my_word_frequency)
-```
-
----
-
-Step 3. Let's create the document-term matrix
-
-.small[
-
-```{r}
-my_dfm <- 
-  my_word_frequency |>
-  # This requries install.packages('quanteda')
-  tidytext::cast_dfm(document = doc_id, # Column identifying the document
-                     term = word, # Column identifying the term
-                     value = n) # Column identifying the frequency value
-print(my_dfm)
-```
-
-DFM is commonly used but also inefficient because **sparse** (it's mostly zeros!).
-
-]
-
----
-
-- **Problem**: Sparse matrices are memory-intensive and unsuitable for capturing context. Instead...
-- **Solution**: Word embeddings capture semantics by learning word relationships (more efficiently than DFM).
-
-> "Modern word embeddings are based on a statistical approach to modeling language, rather than a linguistics or rules-based approach."
 
 ---
 
@@ -947,18 +1264,27 @@ Process: Word embeddings are learned by analysing the co-occurrence of words in 
 
 ---
 
-Pre-Trained Word Embeddings – An Overview
-What Are They?
+## Pre-Trained Word Embeddings – An Overview
 
-Pre-trained embeddings are word vectors learned from large, publicly available corpora like Wikipedia or news articles.
-Examples include GloVe, Word2Vec, and FastText.
+### What Are They?
 
-```{r eval = F}
-library(word2vec)
-model <- word2vec(documents)
-embedding <- predict(model, c("political", "fluctuations"), type = "embedding")
-lookslike <- predict(model, c("bus", "toilet"), type = "nearest", top_n = 5)
-```
+- Pre-trained embeddings are word vectors learned from large, publicly available corpora like Wikipedia or news articles.
+
+- Examples include GloVe, Word2Vec, and FastText.
+
+---
+
+## Use Pre-Trained Word Embeddings in R
+
+Refer to the text book for more details, but note that Pre-Trained models can be very large (GB large).
+
+For example, 
+
+- the `embedding_glove6b()` function of the textdata package will download a 6 billion tokens model (size: 822.2 MB)
+
+- the `embedding_glove840b()` function will download a 840 billion token models 4.03 GB
+
+Once downloaded, you can use the vectors for the words of your corpus for your analysis (instead of calculating these vectors yourself)
 
 
 ---
