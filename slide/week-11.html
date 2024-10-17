@@ -6,12 +6,12 @@
     <meta name="author" content="Francesco Bailo" />
     <script src="week-11_files/header-attrs/header-attrs.js"></script>
     <link href="week-11_files/remark-css/default.css" rel="stylesheet" />
+    <link href="week-11_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-11_files/countdown/countdown.js"></script>
     <script src="week-11_files/htmlwidgets/htmlwidgets.js"></script>
     <script src="week-11_files/viz/viz.js"></script>
     <link href="week-11_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
     <script src="week-11_files/grViz-binding/grViz.js"></script>
-    <link href="week-11_files/countdown/countdown.css" rel="stylesheet" />
-    <script src="week-11_files/countdown/countdown.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         TeX: { equationNumbers: { autoNumber: "AMS" } },
@@ -68,6 +68,16 @@ pre code {
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
 ---
+class: inverse, center, middle
+
+# Please take the anonymous Week 11 Student feedback survey on Canvas!
+
+<div class="countdown" id="timer_b75d7c49" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
 
 ## Recap from last week
 
@@ -104,8 +114,8 @@ class: inverse, center, middle
 
 ## A machine learning pipline
 
-<div id="htmlwidget-32176fac03096a4dee05" style="width:100%;height:500px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-32176fac03096a4dee05">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-763449a5b8966efd910e" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-763449a5b8966efd910e">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -230,7 +240,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-6-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-7-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -247,7 +257,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-7-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-8-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -264,7 +274,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-8-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-9-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 .center[(And this is where the boomers come from!)]
 
@@ -745,7 +755,7 @@ ggplot(linear_predictions) +
   lims(x = c(-63,63), y = c(-63,63))
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-30-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-31-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, center, middle
@@ -788,7 +798,7 @@ debate_transcripts |&gt;
   geom_col() + labs(x = "year", y = "Number of speeches per year")
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-32-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-33-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -980,7 +990,7 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 
 ## Can we do better? 
 
-- Machine learning is about fine-tuning your workflow to improve the model.
+- Machine learning is all about fine-tuning your workflow to improve the model.
 
 - That's why is important to fine tune it on the train set!
 
@@ -1228,7 +1238,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_ad53be96" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_affc2168" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1238,7 +1248,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review
 
-<div class="countdown" id="timer_91a5102d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_8694b523" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1257,7 +1267,7 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# See you next week for the second week on Text Analysis!
+# See you next week for Network and Spatial Data!
 
 
     </textarea>

@@ -63,6 +63,17 @@ ggplot2::theme_set(theme_bw())
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
 ---
+class: inverse, center, middle
+
+# Please take the anonymous Week 11 Student feedback survey on Canvas!
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 5, seconds = 00)
+```
+
+---
 
 ## Recap from last week
 
