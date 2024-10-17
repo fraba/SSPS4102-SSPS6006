@@ -72,7 +72,7 @@ class: inverse, center, middle
 
 # Please take the anonymous Week 11 Student feedback survey on Canvas!
 
-<div class="countdown" id="timer_b75d7c49" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_52f5fd32" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -92,15 +92,54 @@ class: inverse, center, middle
 ## Today's class
 
 - tidymodels for machine learning
-- Regression
-- Classification
+- Regression with non-text data
+- Classification with non-text data
+- Regression with text data
+- Classification with text data
 
+---
+
+## Plan for today
+
+| Time        | Content                                |
+|-------------|----------------------------------------|
+| 11:00-11:10 | Week 11 Student feedback survey        |
+| 11:10-12:00 | A3 Workshop                            |
+| 12:00-12:20 | Tidymodels for machine learning        |
+| 12:20-12:40 | Logistic regression with non-text data |
+| 12:40-12:50 | Linear regression with non-text data   |
+| 12:50-13:00 | Individual quiz/tutorial Part 1        |
+| 13:00-13:20 | Linear regression with text data       |
+| 13:20-13:40 | Logistic regression with text data     |
+| 13:40-14:00 | Individual quiz/tutorial Part 2        |
 
 ---
 
 class: inverse, center, middle
 
-# tidymodels for machine learning
+# Week 11 Student feedback survey (from Canvas)
+
+<div class="countdown" id="timer_54b66593" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+<div class="countdown" id="timer_fcd27769" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+
+---
+class: inverse, center, middle
+
+# Tidymodels for machine learning
 
 ---
 
@@ -114,8 +153,8 @@ class: inverse, center, middle
 
 ## A machine learning pipline
 
-<div id="htmlwidget-763449a5b8966efd910e" style="width:100%;height:500px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-763449a5b8966efd910e">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f4b6e2b979650698b129" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f4b6e2b979650698b129">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -240,7 +279,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-7-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-9-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -257,7 +296,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-8-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-10-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -274,7 +313,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-9-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-11-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 .center[(And this is where the boomers come from!)]
 
@@ -291,9 +330,9 @@ Now it is time to specify the model. Note that we are not using any data at this
 
 ``` r
 logistic_spec &lt;- 
-  logistic_reg() |&gt;
-  set_engine("glm") |&gt;
-  set_mode("classification")
+* logistic_reg() |&gt;
+* set_engine("glm") |&gt;
+* set_mode("classification")
 ```
 
 ---
@@ -305,7 +344,7 @@ The recipe is mainly our formula and the data, both in the format we should alre
 
 ``` r
 logistic_recipe &lt;- 
-  recipe(voted ~ message + birth, data = voting_train)
+* recipe(voted ~ message + birth, data = voting_train)
 ```
 
 (Note additional steps, such as normalisation and the creation of dummy variables are possible at this stage)
@@ -320,9 +359,9 @@ We add our .content-box-yellow[**Specification**] and .content-box-yellow[**Reci
 
 ``` r
 logistic_workflow &lt;- 
-  workflow() |&gt;
-  add_model(logistic_spec) |&gt;
-  add_recipe(logistic_recipe)
+* workflow() |&gt;
+* add_model(logistic_spec) |&gt;
+* add_recipe(logistic_recipe)
 ```
 
 ## 6. Train the Model
@@ -332,8 +371,8 @@ And then we train our model (with the training data)
 
 ``` r
 logistic_fit &lt;- 
-  logistic_workflow |&gt;
-  fit(data = voting_train)
+* logistic_workflow |&gt;
+* fit(data = voting_train)
 ```
 
 ---
@@ -755,7 +794,18 @@ ggplot(linear_predictions) +
   lims(x = c(-63,63), y = c(-63,63))
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-31-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-33-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part I (up to "R2 and RMSE")
+
+<div class="countdown" id="timer_292629aa" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
 
 ---
 class: inverse, center, middle
@@ -798,7 +848,7 @@ debate_transcripts |&gt;
   geom_col() + labs(x = "year", y = "Number of speeches per year")
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-33-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-36-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -860,7 +910,7 @@ debate_recipe &lt;-
   recipe(election_year ~ text, data = debate_train) |&gt; 
   step_tokenize(text) |&gt;
   step_tokenfilter(text, max_tokens = 1000) |&gt;
-  step_tfidf(text) |&gt;
+  step_tf(text) |&gt;
   step_normalize(all_predictors())
 ```
 
@@ -900,18 +950,18 @@ tidy(linear_fit) |&gt;
 
 ```
 ## # A tibble: 1,001 × 5
-##    term                     estimate std.error statistic   p.value
-##    &lt;chr&gt;                       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)                 2012.     0.283  7119.    5.99e-163
-##  2 tfidf_text_congresswoman     431.   763.        0.566 5.74e-  1
-##  3 tfidf_text_commander         426.   455.        0.936 3.53e-  1
-##  4 tfidf_text_black             282.   351.        0.804 4.25e-  1
-##  5 tfidf_text_income            274.   379.        0.722 4.74e-  1
-##  6 tfidf_text_affairs           258.   292.        0.885 3.80e-  1
-##  7 tfidf_text_east              251.   270.        0.930 3.57e-  1
-##  8 tfidf_text_bin               192.   251.        0.766 4.47e-  1
-##  9 tfidf_text_6                 177.   228.        0.776 4.41e-  1
-## 10 tfidf_text_fence             167.   304.        0.550 5.84e-  1
+##    term                estimate std.error statistic p.value
+##    &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+##  1 tf_text_coal         1.22e14   7.90e13      1.54  0.130 
+##  2 tf_text_land         9.66e13   5.69e13      1.70  0.0964
+##  3 tf_text_aisle        9.30e13   5.10e13      1.82  0.0743
+##  4 tf_text_child        9.15e13   5.00e13      1.83  0.0733
+##  5 tf_text_doesnt       8.49e13   5.62e13      1.51  0.137 
+##  6 tf_text_information  8.31e13   4.91e13      1.69  0.0969
+##  7 tf_text_ability      8.28e13   5.34e13      1.55  0.128 
+##  8 tf_text_class        8.07e13   6.89e13      1.17  0.247 
+##  9 tf_text_met          7.26e13   6.14e13      1.18  0.243 
+## 10 tf_text_nafta        6.91e13   3.78e13      1.83  0.0734
 ## # ℹ 991 more rows
 ```
 
@@ -928,18 +978,18 @@ tidy(linear_fit) |&gt;
 
 ```
 ## # A tibble: 1,001 × 5
-##    term                estimate std.error statistic p.value
-##    &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-##  1 tfidf_text_bachmann    -435.      770.    -0.566   0.574
-##  2 tfidf_text_billion     -349.      372.    -0.938   0.352
-##  3 tfidf_text_higher      -305.      425.    -0.717   0.476
-##  4 tfidf_text_middle      -302.      338.    -0.895   0.375
-##  5 tfidf_text_chief       -300.      277.    -1.08    0.283
-##  6 tfidf_text_defense     -265.      334.    -0.792   0.432
-##  7 tfidf_text_havent      -177.      218.    -0.813   0.420
-##  8 tfidf_text_hunting     -161.      233.    -0.694   0.491
-##  9 tfidf_text_hope        -151.      169.    -0.894   0.375
-## 10 tfidf_text_oil         -150.      363.    -0.413   0.681
+##    term                  estimate std.error statistic p.value
+##    &lt;chr&gt;                    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+##  1 tf_text_oil           -2.18e14   1.35e14    -1.62    0.112
+##  2 tf_text_children      -9.69e13   7.17e13    -1.35    0.183
+##  3 tf_text_effort        -9.38e13   6.37e13    -1.47    0.147
+##  4 tf_text_banking       -9.17e13   6.43e13    -1.43    0.160
+##  5 tf_text_union         -9.16e13   8.80e13    -1.04    0.303
+##  6 tf_text_leader        -8.79e13   5.56e13    -1.58    0.121
+##  7 tf_text_massachusetts -8.22e13   6.58e13    -1.25    0.218
+##  8 tf_text_chief         -8.00e13   1.17e14    -0.687   0.496
+##  9 tf_text_cost          -7.54e13   5.93e13    -1.27    0.209
+## 10 tf_text_example       -7.45e13   5.14e13    -1.45    0.154
 ## # ℹ 991 more rows
 ```
 
@@ -968,7 +1018,7 @@ rsq_trad(linear_predictions, truth = election_year, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric  .estimator .estimate
 ##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-## 1 rsq_trad standard       0.966
+## 1 rsq_trad standard       0.342
 ```
 
 ## `\(RMSE\)`
@@ -982,7 +1032,7 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard        2.08
+## 1 rmse    standard        9.14
 ```
 
 
@@ -994,13 +1044,13 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 
 - That's why is important to fine tune it on the train set!
 
-### We could try to remove stopwords and see if the prediction improves!
+### We could try to remove stopwords and us TF-IDF instead of TF and see if the prediction improves!
 
 ---
 
 ## With tidymodels, I don't need to redefine everything.
 
-- I only need to interve on the step that I want to change...
+- I only need to intervene on the step that I want to change...
 
 ---
 
@@ -1011,9 +1061,9 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 debate_recipe &lt;- 
   recipe(election_year ~ text, data = debate_train) |&gt; 
   step_tokenize(text) |&gt;
-  step_stopwords() |&gt; #&lt;&lt; # Removed the stop words
+* step_stopwords() |&gt; # Removed the stop words
   step_tokenfilter(text, max_tokens = 1000) |&gt;
-  step_tf(text) |&gt; #&lt;&lt; # Change tf
+* step_tfidf(text) |&gt; # Change to tfidf
   step_normalize(all_predictors())
 ```
 
@@ -1062,7 +1112,7 @@ rsq_trad(linear_predictions, truth = election_year, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric  .estimator .estimate
 ##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-## 1 rsq_trad standard       0.342
+## 1 rsq_trad standard       0.966
 ```
 
 
@@ -1074,7 +1124,7 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard        9.14
+## 1 rmse    standard        2.08
 ```
 
 
@@ -1231,32 +1281,15 @@ conf_mat(logistic_predictions, truth = speaker, estimate = .pred_class)
 ```
 
 
-
-
 ---
 class: inverse, center, middle
 
-# Individual quiz/tutorial Part 2
+# Individual quiz/tutorial Part II
 
-<div class="countdown" id="timer_affc2168" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_56ec3daa" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
-
----
-class: inverse, center, middle
-
-# Individual on A3 with peer-review
-
-<div class="countdown" id="timer_8694b523" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-
----
-class: inverse, center, middle
-
-# Individual problem set
 
 
 ---

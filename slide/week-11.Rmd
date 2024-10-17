@@ -88,15 +88,55 @@ countdown(minutes = 5, seconds = 00)
 ## Today's class
 
 - tidymodels for machine learning
-- Regression
-- Classification
+- Regression with non-text data
+- Classification with non-text data
+- Regression with text data
+- Classification with text data
 
+---
+
+## Plan for today
+
+| Time        | Content                                |
+|-------------|----------------------------------------|
+| 11:00-11:10 | Week 11 Student feedback survey        |
+| 11:10-12:00 | A3 Workshop                            |
+| 12:00-12:20 | Tidymodels for machine learning        |
+| 12:20-12:40 | Logistic regression with non-text data |
+| 12:40-12:50 | Linear regression with non-text data   |
+| 12:50-13:00 | Individual quiz/tutorial Part 1        |
+| 13:00-13:20 | Linear regression with text data       |
+| 13:20-13:40 | Logistic regression with text data     |
+| 13:40-14:00 | Individual quiz/tutorial Part 2        |
 
 ---
 
 class: inverse, center, middle
 
-# tidymodels for machine learning
+# Week 11 Student feedback survey (from Canvas)
+
+```{r echo = FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 30, seconds = 00)
+```
+
+
+---
+class: inverse, center, middle
+
+# Tidymodels for machine learning
 
 ---
 
@@ -286,9 +326,9 @@ Now it is time to specify the model. Note that we are not using any data at this
 
 ```{r}
 logistic_spec <- 
-  logistic_reg() |>
-  set_engine("glm") |>
-  set_mode("classification")
+  logistic_reg() |> #<<
+  set_engine("glm") |> #<<
+  set_mode("classification") #<<
 ```
 
 ---
@@ -299,7 +339,7 @@ The recipe is mainly our formula and the data, both in the format we should alre
 
 ```{r}
 logistic_recipe <- 
-  recipe(voted ~ message + birth, data = voting_train)
+  recipe(voted ~ message + birth, data = voting_train) #<<
 ```
 
 (Note additional steps, such as normalisation and the creation of dummy variables are possible at this stage)
@@ -313,9 +353,9 @@ We add our .content-box-yellow[**Specification**] and .content-box-yellow[**Reci
 
 ```{r}
 logistic_workflow <- 
-  workflow() |>
-  add_model(logistic_spec) |>
-  add_recipe(logistic_recipe)
+  workflow() |> #<<
+  add_model(logistic_spec) |> #<<
+  add_recipe(logistic_recipe) #<<
 ```
 
 ## 6. Train the Model
@@ -324,8 +364,8 @@ And then we train our model (with the training data)
 
 ```{r}
 logistic_fit <- 
-  logistic_workflow |>
-  fit(data = voting_train)
+  logistic_workflow |> #<<
+  fit(data = voting_train) #<<
 ```
 
 ---
@@ -617,6 +657,18 @@ ggplot(linear_predictions) +
 ---
 class: inverse, center, middle
 
+# Individual quiz/tutorial Part I (up to "R2 and RMSE")
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
+
+
+---
+class: inverse, center, middle
+
 # Text analysis: Regression
 
 ---
@@ -699,7 +751,7 @@ debate_recipe <-
   recipe(election_year ~ text, data = debate_train) |> 
   step_tokenize(text) |>
   step_tokenfilter(text, max_tokens = 1000) |>
-  step_tfidf(text) |>
+  step_tf(text) |>
   step_normalize(all_predictors())
 ```
 
@@ -778,13 +830,13 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 
 - That's why is important to fine tune it on the train set!
 
-### We could try to remove stopwords and see if the prediction improves!
+### We could try to remove stopwords and us TF-IDF instead of TF and see if the prediction improves!
 
 ---
 
 ## With tidymodels, I don't need to redefine everything.
 
-- I only need to interve on the step that I want to change...
+- I only need to intervene on the step that I want to change...
 
 ---
 
@@ -794,9 +846,9 @@ rmse(linear_predictions, truth = election_year, estimate = .pred)
 debate_recipe <- 
   recipe(election_year ~ text, data = debate_train) |> 
   step_tokenize(text) |>
-  step_stopwords() |> #<< # Removed the stop words
+  step_stopwords() |> # Removed the stop words #<< 
   step_tokenfilter(text, max_tokens = 1000) |>
-  step_tf(text) |> #<< # Change tf
+  step_tfidf(text) |> # Change to tfidf #<< 
   step_normalize(all_predictors())
 ```
 
@@ -944,34 +996,16 @@ conf_mat(logistic_predictions, truth = speaker, estimate = .pred_class)
 ```
 
 
-
-
 ---
 class: inverse, center, middle
 
-# Individual quiz/tutorial Part 2
+# Individual quiz/tutorial Part II
 
 ```{r echo = FALSE}
 library(countdown)
 
-countdown(minutes = 5, seconds = 00)
+countdown(minutes = 10, seconds = 00)
 ```
-
----
-class: inverse, center, middle
-
-# Individual on A3 with peer-review
-
-```{r echo = FALSE}
-library(countdown)
-
-countdown(minutes = 30, seconds = 00)
-```
-
----
-class: inverse, center, middle
-
-# Individual problem set
 
 
 ---
