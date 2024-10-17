@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SSPS [4102|6006] Data Analytics[in the Social Sciences|for Social Research]</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Francesco Bailo" />
+    <script src="week-11_files/header-attrs/header-attrs.js"></script>
+    <link href="week-11_files/remark-css/default.css" rel="stylesheet" />
+    <script src="week-11_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="week-11_files/viz/viz.js"></script>
+    <link href="week-11_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="week-11_files/grViz-binding/grViz.js"></script>
+    <link href="week-11_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-11_files/countdown/countdown.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+      });
+    </script>
+    <style>
+    .mjx-mrow a {
+      color: black;
+      pointer-events: none;
+      cursor: default;
+    }
+    </style>
+    <link rel="stylesheet" href="assets/sydney-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="assets/sydney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]
+]
+.subtitle[
+## Week 11</br>Textual Data: Machine Learning Methods
+]
+.author[
+### Francesco Bailo
+]
+.date[
+### Semester 2, 2024 (updated: 2024-10-17)
+]
+
+---
+
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+&lt;style&gt;
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+&lt;/style&gt;
+
+
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+---
+
+## Recap from last week
+
+- Language and Modelling
+- Tokenization, Stop Words &amp; Stemming
+- Sentiment analysis
+- Document-Frequency Matrix
+- Word Embeddings
+
+---
+
+## Today's class
+
+- tidymodels for machine learning
+- Regression
+- Classification
+
+
+---
+
+class: inverse, center, middle
+
+# tidymodels for machine learning
+
+---
+
+## What is machine learning again?
+
+.center[&lt;img src = 'https://i.vas3k.blog/7w1.jpg' width = '100%'&gt;&lt;/img&gt;]
+
+.footnote[Illustration from: https://vas3k.com/blog/machine_learning/]
+
+---
+
+## A machine learning pipline
+
+<div id="htmlwidget-bcc71e1ca8563abb3e77" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-bcc71e1ca8563abb3e77">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+
+---
+
+## What is tidymodels?
+
+&lt;iframe src = 'https://www.tidymodels.org/' width = '100%' height = '450px'&gt;&lt;/iframe&gt;
+
+.footnote[https://www.tidymodels.org/]
+
+---
+## Benefit of tidymodels
+
+- Consistent and modular framework for modelling.
+- Easier to use in a pipeline format.
+- Compatible with a wide range of data preprocessing and validation methods.
+
+.center[&lt;img src = 'https://rviews.rstudio.com/post/2019-06-14-a-gentle-intro-to-tidymodels_files/figure-html/tidymodels.png' width = '100%'&gt;&lt;/img&gt;]
+
+
+---
+
+## Steps in Tidymodels 
+
+1.  Split Data (`initial_split()`)
+2.  Define Model Specification
+3.  Preprocess Data with Recipe (`recipe()`)
+4.  Create Workflow (`workflow()`): 2. Specification + 3. Recipe
+5.  Evaluate Model Performance
+
+
+---
+
+class: inverse, center, middle
+
+# Logistic regression
+
+---
+
+## 1. Loading and preparing the data
+
+
+``` r
+library(tidyverse)
+library(tidymodels)
+voting &lt;- read.csv("../data/voting.csv")
+head(voting)
+```
+
+```
+##   birth message voted
+## 1  1981      no     0
+## 2  1959      no     1
+## 3  1956      no     1
+## 4  1939     yes     1
+## 5  1968      no     0
+## 6  1967      no     0
+```
+
+Let's first recode the `voted` variable to a factor for the classification (no missing values here...)
+
+
+``` r
+voting &lt;- 
+  voting |&gt;
+  dplyr::mutate(voted = 
+                  case_when(voted ==  0 ~ "no", # first case
+                            voted == 1 ~ "yes")) # second case
+```
+
+---
+
+## 2. Splitting the data
+
+
+``` r
+nrow(voting)
+```
+
+```
+## [1] 229444
+```
+
+``` r
+set.seed(2006)
+voting_split &lt;- initial_split(voting, prop = .5)
+```
+
+
+``` r
+voting_train &lt;- training(voting_split)
+nrow(voting_train)
+```
+
+```
+## [1] 114722
+```
+
+``` r
+voting_test &lt;- testing(voting_split)
+nrow(voting_split)
+```
+
+```
+## analysis 
+##   114722
+```
+
+
+---
+
+## Preliminary data analysis (Know Your Data!)
+
+.pull-left[
+
+### Our treatment variable (independent)
+
+
+``` r
+voting_train %&gt;% 
+  ggplot(aes(x = message)) +
+  geom_bar()
+```
+
+&lt;img src="week-11_files/figure-html/unnamed-chunk-6-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+
+.pull-right[
+
+### Our outcome variable (dependent)
+
+
+``` r
+voting_train %&gt;% 
+  ggplot(aes(x = voted)) +
+  geom_bar()
+```
+
+&lt;img src="week-11_files/figure-html/unnamed-chunk-7-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Preliminary data analysis (Know Your Data!)
+
+### Our control variable
+
+
+``` r
+voting_train %&gt;% 
+  ggplot(aes(x = birth)) +
+  geom_bar()
+```
+
+&lt;img src="week-11_files/figure-html/unnamed-chunk-8-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+.center[(And this is where the boomers come from!)]
+
+---
+
+## 3. Define Model Specification
+
+Now it is time to specify the model. Note that we are not using any data at this stage. Indeed, this specification can be used for different datasets.
+
+1. We specify that we want a logistic regression, 
+2. that we use the package ("engine") .content-box-purple[**glm**], which we already know, and finally  
+3. that we want to do a classification (ML is either about .content-box-purple[**regression**] or .content-box-purple[**classification**])
+
+
+``` r
+logistic_spec &lt;- 
+  logistic_reg() |&gt;
+  set_engine("glm") |&gt;
+  set_mode("classification")
+```
+
+---
+
+## 4. Define Model Recipe (including our formula)
+
+The recipe is mainly our formula and the data, both in the format we should already be familiar with
+
+
+``` r
+logistic_recipe &lt;- 
+  recipe(voted ~ message + birth, data = voting_train)
+```
+
+(Note additional steps, such as normalisation and the creation of dummy variables are possible at this stage)
+
+
+---
+
+## 5. Create a Workflow
+
+We add our .content-box-yellow[**Specification**] and .content-box-yellow[**Recipe**]
+
+
+``` r
+logistic_workflow &lt;- 
+  workflow() |&gt;
+  add_model(logistic_spec) |&gt;
+  add_recipe(logistic_recipe)
+```
+
+## 6. Train the Model
+
+And then we train our model (with the training data)
+
+
+``` r
+logistic_fit &lt;- 
+  logistic_workflow |&gt;
+  fit(data = voting_train)
+```
+
+---
+
+## Check the parameters (a.k.a. estimates or coefficients) of the model
+
+... and since this is a logistic regression you can also check the p-value.
+
+To extract these values we can use `tidy()`.
+
+
+``` r
+tidy(logistic_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  36.8     0.882         41.7 0        
+## 2 messageyes    0.367   0.0167        21.9 1.18e-106
+## 3 birth        -0.0192  0.000451     -42.7 0
+```
+
+But with ML with are also interested in the **prediction**!
+
+---
+
+## 7. Evaluate Model Performance 
+
+... using the .content-box-yellow[**test**] data 
+
+
+``` r
+logistic_predictions &lt;- 
+  logistic_fit |&gt;
+  predict(voting_test, type = "prob") # This will return the probabilities
+head(logistic_predictions)
+```
+
+```
+## # A tibble: 6 × 2
+##   .pred_no .pred_yes
+##      &lt;dbl&gt;     &lt;dbl&gt;
+## 1    0.643     0.357
+## 2    0.755     0.245
+## 3    0.748     0.252
+## 4    0.726     0.274
+## 5    0.762     0.238
+## 6    0.802     0.198
+```
+
+.content-box-green[
+
+With a .5 threshold I will predict a 'no' to `voted` if the value of `.pred_no` is &gt;0.5.
+
+]
+
+
+---
+
+## 7. Evaluate Model Performance 
+
+And without `type = "prob"` we get the prediction (with a  0.5 decision treshold)
+
+
+``` r
+logistic_predictions &lt;- 
+  logistic_fit |&gt;
+  predict(voting_test) # This will return the prediction
+head(logistic_predictions)
+```
+
+```
+## # A tibble: 6 × 1
+##   .pred_class
+##   &lt;fct&gt;      
+## 1 no         
+## 2 no         
+## 3 no         
+## 4 no         
+## 5 no         
+## 6 no
+```
+
+
+---
+
+## 7. Evaluate Model Performance
+
+But how good is my model in predicting the actual observed value? 
+
+I can bind the columns from the original test data and compare the actual observed value (`voted`) with the prediction.
+
+
+``` r
+logistic_predictions &lt;- 
+  logistic_predictions |&gt;
+  dplyr::bind_cols(voting_test)
+head(logistic_predictions)
+```
+
+```
+## # A tibble: 6 × 4
+##   .pred_class birth message voted
+##   &lt;fct&gt;       &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;
+## 1 no           1941 no      yes  
+## 2 no           1969 no      no   
+## 3 no           1967 no      yes  
+## 4 no           1961 no      yes  
+## 5 no           1971 no      yes  
+## 6 no           1983 no      no
+```
+
+---
+
+## 7. Evaluate Model Performance
+
+Let's check how many predictions are right with
+
+Correct predictions are 
+
+
+``` r
+sum(logistic_predictions$.pred_class == logistic_predictions$voted) /
+  nrow(logistic_predictions)
+```
+
+```
+## [1] 0.6873834
+```
+
+
+And finally here is our confusion matrix (which identify a big problem!)
+
+
+``` r
+prop.table(table(logistic_predictions$.pred_class,
+                 logistic_predictions$voted),
+           margin = 1)
+```
+
+```
+##      
+##              no       yes
+##   no  0.6897596 0.3102404
+##   yes 0.6313310 0.3686690
+```
+
+---
+
+## 7. Evaluate Model Performance
+
+In conclusion, only knowing `message` and `birth` (age) we can predict if someone will vote or not with an accuracy of 69%. 
+
+- Yes, the model will do somehow a good job in predicting the NOs but will do a terrible job in predicting the YESs.
+
+---
+
+# Linear regression
+
+---
+
+## Let's import some data
+
+
+``` r
+midterms &lt;- 
+  read_csv("../data/midterms.csv")
+head(midterms)
+```
+
+```
+## # A tibble: 6 × 6
+##    year president  party approval seat.change rdi.change
+##   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+## 1  1946 Truman     D           33         -55       NA  
+## 2  1950 Truman     D           39         -29        8.2
+## 3  1954 Eisenhower R           61          -4        1  
+## 4  1958 Eisenhower R           57         -47        1.1
+## 5  1962 Kennedy    D           61          -4        5  
+## 6  1966 Johnson    D           44         -47        5.3
+```
+
+
+
+``` r
+linear_spec &lt;- 
+  linear_reg() %&gt;%
+  set_engine("lm")
+
+# Create the workflow and fit the model
+linear_workflow &lt;- workflow() %&gt;%
+                   add_model(linear_spec) %&gt;%
+                   add_formula(outcome ~ .)  # Replace 'outcome' with your target variable
+
+linear_fit &lt;- linear_workflow %&gt;%
+              fit(data = train_data)
+```
+
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 2
+
+<div class="countdown" id="timer_06f975bf" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+<div class="countdown" id="timer_4a374c9b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Individual problem set
+
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week for the second week on Text Analysis!
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="assets/remark-zoom.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

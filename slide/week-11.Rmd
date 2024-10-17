@@ -1,0 +1,481 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 11</br>Textual Data: Machine Learning Methods"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+library(ggrepel)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+---
+
+## Recap from last week
+
+- Language and Modelling
+- Tokenization, Stop Words & Stemming
+- Sentiment analysis
+- Document-Frequency Matrix
+- Word Embeddings
+
+---
+
+## Today's class
+
+- tidymodels for machine learning
+- Regression
+- Classification
+
+
+---
+
+class: inverse, center, middle
+
+# tidymodels for machine learning
+
+---
+
+## What is machine learning again?
+
+.center[<img src = 'https://i.vas3k.blog/7w1.jpg' width = '100%'></img>]
+
+.footnote[Illustration from: https://vas3k.com/blog/machine_learning/]
+
+---
+
+## A machine learning pipline
+
+```{r echo = FALSE, out.width='100%'}
+# Load the DiagrammeR package
+library(DiagrammeR)
+
+DiagrammeR::grViz("digraph {
+  # Define graph properties for a more spaced layout
+  graph [layout = dot, rankdir = TB]
+  
+  # Define nodes with increased font size
+  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]
+  raw_data     [label = 'Raw Data']
+  train_data   [label = 'Training Data']
+  test_data    [label = 'Test Data']
+  
+  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]
+  preprocess_train [label = 'Preprocess\nTraining Data']
+  preprocess_test  [label = 'Preprocess\nTest Data']
+  
+  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]
+  model_spec      [label = 'Model Specification']
+  model_training  [label = 'Model Training']
+  
+  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]
+  trained_model   [label = 'Trained Model']
+  predict         [label = 'Predict on Test Data']
+  evaluate        [label = 'Evaluate Predictions']
+  
+  # Define edges to create space between steps
+  raw_data -> train_data [minlen=2]
+  raw_data -> test_data [minlen=2]
+  
+  train_data -> preprocess_train [minlen=2]
+  preprocess_train -> model_spec [minlen=2]
+  model_spec -> model_training [minlen=2]
+  model_training -> trained_model [minlen=2]
+  
+  test_data -> preprocess_test [minlen=2]
+  preprocess_test -> predict [minlen=2]
+  predict -> evaluate [minlen=2]
+  trained_model -> predict [minlen=2]
+  }",
+  height = 500)
+```
+
+
+---
+
+## What is tidymodels?
+
+<iframe src = 'https://www.tidymodels.org/' width = '100%' height = '450px'></iframe>
+
+.footnote[https://www.tidymodels.org/]
+
+---
+## Benefit of tidymodels
+
+- Consistent and modular framework for modelling.
+- Easier to use in a pipeline format.
+- Compatible with a wide range of data preprocessing and validation methods.
+
+.center[<img src = 'https://rviews.rstudio.com/post/2019-06-14-a-gentle-intro-to-tidymodels_files/figure-html/tidymodels.png' width = '100%'></img>]
+
+
+---
+
+## Steps in Tidymodels 
+
+1.  Split Data (`initial_split()`)
+2.  Define Model Specification
+3.  Preprocess Data with Recipe (`recipe()`)
+4.  Create Workflow (`workflow()`): 2. Specification + 3. Recipe
+5.  Evaluate Model Performance
+
+
+---
+
+class: inverse, center, middle
+
+# Logistic regression
+
+---
+
+## 1. Loading and preparing the data
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+voting <- read.csv("../data/voting.csv")
+head(voting)
+```
+
+Let's first recode the `voted` variable to a factor for the classification (no missing values here...)
+
+```{r}
+voting <- 
+  voting |>
+  dplyr::mutate(voted = 
+                  case_when(voted ==  0 ~ "no", # first case
+                            voted == 1 ~ "yes")) # second case
+```
+
+---
+
+## 2. Splitting the data
+
+```{r}
+nrow(voting)
+
+set.seed(2006)
+voting_split <- initial_split(voting, prop = .5)
+```
+
+```{r}
+voting_train <- training(voting_split)
+nrow(voting_train)
+voting_test <- testing(voting_split)
+nrow(voting_split)
+```
+
+
+---
+
+## Preliminary data analysis (Know Your Data!)
+
+.pull-left[
+
+### Our treatment variable (independent)
+
+```{r out.width = "70%"}
+voting_train %>% 
+  ggplot(aes(x = message)) +
+  geom_bar()
+```
+
+]
+
+
+
+.pull-right[
+
+### Our outcome variable (dependent)
+
+```{r out.width = "70%"}
+voting_train %>% 
+  ggplot(aes(x = voted)) +
+  geom_bar()
+```
+
+]
+
+---
+
+## Preliminary data analysis (Know Your Data!)
+
+### Our control variable
+
+```{r out.width = "70%", fig.width=6, fig.height=3}
+voting_train %>% 
+  ggplot(aes(x = birth)) +
+  geom_bar()
+```
+
+.center[(And this is where the boomers come from!)]
+
+---
+
+## 3. Define Model Specification
+
+Now it is time to specify the model. Note that we are not using any data at this stage. Indeed, this specification can be used for different datasets.
+
+1. We specify that we want a logistic regression, 
+2. that we use the package ("engine") .content-box-purple[**glm**], which we already know, and finally  
+3. that we want to do a classification (ML is either about .content-box-purple[**regression**] or .content-box-purple[**classification**])
+
+```{r}
+logistic_spec <- 
+  logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+```
+
+---
+
+## 4. Define Model Recipe (including our formula)
+
+The recipe is mainly our formula and the data, both in the format we should already be familiar with
+
+```{r}
+logistic_recipe <- 
+  recipe(voted ~ message + birth, data = voting_train)
+```
+
+(Note additional steps, such as normalisation and the creation of dummy variables are possible at this stage)
+
+
+---
+
+## 5. Create a Workflow
+
+We add our .content-box-yellow[**Specification**] and .content-box-yellow[**Recipe**]
+
+```{r}
+logistic_workflow <- 
+  workflow() |>
+  add_model(logistic_spec) |>
+  add_recipe(logistic_recipe)
+```
+
+## 6. Train the Model
+
+And then we train our model (with the training data)
+
+```{r}
+logistic_fit <- 
+  logistic_workflow |>
+  fit(data = voting_train)
+```
+
+---
+
+## Check the parameters (a.k.a. estimates or coefficients) of the model
+
+... and since this is a logistic regression you can also check the p-value.
+
+To extract these values we can use `tidy()`.
+
+```{r}
+tidy(logistic_fit)
+```
+
+But with ML with are also interested in the **prediction**!
+
+---
+
+## 7. Evaluate Model Performance 
+
+... using the .content-box-yellow[**test**] data 
+
+```{r}
+logistic_predictions <- 
+  logistic_fit |>
+  predict(voting_test, type = "prob") # This will return the probabilities
+head(logistic_predictions)
+```
+
+.content-box-green[
+
+With a .5 threshold I will predict a 'no' to `voted` if the value of `.pred_no` is >0.5.
+
+]
+
+
+---
+
+## 7. Evaluate Model Performance 
+
+And without `type = "prob"` we get the prediction (with a  0.5 decision treshold)
+
+```{r}
+logistic_predictions <- 
+  logistic_fit |>
+  predict(voting_test) # This will return the prediction
+head(logistic_predictions)
+```
+
+
+---
+
+## 7. Evaluate Model Performance
+
+But how good is my model in predicting the actual observed value? 
+
+I can bind the columns from the original test data and compare the actual observed value (`voted`) with the prediction.
+
+```{r}
+logistic_predictions <- 
+  logistic_predictions |>
+  dplyr::bind_cols(voting_test)
+head(logistic_predictions)
+```
+
+---
+
+## 7. Evaluate Model Performance
+
+Let's check how many predictions are right with
+
+Correct predictions are 
+
+```{r}
+sum(logistic_predictions$.pred_class == logistic_predictions$voted) /
+  nrow(logistic_predictions)
+```
+
+
+And finally here is our confusion matrix (which identify a big problem!)
+
+```{r}
+prop.table(table(logistic_predictions$.pred_class,
+                 logistic_predictions$voted),
+           margin = 1)
+```
+
+---
+
+## 7. Evaluate Model Performance
+
+In conclusion, only knowing `message` and `birth` (age) we can predict if someone will vote or not with an accuracy of 69%. 
+
+- Yes, the model will do somehow a good job in predicting the NOs but will do a terrible job in predicting the YESs.
+
+---
+
+# Linear regression
+
+---
+
+## Let's import some data
+
+```{r}
+midterms <- 
+  read_csv("../data/midterms.csv")
+head(midterms)
+```
+
+
+```{r eval = F}
+linear_spec <- 
+  linear_reg() %>%
+  set_engine("lm")
+
+# Create the workflow and fit the model
+linear_workflow <- workflow() %>%
+                   add_model(linear_spec) %>%
+                   add_formula(outcome ~ .)  # Replace 'outcome' with your target variable
+
+linear_fit <- linear_workflow %>%
+              fit(data = train_data)
+```
+
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part 2
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 30, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Individual problem set
+
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# See you next week for the second week on Text Analysis!
+
+
