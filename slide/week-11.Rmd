@@ -196,8 +196,8 @@ Let's first recode the `voted` variable to a factor for the classification (no m
 voting <- 
   voting |>
   dplyr::mutate(voted = 
-                  case_when(voted ==  0 ~ "no", # first case
-                            voted == 1 ~ "yes")) # second case
+                  factor(case_when(voted ==  0 ~ "no", # first case
+                                   voted == 1 ~ "yes"))) # second case
 ```
 
 ---
@@ -350,7 +350,6 @@ With a .5 threshold I will predict a 'no' to `voted` if the value of `.pred_no` 
 
 ]
 
-
 ---
 
 ## 7. Evaluate Model Performance 
@@ -384,22 +383,19 @@ head(logistic_predictions)
 
 ## 7. Evaluate Model Performance
 
-Let's check how many predictions are right with
+Let's check how many predictions are right using `accuracy()`
 
-Correct predictions are 
+- Accuracy
 
 ```{r}
-sum(logistic_predictions$.pred_class == logistic_predictions$voted) /
-  nrow(logistic_predictions)
+accuracy(logistic_predictions, truth = voted, estimate = .pred_class)
 ```
 
 
 And finally here is our confusion matrix (which identify a big problem!)
 
 ```{r}
-prop.table(table(logistic_predictions$.pred_class,
-                 logistic_predictions$voted),
-           margin = 1)
+conf_mat(logistic_predictions, truth = voted, estimate = .pred_class)
 ```
 
 ---
@@ -408,36 +404,535 @@ prop.table(table(logistic_predictions$.pred_class,
 
 In conclusion, only knowing `message` and `birth` (age) we can predict if someone will vote or not with an accuracy of 69%. 
 
-- Yes, the model will do somehow a good job in predicting the NOs but will do a terrible job in predicting the YESs.
+> The model will do an OK good job in predicting the NOs but will do a terrible job in predicting the YESs.
 
 ---
+
+class: inverse, center, middle
 
 # Linear regression
 
 ---
 
-## Let's import some data
+### 1. Loading and preparing the data
 
 ```{r}
 midterms <- 
-  read_csv("../data/midterms.csv")
+  read.csv("../data/midterms.csv") |>
+  tidyr::drop_na() #<< # This will drop NAs
 head(midterms)
 ```
 
+### 2. Splitting the data
 
-```{r eval = F}
+```{r}
+set.seed(2006)
+midterms_split <- initial_split(midterms, prop = .5)
+midterms_train <- training(midterms_split)
+nrow(midterms_train)
+midterms_test <- testing(midterms_split)
+nrow(midterms_train)
+```
+
+---
+
+## 3. Define Model Specification
+
+```{r}
 linear_spec <- 
   linear_reg() %>%
   set_engine("lm")
-
-# Create the workflow and fit the model
-linear_workflow <- workflow() %>%
-                   add_model(linear_spec) %>%
-                   add_formula(outcome ~ .)  # Replace 'outcome' with your target variable
-
-linear_fit <- linear_workflow %>%
-              fit(data = train_data)
 ```
+
+---
+
+## 4. Define Model Recipe (including our formula)
+
+```{r}
+linear_recipe <- 
+  recipe(seat.change ~ approval + rdi.change, data = midterms_train)
+```
+
+
+---
+
+## 5. Create a Workflow ...
+
+```{r}
+linear_workflow <- 
+  workflow() |>
+  add_model(linear_spec) |>
+  add_recipe(linear_recipe)
+```
+
+## 6. ... and fit the model
+
+```{r}
+linear_fit <- 
+  linear_workflow |>
+  fit(data = midterms_train)
+```
+
+---
+
+## Check the parameters
+
+```{r}
+tidy(linear_fit)
+```
+
+---
+
+## 7. Evaluate Model Performance... on train data
+
+```{r}
+linear_predictions <- 
+  linear_fit |>
+  predict(midterms_train) |>
+  dplyr::bind_cols(midterms_train)
+head(linear_predictions)
+```
+
+---
+
+## What is $R^2$ again?
+
+- $R^2$, or the **coefficient of determination**, is a statistical metric used to evaluate the performance of a regression model.
+- It indicates the proportion of the variance in the dependent variable that is predictable from the independent variables.
+
+$$R^2 = 1 - \frac{\text{SS}_{\text{res}}}{\text{SS}_{\text{tot}}}$$
+
+where:
+- $\text{SS}_{\text{res}}$: Sum of squared residuals (unexplained variance)
+- $\text{SS}_{\text{tot}}$: Total sum of squares (total variance in the outcome)
+
+---
+
+## Interpretation of $R^2$
+
+- **$R^2 = 1$**: Perfect fit. The model explains all variability in the data.
+- **$R^2 = 0$**: No fit. The model explains none of the variability.
+- **Between 0 and 1**: Partially explains the variance.
+    - For example, $R^2 = 0.75$ implies that 75% of the variability in the outcome is explained by the model.
+
+## Limitations
+- Adding more variables can increase $R^2$, even if they don’t improve the model significantly. Adjusted $R^2$ can help address this issue.
+
+---
+
+## What is the $R^2$ on our fit?
+
+Use the `rsq_trad` function to find it: where `truth`, or the ground truth value is the observed value and `estimate` is your prediction.
+
+```{r}
+rsq_trad(linear_predictions, truth = seat.change, estimate = .pred)
+```
+
+---
+
+## What is RMSE?
+
+- **Root Mean Square Error (RMSE)** is a metric that measures the average magnitude of the errors in predictions made by a regression model.
+
+- It represents the square root of the average of squared differences between predicted and actual values.
+
+$$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}$$
+
+where:
+- $n$: Number of observations
+- $y_i$: Actual value of the outcome for observation $i$
+- $\hat{y}_i$: Predicted value of the outcome for observation $i$
+
+---
+
+## Interpretation
+
+- RMSE is always non-negative, with lower values indicating a better fit.
+- An RMSE of 0 means perfect prediction accuracy.
+- **Units**: RMSE is in the same units as the dependent variable, making it interpretable in the context of the data.
+
+## Limitations
+- RMSE is sensitive to outliers since errors are squared.
+- It doesn’t provide an interpretation for how large or small the error is in relative terms; comparing RMSE across different datasets or contexts may require normalization.
+
+---
+
+## What is RMSE on our fit?
+
+```{r}
+rmse(linear_predictions, truth = seat.change, estimate = .pred)
+```
+
+Use the `rmse` function to find it: where `truth`, or the ground truth value is the observed value and `estimate` is your prediction.
+
+---
+
+## Importance of Evaluation Metrics in Machine Learning
+
+### Why Evaluation Metrics Matter
+
+.small[
+
+- **Assess Model Performance**: Metrics like accuracy, RMSE, and $R^2$ help quantify how well a model predicts outcomes, guiding improvements.
+
+- **Compare Models**: Metrics allow us to objectively compare different models to find the best fit for the problem.
+
+- **Understand Errors**: By analyzing metrics such as precision, recall, or RMSE, we understand where a model may mispredict, enabling targeted refinements.
+
+- **Avoid Overfitting/Underfitting**: Metrics reveal if a model generalizes well to new data, helping avoid models that only perform well on the training set.
+
+- **Select Relevant Metrics**: Choosing the right metric aligns with the specific goals of a task (e.g., accuracy for classification, RMSE for regression), optimizing model impact.
+
+]
+
+---
+
+## 7. Evaluate Model Performance... on test data!
+
+```{r}
+linear_predictions <- 
+  linear_fit |>
+  predict(midterms_test) |>
+  dplyr::bind_cols(midterms_test)
+```
+
+```{r}
+ggplot(linear_predictions) +
+  geom_point(aes(x = seat.change, y = .pred)) +
+  geom_abline() +
+  lims(x = c(-63,63), y = c(-63,63))
+```
+
+---
+class: inverse, center, middle
+
+# Text analysis: Regression
+
+---
+
+- We now turn to using text analysis and machine learning to predict some value based on the features we extract from some text.
+
+## Let's go back to the debate transcripts we used last week
+
+
+---
+
+## 1. Load and prepare data
+
+... Since text analysis is computationally intense we also reduce the size of the data
+
+```{r}
+load("../data/debate_transcripts.rda")
+
+## Let's reduce the data set size
+debate_transcripts <-
+  debate_transcripts |>
+  dplyr::sample_n(1000)
+```
+
+
+---
+
+## Know your data
+
+```{r}
+debate_transcripts |>
+  dplyr::count(election_year) |>
+  ggplot(aes(election_year, n)) + 
+  geom_col() + labs(x = "year", y = "Number of speeches per year")
+```
+
+---
+
+## 2. Splitting the data
+
+```{r}
+debate_split <- initial_split(debate_transcripts)
+
+debate_train <- training(debate_split) 
+nrow(debate_train)
+debate_test <- testing(debate_split)
+nrow(debate_test)
+```
+
+---
+
+## 4. Define Model Specification
+
+... This is exactly as before
+
+```{r}
+linear_spec <- 
+  linear_reg() |>
+  set_engine("lm") |>
+  set_mode("regression")
+```
+
+---
+
+## 4. Define Model Recipe (including our formula)
+
+This part is sligthly different because we extract features from text!
+
+- We use the same text processing steps see last week 
+
+- We use the textrecipes package to do it within the tidymodels framework
+
+- Note that you can combine text features and other features in your model (e.g., date of debate)
+
+```{r}
+# install.packages('textrecipes')
+library(textrecipes)
+
+debate_recipe <- 
+  recipe(election_year ~ text, data = debate_train) |> 
+  step_tokenize(text) |>
+  step_tokenfilter(text, max_tokens = 1000) |>
+  step_tfidf(text) |>
+  step_normalize(all_predictors())
+```
+
+---
+
+## 5. Create a Workflow ...
+
+```{r}
+linear_workflow <- 
+  workflow() |>
+  add_model(linear_spec) |>
+  add_recipe(debate_recipe)
+```
+
+
+## 6. ... and fit the model
+
+```{r}
+linear_fit <- 
+  linear_workflow |>
+  fit(data = debate_train)
+```
+
+---
+
+## Let's Explore the results
+
+### What are the tokens that predict more recent years (remember formula `election_year ~ text`)
+
+```{r}
+tidy(linear_fit) |>
+  dplyr::arrange(-estimate)
+```
+
+---
+
+### And What are the tokens that predict further in the past (remember formula `election_year ~ text`)
+
+```{r}
+## Further in the past
+tidy(linear_fit) |>
+  arrange(estimate)
+```
+
+---
+
+## 7. Evaluate Model Performance... on train data
+
+```{r}
+linear_predictions <- 
+  linear_fit |>
+  predict(debate_train) |>
+  dplyr::bind_cols(debate_train)
+```
+
+---
+
+## $R^2$
+
+```{r}
+rsq_trad(linear_predictions, truth = election_year, estimate = .pred)
+```
+
+## $RMSE$
+
+```{r}
+rmse(linear_predictions, truth = election_year, estimate = .pred)
+```
+
+
+---
+
+## Can we do better? 
+
+- Machine learning is all about fine-tuning your workflow to improve the model.
+
+- That's why is important to fine tune it on the train set!
+
+### We could try to remove stopwords and see if the prediction improves!
+
+---
+
+## With tidymodels, I don't need to redefine everything.
+
+- I only need to interve on the step that I want to change...
+
+---
+
+## 4. Define Model Recipe (including our formula)
+
+```{r}
+debate_recipe <- 
+  recipe(election_year ~ text, data = debate_train) |> 
+  step_tokenize(text) |>
+  step_stopwords() |> #<< # Removed the stop words
+  step_tokenfilter(text, max_tokens = 1000) |>
+  step_tf(text) |> #<< # Change tf
+  step_normalize(all_predictors())
+```
+
+---
+
+## 5. Re-Create a Workflow ...
+
+... with new `debate_recipe`
+
+```{r}
+linear_workflow <- 
+  workflow() |>
+  add_model(linear_spec) |>
+  add_recipe(debate_recipe)
+```
+
+
+## 6. ... and fit the model
+
+```{r}
+linear_fit <- 
+  linear_workflow |>
+  fit(data = debate_train)
+```
+
+---
+
+## 7. Now we compare the new evaluation metrics with the old
+
+```{r}
+linear_predictions <- 
+  linear_fit |>
+  predict(debate_train) |>
+  dplyr::bind_cols(debate_train)
+```
+
+```{r}
+rsq_trad(linear_predictions, truth = election_year, estimate = .pred)
+```
+
+```{r}
+rmse(linear_predictions, truth = election_year, estimate = .pred)
+```
+
+
+
+---
+class: inverse, center, middle
+
+# Text analysis: Classification
+
+---
+
+## 1. Load and prepare data
+
+... We have already loaded the data. Let's only focus on classifying two speakers...
+
+```{r}
+debate_clinton_trump <-
+  debate_transcripts |>
+  dplyr::filter(speaker %in% 
+                  c("Hillary Clinton", "Donald Trump")) |>
+  dplyr::mutate(speaker = factor(speaker))
+```
+
+---
+
+## 2. Splitting the data
+
+```{r}
+debate_split <- initial_split(debate_clinton_trump, prop = 1/2)  
+debate_train <- training(debate_split) 
+nrow(debate_train)
+debate_test <- testing(debate_split)
+nrow(debate_test)
+```
+
+---
+
+## 3. Define Model Specification for text
+
+```{r}
+debate_recipe <- 
+  recipe(speaker ~ text, data = debate_train) %>% 
+  step_tokenize(text) %>% 
+  step_tokenfilter(text, max_tokens = 1000) %>% 
+  step_tfidf(text) %>% 
+  step_normalize(all_predictors())
+```
+
+## 4. Define Model Recipe (including our formula)
+
+```{r}
+logistic_spec <- 
+  logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+```
+
+---
+
+## 5. Create a Workflow ...
+
+```{r}
+logistic_workflow <- 
+  workflow() |>
+  add_model(logistic_spec) |>
+  add_recipe(debate_recipe)
+```
+
+## 6. ... and fit the model
+
+```{r}
+logistic_fit <- 
+  logistic_workflow |>
+  fit(data = debate_train)
+```
+
+---
+
+## Let's explore the results on our test data!
+
+```{r}
+logistic_predictions <- 
+  logistic_fit |>
+  predict(debate_test) |>
+  dplyr::bind_cols(debate_test)
+logistic_predictions
+```
+
+---
+
+## 7. Evaluate the model on test data
+
+- Accuracy
+
+```{r}
+accuracy(logistic_predictions, truth = speaker, estimate = .pred_class)
+```
+
+- And confusion matrix
+
+```{r}
+conf_mat(logistic_predictions, truth = speaker, estimate = .pred_class)
+```
+
+
 
 
 ---
@@ -476,6 +971,6 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-# See you next week for the second week on Text Analysis!
+# See you next week for Network and Spatial Data!
 
 
