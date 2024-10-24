@@ -95,6 +95,13 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ## Plan for today
 
+### Back to the basics
+
+1. Research question: How to write
+2. Data analysis in R for A3
+3. Network analysis
+4. Spatial analysis
+
 ---
 class: inverse, center, middle
 
@@ -172,6 +179,15 @@ class: inverse, center, middle
 3. Describe, Manipulate and Select the data (not necessarily in this order!)
 4. Analyse the data
 5. Present your conclusions!
+
+---
+class: center, middle
+
+# What does determine student evaluation? (Padlet)
+
+https://sydney.padlet.org/francescobailo/what-does-determine-student-evaluation-k1t4byeayqeht9an
+
+
 
 ---
 class: inverse, center, middle
@@ -295,7 +311,7 @@ class: inverse, center, middle
 
 # Week 12 Individual Means Test (In-class) 
 
-<div class="countdown" id="timer_18e07237" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_8b00aa73" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">15</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -311,7 +327,7 @@ class: inverse, center, middle
 
 .center[&lt;img src = 'https://student-surveys.sydney.edu.au/common/images/student-surveys-QR.png' width = '40%'&gt;]
 
-<div class="countdown" id="timer_eb78422b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_75f6c13d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -418,14 +434,14 @@ Source: Newman, 2010, p. 112.
 A second common way to represent and store network data is the edge list. In ad edge list, eacg row of a table is an **edge** between two end point **nodes**. 
 
 
-|country1  |country2    | year| exports|
-|:---------|:-----------|----:|-------:|
-|Syria     |Turkey      | 2000|  545.24|
-|Spain     |Italy       | 2000| 9693.94|
-|Australia |Sri Lanka   | 2000|  163.69|
-|Norway    |France      | 2000| 6466.08|
-|Canada    |New Zealand | 2000|  221.75|
-|Italy     |Bulgaria    | 2000|  548.64|
+|country1                 |country2       | year|  exports|
+|:------------------------|:--------------|----:|--------:|
+|United Kingdom           |Indonesia      | 2000|   557.33|
+|Canada                   |Pakistan       | 2000|    82.63|
+|Estonia                  |Russia         | 2000|    96.71|
+|United Kingdom           |Peru           | 2000|   101.02|
+|United States of America |Croatia        | 2000|   226.69|
+|China                    |United Kingdom | 2000| 16855.54|
 
 Addition columns in the edge list (here `year` and `exports`) represent attributes of the edges. 
 
@@ -491,9 +507,9 @@ florence.g
 ```
 
 ```
-## IGRAPH 2859b8d UN-- 16 20 -- 
+## IGRAPH 38b2054 UN-- 16 20 -- 
 ## + attr: name (v/c)
-## + edges from 2859b8d (vertex names):
+## + edges from 38b2054 (vertex names):
 ##  [1] ACCIAIUOL--MEDICI    ALBIZZI  --GINORI    ALBIZZI  --GUADAGNI 
 ##  [4] ALBIZZI  --MEDICI    BARBADORI--CASTELLAN BARBADORI--MEDICI   
 ##  [7] BISCHERI --GUADAGNI  BISCHERI --PERUZZI   BISCHERI --STROZZI  
@@ -505,11 +521,16 @@ florence.g
 
 By typing the name of the network in console I get its details. Here I learn that that my network is **undirected** (`U`), named (`N`), has 16 **nodes** and 20 **edges**.
 
+And then we can plot our network with our good ol' friend, `ggplot()`
+
 ---
 
 
 ``` r
-plot(florence.g, vertex.size=10, vertex.label.dist=1.5)
+*ggplot(florence.g, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges() +
+  geom_nodes() +
+  geom_text(aes(label = name))
 ```
 
 &lt;img src="week-12_files/figure-html/unnamed-chunk-13-1.svg" width="80%" style="display: block; margin: auto;" /&gt;

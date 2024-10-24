@@ -82,6 +82,13 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 ## Plan for today
 
+### Back to the basics
+
+1. Research question: How to write
+2. Data analysis in R for A3
+3. Network analysis
+4. Spatial analysis
+
 ---
 class: inverse, center, middle
 
@@ -159,6 +166,15 @@ class: inverse, center, middle
 3. Describe, Manipulate and Select the data (not necessarily in this order!)
 4. Analyse the data
 5. Present your conclusions!
+
+---
+class: center, middle
+
+# What does determine student evaluation? (Padlet)
+
+https://sydney.padlet.org/francescobailo/what-does-determine-student-evaluation-k1t4byeayqeht9an
+
+
 
 ---
 class: inverse, center, middle
@@ -509,10 +525,16 @@ florence.g
 
 By typing the name of the network in console I get its details. Here I learn that that my network is **undirected** (`U`), named (`N`), has 16 **nodes** and 20 **edges**.
 
+And then we can plot our network with our good ol' friend, `ggplot()`
+
 ---
 
-```{r out.width = "80%", fig.width = 7, fig.height = 7}
-plot(florence.g, vertex.size=10, vertex.label.dist=1.5)
+```{r out.width = "80%", fig.width = 7, fig.height = 5}
+
+ggplot(florence.g, aes(x = x, y = y, xend = xend, yend = yend)) + #<<
+  geom_edges() +
+  geom_nodes() +
+  geom_text(aes(label = name))
 ```
 
 ---
