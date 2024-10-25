@@ -495,6 +495,16 @@ In this case the network is **undirected** and the matrix is symmetric (across t
 
 ---
 
+## Packages we are going to need
+
+```{r eval = F}
+install.packages("igraph") #<< core package for network analysis
+install.packages("ggnetwork")  #<< net viz with ggplot
+install.packages("intergraph") #<< support package to transform graph obj
+```
+
+---
+
 ### Networks in igraph
 
 ```{r}
