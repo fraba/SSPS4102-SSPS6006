@@ -78,12 +78,37 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 - Spatial analysis
 
 ---
+class: inverse, center, middle
 
 # Any questions about anything?
 
 ---
 
 ## Plan for today
+
+- Individual on A3 with peer-review
+- The Replication Crisis and P-Values (again)
+- The Ethics of Artificial Intelligence
+- Data Surfacing
+- Mixed-Methods Research
+- Workshopping A3
+
+---
+
+class: inverse, center, middle
+
+# Individual on A3 with peer-review (from Canvas)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 20, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# The Replication Crisis and P-Values
 
 ---
 
@@ -327,6 +352,7 @@ A p-value of, let's say, 0.05 means that
   - Considers prior knowledge, discourages data manipulation, and fosters reproducible science.
 
 ---
+class: inverse, center, middle
 
 # Future trend #1
 
@@ -399,6 +425,7 @@ to responsibly integrate AI.
 - **Balancing Act**: Ensure national security benefits do not compromise ethical standards, maintaining public trust and democratic integrity.
 
 ---
+class: inverse, center, middle
 
 # Future trend #2
 
@@ -499,6 +526,7 @@ In summary, data surfacing redefines data analysis by allowing full exploration 
 .footnote[Zuboff, S. (2018). *The age of surveillance capitalism: The fight for a human future at the new frontier of power*. PublicAffairs.]
 
 ---
+class: inverse, center, middle
 
 # Future trend #3
 
@@ -610,6 +638,12 @@ MMR offers a holistic approach to understanding multifaceted social issues by le
 class: inverse, center, middle
 
 # Attendance
+
+---
+class: inverse, center, middle
+
+# Let's workshop your A3!
+
 
 ---
 class: inverse, center, middle
