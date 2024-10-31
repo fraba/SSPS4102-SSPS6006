@@ -658,9 +658,9 @@ class: inverse, center, middle
 
 ## Keep a project-oriented approach
 
-1. What you want to find?
+1. What do you want to find?
 
-2. What data you need?
+2. What data do you need?
 
 3. What software tools can you use to do it?
 
@@ -668,6 +668,36 @@ class: inverse, center, middle
 
 - GenAI has changed how quickly you can become very proficient in a computer language: with ChatGPT, Copilot, Gemina you already are a very sophisticated and knowledgeable programmer.
 
+- But always make sure you are (more or less) in control of what is going on. Don't let the machines take over!
+
+---
+
+## The availability of 
+
+- Data and 
+- Data analysis 
+
+tools offers great opportunities for understanding and improving society.
+
+### And yet, with great power comes great responsability ...
+
+.center[<iframe src="https://giphy.com/embed/6rCk8D1VZwm52" width="480" height="350" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>]
+
+---
+
+## Data Are About People
+
+Let’s keep these questions in mind:
+
+.large[
+
+- Should this data be collected?
+
+- Are people represented fairly by this data?
+
+- Does the resulting analysis represent these people fairly?
+
+]
   
 
 
