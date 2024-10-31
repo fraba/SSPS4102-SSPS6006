@@ -1,0 +1,619 @@
+---
+title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
+subtitle: "Week 13</br>Ethical Considerations and Future Trends"
+author: "Francesco Bailo"
+date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+
+---
+
+background-image: url('assets/USydLogo.svg')
+background-size: 95%
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = FALSE, 
+                      dev = 'svg', 
+                      fig.width = 4, 
+                      fig.height = 4, out.width="30%",
+                      fig.align="center")
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(sf)
+library(DiagrammeR)
+library(cowplot)
+library(gapminder)
+library(ggrepel)
+
+ggplot2::theme_set(theme_bw())
+
+```
+
+---
+class: inverse, center, middle
+
+# Ethical Considerations and Future Trends
+
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Recap from last week
+
+- Research question: How to write
+- Data analysis in R for A3
+- Network analysis
+- Spatial analysis
+
+---
+
+# Any questions about anything?
+
+---
+
+## Plan for today
+
+---
+
+## The Replication Crisis
+
+- Began around 2011, affecting fields like psychology and social sciences.
+
+- Defined by the inability to replicate results in studies, which questions the reliability of scientific findings.
+
+- High-profile cases like Diederik Stapel, a social psychologist, **fabricated data** in studies on behavior, highlighting broader issues.
+
+- But the **replication crisis** is not only about fraud... 
+
+.footnote[Slides adapted from Chivers, T. (2024). *Everything is predictable: How Bayesian statistics explain our world*. One Signal Publishers/Atria.]
+
+---
+
+## P-Values: Misunderstood Statistic
+
+- **What is a p-value?**  
+  - Represents the probability of obtaining test results at least as extreme as the observed data, assuming the null hypothesis is true.
+- **Misinterpretation:**  
+  - Many scientists believe a p-value (e.g., p < 0.05) indicates the probability that the hypothesis is true, which is incorrect.  
+- Studies show a significant percentage of scientists misunderstand p-values, which impacts the credibility of research.
+
+---
+
+## Let's replicate a famous study on the misconceptions in intepreting the significance test (i.e., the p-value)
+
+
+On Canvas take, the 
+
+.center[.content-box-yellow[*Week 13 Individual quiz (In-class)*]]
+
+(it's anonymous).
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+The very same questions you just answered were got mostly wrong in two famous studies:
+
+Percentages of participants in each group who made at least one mistake, in Haller & Krauss, (2002) and Oakes (1986)
+
+```{r echo = FALSE, out.width = "70%", fig.width=7, fig.height=4}
+# Load necessary library
+library(ggplot2)
+
+# Create the data frame
+data <- data.frame(
+  Group = c("Methodology instructors\n(N = 30)", "Scientists\nnot teaching methods\n(N = 39)", 
+            "Psychology\nstudents\n(N = 44)", "Academic\npsychologists\n(Oakes, 1986)"),
+  Percentage = c(80.0, 89.7, 100.0, 97.0)
+)
+
+# Create the plot
+ggplot(data, aes(x = Group, y = Percentage)) +
+  geom_bar(stat = "identity", fill = "black") +
+  geom_text(aes(label = paste0(Percentage, "%")), vjust = -0.5) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+
+.footnote[
+- Haller, H., & Krauss, S. (2002). Misinterpretations of significance: A problem students share with their teachers. *Methods of Psychological Research*, 7(1), 1–20.
+- Oakes, M. (1986). *Statistical inference: A commentary for the social and behavioral  sciences*, Chichester: Wiley.]
+
+
+
+---
+
+## Again ...
+
+A p-value of, let's say, 0.05 means that 
+
+> The probability of the available (or of even less likely) data, given that the null hypothesis is true, is less than 5%.
+
+.center[.content-box-yellow[P-Values just help you understand how rare the results are.]]
+
+---
+
+## Let's check why the first six statements were wrong...
+
+- 1# You have absolutely disproved the null hypothesis (that is, there is no difference between being white or non-white in the hiring process).
+
+- 3# You have absolutely proved your experimental hypothesis (that there is a difference between being white or non-white).
+
+> Statements 1 and 3 are easily classified as being false: **Significance tests can never prove (or disprove) hypotheses**. Significance tests provide probabilistic information and  can, therefore, at best be used to **corroborate theories**.
+
+.footnote[Haller, H., & Krauss, S. (2002). Misinterpretations of significance: A problem students share with their teachers. *Methods of Psychological Research*, 7(1), 1–20.]
+
+---
+
+- 2# You have found the probability of the null hypothesis being true.
+
+- 4# You can deduce the probability of the experimental hypothesis being true.
+
+- 5# You know, if you decide to reject the null hypothesis, the probability that you are making the wrong decision.
+
+> It is generally impossible to assign a probability to any hypothesis by applying significance tests: One can neither assign it a probability of 1 (statements 1 and 3) nor any  other probability (statements 2, 4 and 5).
+
+.footnote[Haller, H., & Krauss, S. (2002). Misinterpretations of significance: A problem students share with their teachers. *Methods of Psychological Research*, 7(1), 1–20.]
+
+---
+
+*This is the trickiest...*
+
+- 6# You have a reliable experimental finding in the sense that if, hypothetically, the experiment were repeated a great number of times, you would obtain a significant result on 99% of occasions.
+
+> Statement 6 reflects the so-called "replication fallacy" ... one could interpret $\alpha$ = .01 in a frequentistic framework **as relative frequency of rejections** of $H_0$ if $H_0$ **is true**. The **example however gives no evidence of the $H_0$ being true**. "In the minds of many, 1 - p erroneously turned into the relative frequency of rejections of $H_0$, that is, into the probability that significant results could be replicated"  (Gigerenzer, 1993a).
+
+.footnote[Haller, H., & Krauss, S. (2002). Misinterpretations of significance: A problem students share with their teachers. *Methods of Psychological Research*, 7(1), 1–20.]
+
+
+---
+
+## Problems with P-Values in Research
+- **p < 0.05 Threshold**: Often used as a benchmark for "statistical significance" in research.
+  - A result of p < 0.05 suggests the observed data would occur by chance only 5% of the time if the null hypothesis were true.
+- **Misleading Significance**:  
+  - A low p-value **does not confirm the hypothesis**; it merely indicates that the data is unlikely under the null hypothesis.
+
+---
+
+## Case Study: False Positive Psychology
+- **Joseph Simmons et al. (2011)**: Used p-values to show "impossible" results.
+  - Experiment found that listening to The Beatles’ *When I’m Sixty-Four* made participants "younger" (p = 0.04).
+  - Revealed flaws in the p-value system, showing that traditional statistical methods can yield false positives.
+  
+  
+.footnote[Simmons, J. P., Nelson, L. D., & Simonsohn, U. (2011). False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant. *Psychological Science*, 22(11), 1359–1366. https://doi.org/10.1177/0956797611417632
+]  
+
+---
+
+.small[
+
+| Researcher degrees of freedom                        | Significance level       |           |           |
+|-----------------------------------------------------|---------------------------|-----------|-----------|
+|                                                     | p < .1                    | p < .05   | p < .01   |
+| **Situation A**: two dependent variables (r = .50)  | 17.8%                     | 9.5%      | 2.2%      |
+| **Situation B**: addition of 10 more observations per cell | 14.5%              | 7.7%      | 1.6%      |
+| **Situation C**: controlling for gender or interaction of gender with treatment | 21.6% | 11.7%     | 2.7%      |
+| **Situation D**: dropping (or not dropping) one of three conditions | 23.2%       | 12.6%     | 2.8%      |
+| **Combine Situations A and B**                      | 26.0%                     | 14.4%     | 3.3%      |
+| **Combine Situations A, B, and C**                  | 50.9%                     | 30.9%     | 8.4%      |
+| **Combine Situations A, B, C, and D**               | 81.5%                     | 60.7%     | 21.5%     |
+
+]
+
+.footnote[Simmons, J. P., Nelson, L. D., & Simonsohn, U. (2011). False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant. *Psychological Science*, 22(11), 1359–1366. https://doi.org/10.1177/0956797611417632
+]  
+
+---
+
+## P-Hacking: Manipulating Data for p < 0.05
+- **P-Hacking Defined**:  
+  - Adjusting data, experimenting with various statistical methods, or selectively reporting results to achieve p < 0.05.
+- **Common Techniques**:  
+  - Stopping data collection once significance is reached.
+  - Selectively including/excluding variables.
+  - Repeating tests until significance is found.
+- These practices lead to biased and potentially false conclusions in research.
+
+---
+
+## P-Hacking: Real-World Example
+- **Brian Wansink’s Food Psychology Studies**  
+  - Wansink's team performed analyses in multiple ways to “mine” the data for p < 0.05 results.
+  - Example: “Men eat more in the presence of women” — a result reached by manipulating dataset splits.
+- Result: Over a dozen of Wansink’s papers retracted due to unreliable methods.
+
+---
+
+## HARKing: Hypothesizing After Results Are Known
+- **HARKing Defined**:  
+  - Formulating hypotheses based on the data collected, instead of predefining them before analysis.
+- **Impact on Science**:  
+  - Encourages “fitting” the data to hypotheses, making it easier to publish “significant” findings.
+  - Contributes to the replication crisis by distorting study findings.
+
+---
+
+## The Reproducibility Project (2015)
+- **Brian Nosek’s Reproducibility Project**  
+  - Attempted to replicate 100 psychology studies.
+  - Results: Only 36 out of 100 studies achieved significant results upon replication.
+- **Conclusion**:  
+  - Suggests that many published findings might be false positives, influenced by p-hacking and reliance on p < 0.05 as a significance threshold.
+
+---
+
+## Bayesian Approach: A Solution to p-Value Limitations
+- **Bayesian Analysis**: Uses prior knowledge or "priors" and updates beliefs with new data.
+  - Bayesian methods integrate previous knowledge, reducing the need to find p < 0.05 results in each new study (as you do with a *frequentist* approach).
+- **Advantages Over P-Values**:
+  - Allows for accumulating evidence over time.
+  - Avoids arbitrary thresholds like p < 0.05, reducing false positives and p-hacking incentives.
+
+---
+
+## Prior Probabilities and Plausibility
+- Bayesian methods consider the *prior probability* of a hypothesis being true.
+  - For implausible hypotheses, more data is required to "overcome" prior skepticism.
+- **Contrast with p-Values**:  
+  - P-values treat all hypotheses equally, ignoring whether they’re plausible, potentially leading to the publication of "outlandish" claims.
+  
+---
+
+## Optional Stopping: How Bayesian Methods Address It
+- **Frequentist Issue**: Checking results multiple times increases false-positive risk.
+  - “Optional stopping” refers to stopping data collection once p < 0.05 is achieved.
+- **Bayesian Approach**: Can incorporate new data without inflating false positives.
+  - Results update gradually, reducing impact of early “significant” results and helping maintain study integrity.
+
+---
+
+## Reducing the p-Value Threshold: Proposed Solution
+- **Suggestion**: Lower p-value threshold from 0.05 to 0.005.
+  - Would reduce false positives by making it harder to reach “significance.”
+- **Challenges**:  
+  - While it reduces false positives, it doesn’t address all limitations of p-values, such as not considering prior plausibility.
+
+---
+
+## Summary: Beyond p-Values with Bayesian Methods
+- **Limitations of p-values**: Encourage p-hacking, HARKing, and misunderstandings about evidence.
+- **Bayesian Solution**:  
+  - Provides a more flexible, evidence-based approach.
+  - Considers prior knowledge, discourages data manipulation, and fosters reproducible science.
+
+---
+
+# Future trend #1
+
+# The Ethics of Artificial Intelligence for Intelligence Analysis: a Review of the Key Challenges with Recommendations
+
+---
+
+## Introduction to Ethical AI in Intelligence Analysis
+
+- **Examples**: The UK's GCHQ and the US CIA are actively developing AI capabilities, aiming to streamline intelligence processes.
+- **Purpose**: Highlight ethical issues in using AI for intelligence and provide recommendations for responsible implementation.
+
+### Ethical Challanges of Big Data analyses:
+
+1. Intrusion
+2. Explainability and Accountability
+3. Bias
+
+.footnote[Blanchard, A., & Taddeo, M. (2023). The ethics of artificial intelligence for intelligence analysis: A review of the key challenges with recommendations. *Digital Society*, 2(1), 12. https://doi.org/10.1007/s44206-023-00036-4]
+
+---
+
+## Ethical Challenge: Intrusion
+- **Privacy Concerns**: AI's capacity to process vast datasets raises significant privacy issues, especially regarding the boundaries of surveillance.
+- **Bulk Data Collection**: AI enables the collection and analysis of extensive data, sparking debate on when intrusion actually begins.
+- **Recommendation**: Focus on purpose-oriented data collection, gathering only data relevant to specific intelligence goals to limit unnecessary intrusion.
+
+---
+
+## Ethical Challenge: Explainability and Accountability
+- **Explainability**: Advanced AI (machine learning) systems, like neural networks, often act as "black boxes," making decision-making processes opaque. We saw that machine learning can act on billions of parameters (i.e. variables, how do you *interpret effects* there?)
+- **Accountability**: Analysts need transparent AI to confidently defend AI-assisted analysis, especially for decisions with serious implications.
+- **Recommendation**: Use interpretable AI models and establish ethics-based auditing practices to ensure accountability and foster trust in AI outputs.
+
+---
+
+## Ethical Challenge: Bias
+- **Sources of Bias**: Bias in AI can arise from training data, model design, or operational practices, potentially leading to unfair or discriminatory outcomes.
+- **Social Impact**: Bias in intelligence analysis risks reinforcing stereotypes or targeting specific groups, impacting societal justice.
+- **Recommendation**: Equip analysts with tools to assess training data for bias, and ensure ongoing evaluations to detect and mitigate algorithmic bias.
+
+--
+
+## Can we think of any examples?
+
+---
+
+## Authoritarianism and Political Security
+
+- **Ethical Challenge**: The use of AI in intelligence analysis can strengthen authoritarian control, raising ethical concerns.
+- **Potential for Misuse**: AI’s ability to monitor and control populations could be misused by states to enforce authoritarian policies, limiting political freedoms and civil liberties.
+- **Implications for Security**: While AI can enhance security, it risks undermining democratic values if leveraged to suppress dissent or surveil citizens excessively.
+- **Recommendation**: Establish safeguards and ethical guidelines to prevent AI from being used to infringe on civil liberties and ensure it aligns with democratic principles.
+
+--
+
+### Can we think of a possible practical scenario?
+
+---
+
+## Conclusion: Responsible Use of AI in Intelligence
+- AI offers significant potential to enhance intelligence analysis but poses ethical risks that impact democratic values.
+- **Long-Term Strategy**: Implement 
+
+  1. ethical principles, 
+  2. prioritise transparency, and 
+  3. conduct regular assessments
+  
+to responsibly integrate AI.
+- **Balancing Act**: Ensure national security benefits do not compromise ethical standards, maintaining public trust and democratic integrity.
+
+---
+
+# Future trend #2
+
+# Is data surfacing the future of empirical social research?
+
+---
+
+## The Evolution of Empirical Social Research
+- **Historical Perspective**: Early social research aimed at systematic data gathering for state use, focusing on health, wealth, and societal status.
+- **Shift in Data Use**: Originally, data was collected for tax, trade, or war, but by the 19th century, the focus expanded to predict societal trends.
+- **Influence**: The English Utilitarians and French Positivists promoted viewing data as a reflection of social health or pathology.
+
+---
+
+## The Role of Data in a Post-Truth Society
+- **Data and Truth**: In today’s "post-truth" world, data producers are numerous, leading to uncertainty over what constitutes truth.
+- **Public Resistance**: As people understand research methods, they may withhold or manipulate information, challenging data integrity.
+- **Historical Analogy**: Elisabeth Noelle-Neumann’s "spiral of silence" concept describes how dominant voices suppress opposing views, impacting data accuracy.
+
+---
+
+## Big Data and Passive Information Gathering
+- **Unobtrusive Measures**: Unlike traditional methods that required active participation, big data passively collects user behavior (e.g., clicks, likes).
+- **Metadata Relevance**: Analysts focus on relationships in data (metadata) rather than explicit details, using patterns to infer deeper insights.
+- **Challenges**: Empirical research struggles to adapt to this scale and nature of data, which was initially gathered for unintended purposes.
+
+---
+
+## Data Surfacing: A New Approach to Empirical Research
+
+.small[
+- **Definition and Purpose**: Data surfacing is a method developed by the analytics firm **Palantir**, designed as an alternative to traditional data mining. Unlike data mining, which extracts specific, predefined insights and treats other data as "noise," data surfacing presumes that *all* data is potentially valuable. This approach visualises comprehensive datasets to allow users to interpret and discover emerging trends and patterns without preconceived constraints.
+
+- **How It Works**: Data surfacing involves displaying all relevant data in a way that encourages users to identify "emergent phenomena" or unexpected insights that may not fit into standard analytical frameworks. This is achieved by relaxing initial assumptions and focusing more on anomalies or directional patterns within the dataset.
+
+- **Comparison to Grounded Theory**: Data surfacing is similar to *grounded theory* in qualitative research. In grounded theory, researchers avoid predefined hypotheses, instead observing subjects' experiences to let themes emerge naturally. Similarly, data surfacing treats large datasets as subjects for open interpretation, rather than filtering data based on existing models or hypotheses.
+]
+
+---
+
+## Applications and Benefits 
+
+Data surfacing has applications in fields like national security, healthcare, and market research, where understanding emerging patterns can be crucial. By focusing on the dataset as a whole, this method allows insights that might otherwise be missed, helping researchers and analysts identify novel directions for inquiry.
+
+- **Implications for Researchers**: This approach shifts how researchers interact with data, encouraging them to view it holistically rather than selectively. Data surfacing can uncover "undiscovered public knowledge," as termed by library scientist Don Swanson, by tapping into overlooked or ignored information within existing data.
+
+In summary, data surfacing redefines data analysis by allowing full exploration of datasets without narrowing focus to predefined objectives, fostering innovative insights across disciplines.
+
+---
+
+## Ethical considerations on Data Surfacing (and Data Hoarding)
+
+### What is <img src = 'https://upload.wikimedia.org/wikipedia/commons/1/13/Palantir_Technologies_logo.svg' width = '20%'>
+
+.small[
+- **Data Integration and Analysis**: Palantir Technologies specialises in synthesising vast, complex datasets for analysis, helping organisations like governments, intelligence agencies, and corporations make data-driven decisions.
+- **Core Software**: 
+  - *Gotham*: Primarily used for national security and defence; integrates data for intelligence agencies to identify patterns and prevent threats.
+  - *Foundry*: Commercial application used in various sectors, from logistics to healthcare, allowing organisations to visualise and interpret data insights.
+- **Use Cases**: 
+  - Used by governments for counterterrorism and pandemic response, tracking logistics for the U.S. Army, financial monitoring by Credit Suisse, and production efficiency improvements for Airbus.
+]
+
+.footnote[Steinberger, M. (2020, October 21). Does Palantir See Too Much? *The New York Times*. https://www.nytimes.com/interactive/2020/10/21/magazine/palantir-alex-karp.html]
+
+---
+
+## Surveillance Capitalism
+
+.small[
+
+- **Definition**: Surveillance capitalism is a form of information capitalism where human experience is transformed into raw material for data. This behavioural data is processed by machine intelligence to create *prediction products*, which forecast user actions and are sold in *behavioural futures markets*.
+  
+- **Methods of Data Accumulation**:
+  - **Data Exhaust**: Surveillance capitalists collect data exhaust, or residual data from online activities, to improve predictive algorithms and influence user behaviour for profit.
+  - **Expanding Data Sources**: They gather diverse data, from physical location to biometric data, covering even intimate aspects like emotions and health metrics.
+  - **Network of Coercion**: Users often must share data to access essential functions on devices, such as smart home systems, where opting out can reduce functionality.
+  - **Obfuscation Tactics**: Data collection is often presented as essential for “free” services, while technical jargon obscures the full extent of data capture, making it challenging for users to understand the process.
+
+]
+
+---
+
+## The Problem of the Two Texts
+
+.small[
+
+- **Two Types of Texts**:
+  - **First Text**: The visible, public-facing information that users create and interact with online, such as social media posts, search history, and shared content.
+  - **Shadow Text**: A hidden layer comprising the behavioural data extracted from the first text. This data, accessible only to surveillance capitalists, forms prediction products for commercial use.
+
+- **Implications of the Shadow Text**:
+  - **Asymmetrical Knowledge**: Surveillance capitalists gain extensive insight into users, creating a knowledge gap where they understand users better than users understand themselves.
+  - **Influencing the First Text**: This hidden information enables companies to manipulate the visible content, such as ordering search results or recommending products, to align with their interests, further deepening the impact of surveillance capitalism.
+  
+  ]
+
+.footnote[Zuboff, S. (2018). *The age of surveillance capitalism: The fight for a human future at the new frontier of power*. PublicAffairs.]
+
+---
+
+# Future trend #3
+
+# Mixed methods research: what it is and what it could be
+
+---
+
+## Introduction to Mixed Methods Research (MMR)
+
+**Overview**: Mixed Methods Research (MMR) is an approach that combines both quantitative and qualitative research methods within a single study or series of studies. This combination allows researchers to capture more comprehensive insights and address complex research questions by leveraging the strengths of both approaches.
+
+**Purpose**: MMR is particularly valuable in social sciences and applied fields, where understanding complex human behaviours and contexts requires both .content-box-yellow[*statistical analysis*] and .content-box-yellow[*contextual understanding*].
+
+.footnote[Timans, R., Wouters, P., & Heilbron, J. (2019). Mixed methods research: What it is and what it could be. *Theory and Society*, 48(2), 193–216. https://doi.org/10.1007/s11186-019-09345-5]
+
+---
+
+## What is Mixed Methods Research?
+
+**Definition**: MMR is a research approach that systematically integrates quantitative and qualitative methods to provide a more complete understanding of research problems than either method could offer independently.
+
+**Key Goal**: To synthesise numerical data with narrative insights, facilitating a more holistic interpretation of data and findings.
+
+**Types of Data**: 
+- Quantitative data includes **structured**, numerical data that often seeks to measure or predict variables.
+- Qualitative data involves **unstructured** or **semi-structured data**, such as interview transcripts or observational notes, that provides context and depth.
+
+---
+
+## Why Mixed Methods? The Purpose of Combining Approaches
+
+**Purpose**  
+- To achieve broader perspectives by combining qualitative depth with quantitative generalisability.
+- Each method compensates for the other's limitations, providing robust insights.
+
+**Core Advantages**  
+1. **Corroboration** - Confirms findings through triangulation.
+2. **Expansion** - Extends understanding by adding layers of interpretation.
+3. **Complementarity** - Merges strengths of both approaches.
+
+---
+
+## Key Components of Mixed Methods Research
+
+1. **Data Collection**: Using both qualitative (e.g., interviews) and quantitative (e.g., surveys) methods.
+2. **Analysis**: Integrating results to provide a unified interpretation.
+3. **Timing**: Methods can be concurrent or sequential.
+4. **Emphasis**: Either approach can be dominant, or both can have equal weight.
+
+---
+
+## Institutionalisation and Popularity of MMR
+
+**Growth of MMR**  
+- The number of MMR publications and dedicated journals (e.g., Journal of Mixed Methods Research) has surged.
+- MMR has achieved substantial institutionalisation, with significant uptake in educational and nursing research.
+
+**Key Milestones**  
+- Founding of journals and conferences.
+- Establishment of Mixed Methods International Research Association (MMIRA).
+
+---
+
+## How MMR Works: Integration Process
+
+**Sequential vs. Concurrent Design**  
+1. **Sequential** - One method follows the other, building on initial findings.
+2. **Concurrent** - Both methods are used simultaneously to gather complementary data.
+
+**Emphasis on Integration**  
+- MMR focuses on **merging** data to form a cohesive narrative rather than simply presenting separate analyses.
+
+---
+
+## Applications and Utility of MMR
+
+**Applicability**  
+- Particularly valuable for complex social science research questions where neither qualitative nor quantitative alone is sufficient.
+- Provides insights that are both deep (qualitative) and broad (quantitative).
+
+**Fields of Application**  
+- Education, healthcare, social sciences, and psychology are prime examples where MMR yields comprehensive insights.
+
+---
+
+## Criticisms and Challenges of MMR
+
+**Challenges**  
+1. **Epistemological Tension** - Balancing philosophical differences between qualitative and quantitative paradigms.
+2. **Methodological Rigidity** - Risk of standardisation that may restrict flexibility.
+3. **Complexity of Integration** - Combining data cohesively is challenging.
+
+**Potential Solution**  
+- Emphasis on reflexivity and adaptability to each research context rather than strict adherence to typologies.
+
+---
+
+## Conclusion: The Future of Mixed Methods Research
+
+**Future Directions**  
+- MMR's growth shows its potential to become a distinct field within social science.
+- Increasing demand for complex analysis frameworks suggests MMR will continue to evolve and adapt.
+
+**Final Thought**  
+MMR offers a holistic approach to understanding multifaceted social issues by leveraging both qualitative and quantitative insights.
+
+
+---
+class: inverse, center, middle
+
+# Attendance
+
+---
+class: inverse, center, middle
+
+# Thanks for joining in and engaging during the semester!
+
+
