@@ -42,7 +42,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-09-27)
+### Semester 1, 2025 (updated: 2025-02-07)
 ]
 
 ---
@@ -155,8 +155,8 @@ Machine learning is the study of
 - **Data, Methods, and Computing Power**: A loop where increased data drives the development of new methods and computational needs.
 - **Impact**: Enables larger, more complex datasets to be analysed, spurring new discoveries and capabilities in machine learning.
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-c0401664f975fab1600f" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-c0401664f975fab1600f">{"x":{"diagram":"\n  digraph {\n    graph [layout = circo]\n\n    # Define nodes\n    A [label = \"Available Data\", shape = circle, style = filled, fillcolor = lightgray]\n    B [label = \"Statistical Methods\", shape = circle, style = filled, fillcolor = lightgray]\n    C [label = \"Computing Power\", shape = circle, style = filled, fillcolor = lightgray]\n\n    # Define edges\n    A -> B\n    B -> A\n    B -> C\n    C -> B\n    C -> A\n    A -> C\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-241c82183f2df45bac13" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-241c82183f2df45bac13">{"x":{"diagram":"\n  digraph {\n    graph [layout = circo]\n\n    # Define nodes\n    A [label = \"Available Data\", shape = circle, style = filled, fillcolor = lightgray]\n    B [label = \"Statistical Methods\", shape = circle, style = filled, fillcolor = lightgray]\n    C [label = \"Computing Power\", shape = circle, style = filled, fillcolor = lightgray]\n\n    # Define edges\n    A -> B\n    B -> A\n    B -> C\n    C -> B\n    C -> A\n    A -> C\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -786,7 +786,7 @@ sample(c("A", "B", "C"))
 ```
 
 ```
-## [1] "B" "C" "A"
+## [1] "C" "B" "A"
 ```
 
 ---
@@ -834,7 +834,7 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.4878855
+## [1] 0.4944934
 ```
 
 Not great, but also not too bad since we are classifying over 18 different parties!
@@ -869,7 +869,7 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.6093333
+## [1] 0.6106667
 ```
 
 
@@ -886,10 +886,10 @@ table(`true value` = as.character(aes22_test$party),
 ```
 ##                 prediction
 ## true value       Greens Labor Liberal National Party
-##   Greens             23    66       5              0
-##   Labor              38   205      88              0
-##   Liberal             6    67     229              3
-##   National Party      0     4      16              0
+##   Greens             28    56      11              0
+##   Labor              31   220      83              0
+##   Liberal             6    76     210              1
+##   National Party      0    11      17              0
 ```
 
 - With proportional values
@@ -904,10 +904,10 @@ prop.table(table(`true value` = as.character(aes22_test$party),
 ```
 ##                 prediction
 ## true value            Greens       Labor     Liberal National Party
-##   Greens         0.244680851 0.702127660 0.053191489    0.000000000
-##   Labor          0.114803625 0.619335347 0.265861027    0.000000000
-##   Liberal        0.019672131 0.219672131 0.750819672    0.009836066
-##   National Party 0.000000000 0.200000000 0.800000000    0.000000000
+##   Greens         0.294736842 0.589473684 0.115789474    0.000000000
+##   Labor          0.092814371 0.658682635 0.248502994    0.000000000
+##   Liberal        0.020477816 0.259385666 0.716723549    0.003412969
+##   National Party 0.000000000 0.392857143 0.607142857    0.000000000
 ```
 
 ``` r
@@ -944,7 +944,7 @@ sum(pred == aes22_test$party) / nrow(aes22_test)
 ```
 
 ```
-## [1] 0.7376789
+## [1] 0.7392687
 ```
 
 
@@ -961,8 +961,8 @@ table(`true value` = as.character(aes22_test$party),
 ```
 ##           prediction
 ## true value Labor Liberal
-##    Labor     234      93
-##    Liberal    72     230
+##    Labor     253      83
+##    Liberal    81     212
 ```
 
 - With proportional values
@@ -977,8 +977,8 @@ prop.table(table(`true value` = as.character(aes22_test$party),
 ```
 ##           prediction
 ## true value     Labor   Liberal
-##    Labor   0.7155963 0.2844037
-##    Liberal 0.2384106 0.7615894
+##    Labor   0.7529762 0.2470238
+##    Liberal 0.2764505 0.7235495
 ```
 
 ``` r
@@ -991,7 +991,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 1
 
-<div class="countdown" id="timer_d8ca40d5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_ed5e8613" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">15</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1178,7 +1178,7 @@ class: inverse, center, middle
 
 # Reading a regression table
 
-<div class="countdown" id="timer_b3f97859" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_8e55fa03" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1405,7 +1405,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_016ce1d1" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_28b4e743" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>

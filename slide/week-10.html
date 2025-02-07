@@ -42,7 +42,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-10-11)
+### Semester 1, 2025 (updated: 2025-02-07)
 ]
 
 ---
@@ -167,8 +167,8 @@ class: inverse, center, middle
 
 ## A text analysis pipeline
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-a801e281baf078832a0f" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-a801e281baf078832a0f">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-b88df4d86650e5e1236a" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-b88df4d86650e5e1236a">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -406,7 +406,7 @@ frankenstein$text[49]
 ```
 
 ```
-## [1] "The event on which this fiction is founded has been supposed, by Dr."
+## [1] NA
 ```
 
 
@@ -419,9 +419,7 @@ word_tokens
 
 ```
 ## [[1]]
-##  [1] "the"      "event"    "on"       "which"    "this"     "fiction" 
-##  [7] "is"       "founded"  "has"      "been"     "supposed" "by"      
-## [13] "dr"
+## [1] NA
 ```
 
 ---
@@ -492,20 +490,8 @@ frankenstein |&gt; # From before
 ```
 
 ```
-## # A tibble: 72,841 × 2
-##    gutenberg_id word         
-##           &lt;int&gt; &lt;chr&gt;        
-##  1        41445 transcriber’s
-##  2        41445 note         
-##  3        41445 this         
-##  4        41445 text         
-##  5        41445 was          
-##  6        41445 produced     
-##  7        41445 from         
-##  8        41445 a            
-##  9        41445 photo        
-## 10        41445 reprint      
-## # ℹ 72,831 more rows
+## # A tibble: 0 × 2
+## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
 ```
 
 ---
@@ -547,20 +533,8 @@ frankenstein |&gt; # From before
 ```
 
 ```
-## # A tibble: 61,592 × 2
-##    gutenberg_id word              
-##           &lt;int&gt; &lt;chr&gt;             
-##  1        41445 &lt;NA&gt;              
-##  2        41445 &lt;NA&gt;              
-##  3        41445 &lt;NA&gt;              
-##  4        41445 the event on      
-##  5        41445 event on which    
-##  6        41445 on which this     
-##  7        41445 which this fiction
-##  8        41445 this fiction is   
-##  9        41445 fiction is founded
-## 10        41445 is founded has    
-## # ℹ 61,582 more rows
+## # A tibble: 0 × 2
+## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
 ```
 
 ---
@@ -577,20 +551,8 @@ frankenstein |&gt; # From before
 
 
 ```
-## # A tibble: 72,765 × 2
-##    gutenberg_id word   
-##           &lt;int&gt; &lt;chr&gt;  
-##  1        41445 preface
-##  2        41445 the    
-##  3        41445 event  
-##  4        41445 on     
-##  5        41445 which  
-##  6        41445 this   
-##  7        41445 fiction
-##  8        41445 is     
-##  9        41445 founded
-## 10        41445 has    
-## # ℹ 72,755 more rows
+## # A tibble: 0 × 2
+## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
 ```
 
 ]
@@ -601,20 +563,8 @@ frankenstein |&gt; # From before
 
 
 ```
-## # A tibble: 61,592 × 2
-##    gutenberg_id word              
-##           &lt;int&gt; &lt;chr&gt;             
-##  1        41445 &lt;NA&gt;              
-##  2        41445 &lt;NA&gt;              
-##  3        41445 &lt;NA&gt;              
-##  4        41445 the event on      
-##  5        41445 event on which    
-##  6        41445 on which this     
-##  7        41445 which this fiction
-##  8        41445 this fiction is   
-##  9        41445 fiction is founded
-## 10        41445 is founded has    
-## # ℹ 61,582 more rows
+## # A tibble: 0 × 2
+## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
 ```
 
 ]
@@ -637,7 +587,7 @@ frankenstein$text[4]
 ```
 
 ```
-## [1] "The event on which this fiction is founded has been supposed, by Dr."
+## [1] NA
 ```
 
 ``` r
@@ -646,9 +596,7 @@ tokenize_ngrams(frankenstein$text[4], n = 2)
 
 ```
 ## [[1]]
-##  [1] "the event"     "event on"      "on which"      "which this"   
-##  [5] "this fiction"  "fiction is"    "is founded"    "founded has"  
-##  [9] "has been"      "been supposed" "supposed by"   "by dr"
+## [1] NA
 ```
 
 ``` r
@@ -657,10 +605,7 @@ tokenize_ngrams(frankenstein$text[4], n = 3)
 
 ```
 ## [[1]]
-##  [1] "the event on"       "event on which"     "on which this"     
-##  [4] "which this fiction" "this fiction is"    "fiction is founded"
-##  [7] "is founded has"     "founded has been"   "has been supposed" 
-## [10] "been supposed by"   "supposed by dr"
+## [1] NA
 ```
 
 ]
@@ -906,15 +851,8 @@ head(frankenstein_tokens)
 ```
 
 ```
-## # A tibble: 6 × 3
-##   gutenberg_id word     stemmed_word
-##          &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;       
-## 1        41445 preface  prefac      
-## 2        41445 event    event       
-## 3        41445 fiction  fiction     
-## 4        41445 founded  found       
-## 5        41445 supposed suppos      
-## 6        41445 dr       dr
+## # A tibble: 0 × 3
+## # ℹ 3 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;, stemmed_word &lt;chr&gt;
 ```
 
 ---
@@ -948,7 +886,7 @@ class: inverse, center, middle
 # Individual quiz/tutorial Part 1 
 (to Stemming included)
 
-<div class="countdown" id="timer_ad022ee3" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_e0692f24" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1034,23 +972,23 @@ sent_bing %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word              sentiment
-##    &lt;chr&gt;             &lt;chr&gt;    
-##  1 mercifully        positive 
-##  2 misrepresentation negative 
-##  3 quiet             positive 
-##  4 flawlessly        positive 
-##  5 tingle            positive 
-##  6 unproved          negative 
-##  7 pardon            positive 
-##  8 shocked           negative 
-##  9 attentive         positive 
-## 10 allege            negative 
-## 11 drones            negative 
-## 12 dislike           negative 
-## 13 repugnance        negative 
-## 14 shameless         negative 
-## 15 hiss              negative
+##    word         sentiment
+##    &lt;chr&gt;        &lt;chr&gt;    
+##  1 hotheaded    negative 
+##  2 affluent     positive 
+##  3 lone         negative 
+##  4 conflicts    negative 
+##  5 regretted    negative 
+##  6 preferring   positive 
+##  7 fanaticism   negative 
+##  8 inextricable negative 
+##  9 disinclined  negative 
+## 10 dishonest    negative 
+## 11 scorn        negative 
+## 12 sue          negative 
+## 13 unsecure     negative 
+## 14 gruff        negative 
+## 15 slanders     negative
 ```
 
 ---
@@ -1063,23 +1001,23 @@ sent_afinn %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word            value
-##    &lt;chr&gt;           &lt;dbl&gt;
-##  1 racism             -3
-##  2 terrorizes         -3
-##  3 ominous             3
-##  4 anti               -1
-##  5 interruption       -2
-##  6 errors             -2
-##  7 humiliation        -3
-##  8 brave               2
-##  9 warmth              2
-## 10 gag                -2
-## 11 perfectly           3
-## 12 grand               3
-## 13 indignant          -2
-## 14 justice             2
-## 15 right direction     3
+##    word          value
+##    &lt;chr&gt;         &lt;dbl&gt;
+##  1 unimpressed      -2
+##  2 jocular           2
+##  3 denounces        -2
+##  4 denied           -2
+##  5 nasty            -3
+##  6 punished         -2
+##  7 burdened         -2
+##  8 controversial    -2
+##  9 defenseless      -2
+## 10 frisky            2
+## 11 suffers          -2
+## 12 careful           2
+## 13 unsupported      -2
+## 14 criticizes       -2
+## 15 oks               2
 ```
 
 ---
@@ -1094,21 +1032,21 @@ sent_loughran %&gt;%
 ## # A tibble: 15 × 2
 ##    word          sentiment   
 ##    &lt;chr&gt;         &lt;chr&gt;       
-##  1 prohibit      constraining
-##  2 objectionably negative    
-##  3 might         uncertainty 
-##  4 unfunded      negative    
-##  5 debarments    negative    
-##  6 entails       constraining
-##  7 illegality    negative    
-##  8 alienated     negative    
-##  9 forfeits      negative    
-## 10 distressed    negative    
-## 11 convictions   litigious   
-## 12 relinquishes  negative    
-## 13 overbuild     negative    
-## 14 almost        uncertainty 
-## 15 excessive     negative
+##  1 furtherance   litigious   
+##  2 forbade       constraining
+##  3 corrupted     negative    
+##  4 reconsiders   uncertainty 
+##  5 inequity      negative    
+##  6 thereof       litigious   
+##  7 appear        uncertainty 
+##  8 distracting   negative    
+##  9 leadership    positive    
+## 10 obligate      constraining
+## 11 slowdowns     negative    
+## 12 suggest       uncertainty 
+## 13 shrinkages    negative    
+## 14 hereon        litigious   
+## 15 incarcerating negative
 ```
 
 ---
@@ -1121,23 +1059,23 @@ sent_nrc %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word          sentiment   
-##    &lt;chr&gt;         &lt;chr&gt;       
-##  1 anarchist     anger       
-##  2 supplies      positive    
-##  3 elf           disgust     
-##  4 unfriendly    anger       
-##  5 baptism       positive    
-##  6 goodness      surprise    
-##  7 restorative   joy         
-##  8 sonata        positive    
-##  9 smitten       positive    
-## 10 unsurpassed   joy         
-## 11 sin           fear        
-## 12 weary         negative    
-## 13 entertaining  anticipation
-## 14 productivity  positive    
-## 15 transcendence positive
+##    word        sentiment   
+##    &lt;chr&gt;       &lt;chr&gt;       
+##  1 leave       negative    
+##  2 sponge      negative    
+##  3 arraignment anger       
+##  4 trick       negative    
+##  5 incurable   sadness     
+##  6 witch       fear        
+##  7 passivity   negative    
+##  8 frolic      positive    
+##  9 disparaging anger       
+## 10 foresight   trust       
+## 11 hesitation  negative    
+## 12 saliva      anticipation
+## 13 spiteful    anger       
+## 14 serenity    anticipation
+## 15 weakly      negative
 ```
 
 ---
@@ -1809,7 +1747,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_712f36be" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_5cf4ab28" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1819,7 +1757,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review
 
-<div class="countdown" id="timer_8b463f3d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_3b566be0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>

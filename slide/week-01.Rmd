@@ -2,7 +2,7 @@
 title: "SSPS [4102|6006] Data Analytics</br>[in the Social Sciences|for Social Research]"
 subtitle: "Week 01</br>Introduction and overview"
 author: "Francesco Bailo"
-date: "Semester 2, 2024 (updated: `r Sys.Date()`)"
+date: "Semester 1, 2025 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]

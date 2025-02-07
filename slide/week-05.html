@@ -41,7 +41,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 2, 2024 (updated: 2024-08-30)
+### Semester 1, 2025 (updated: 2025-02-07)
 ]
 
 ---
@@ -180,13 +180,13 @@ In data analytics, data collection generally has a slighlty different meaning. *
 
 ### Data collection in research design
 
-<div id="htmlwidget-6b83f4bcee8e734f6702" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6b83f4bcee8e734f6702">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-c48de1de6b7f20febe1f" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c48de1de6b7f20febe1f">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ### Data collection in data analytics 
 
-<div id="htmlwidget-af85fcecdf27b472292c" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-af85fcecdf27b472292c">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4060c07abbff1cb3eaac" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4060c07abbff1cb3eaac">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -254,8 +254,8 @@ Simply put, you can't `read(source = "http://en.wikipedia.org")`.
 
 A detail discussion about sourcing and reading data is out of the scope of this unit. Still, as example, here an example of a common "pipeline" to collect social media data. 
 
-<div id="htmlwidget-d78d9e14a497c4191296" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d78d9e14a497c4191296">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4454374f733dc4256b02" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4454374f733dc4256b02">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 If instead of an API, you have a database you should expect a very similar pipeline.
 
@@ -1175,8 +1175,8 @@ Before moving to group operations on data frame now let's introduce the `|&gt;` 
 
 The pipe operator, which you type with a `|` + `&gt;`, *chains* function together so that the value returned from the function *on the left* of the `|&gt;` flows as first argument into the function *on the right* of the `|&gt;`.
 
-<div id="htmlwidget-0ba1d2d8a2b74fd5a9c8" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0ba1d2d8a2b74fd5a9c8">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-173ded90d56cbcddaeb1" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-173ded90d56cbcddaeb1">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 And in R...
 
@@ -1334,13 +1334,13 @@ nrow(us_population_by_county)
 ```
 
 
-|county            |state    | population|
-|:-----------------|:--------|----------:|
-|Leon County       |Texas    |      16801|
-|Lake County       |Illinois |     703462|
-|Owen County       |Indiana  |      21575|
-|Norton County     |Kansas   |       5671|
-|Montgomery County |Indiana  |      38124|
+|county            |state     | population|
+|:-----------------|:---------|----------:|
+|Van Zandt County  |Texas     |      52579|
+|Cumberland County |Tennessee |      56053|
+|McIntosh County   |Georgia   |      14333|
+|Cedar County      |Missouri  |      13982|
+|Pinal County      |Arizona   |     375770|
 
 ---
 
