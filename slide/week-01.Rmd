@@ -44,7 +44,9 @@ I would like to acknowledge the Traditional Owners of Australia and  recognise t
 	
 Francesco Bailo (francesco.bailo@sydney.edu.au)
 
-I am a Lecturer in the School of Social and Political Sciences, University of Sydney. I am interested in researching forms of political engagement and political talk on social media. I researched the emergence and dynamics of online communities, the role between news organisations and social media, and the interdependence between social media activists and news organisations. I have engaged with and applied quantitative research methods developing expertise in quantitative text analysis (NLP) and network analysis.
+I am a Lecturer in the School of Social and Political Sciences, University of Sydney. I am also the [Deputy Director of the Centre for AI, Trust and Governance](https://www.sydney.edu.au/arts/our-research/centres-institutes-and-groups/centre-for-ai-trust-and-governance.html).
+
+I am interested in researching forms of political engagement and political talk on social media. I researched the emergence and dynamics of online communities, the role between news organisations and social media, and the interdependence between social media activists and news organisations. I have engaged with and applied quantitative research methods developing expertise in quantitative text analysis (NLP) and network analysis.
 
 This year I am teaching GOVT6139 (S2), SSPS4102 & SSPS6006 (S1) and GOVT3901 (S1).
 
