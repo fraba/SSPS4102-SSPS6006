@@ -44,9 +44,11 @@ I would like to acknowledge the Traditional Owners of Australia and  recognise t
 	
 Francesco Bailo (francesco.bailo@sydney.edu.au)
 
-I am a Lecturer in the School of Social and Political Sciences, University of Sydney. I am interested in researching forms of political engagement and political talk on social media. I researched the emergence and dynamics of online communities, the role between news organisations and social media, and the interdependence between social media activists and news organisations. I have engaged with and applied quantitative research methods developing expertise in quantitative text analysis (NLP) and network analysis.
+I am a Lecturer in the School of Social and Political Sciences, University of Sydney. I am also the [Deputy Director of the Centre for AI, Trust and Governance](https://www.sydney.edu.au/arts/our-research/centres-institutes-and-groups/centre-for-ai-trust-and-governance.html).
 
-This year I am teaching GOVT6139, SSPS4102 & SSPS6006.
+I am interested in researching forms of political engagement and political talk on social media. I researched the emergence and dynamics of online communities, the role between news organisations and social media, and the interdependence between social media activists and news organisations. I have engaged with and applied quantitative research methods developing expertise in quantitative text analysis (NLP) and network analysis.
+
+This year I am teaching GOVT6139 (S2), SSPS4102 & SSPS6006 (S1) and GOVT3901 (S1).
 
 ---
 
@@ -55,13 +57,13 @@ This year I am teaching GOVT6139, SSPS4102 & SSPS6006.
 
 | Time (tentative)  | Content                                                                                        |
 |---------------|------------------------------------------------------------------------------------------------|
-| 11:00 - 11:40 | Unit's introduction and overview: Textbook and texts; Content; Learning goals; How to do this  |
-| 11:40 - 12:00 | Getting started with R and RStudio                                                             |
-| 12:00 - 12:15 | Individual quiz/tutorial Part 1                                                                |
-| 12:15 - 12:45 | Stats: Data & Datasets, Variables, Mean                                                        |
-| 12:45 - 13:00 | Break                                                                                          |
-| 13:00 - 13:15 | Individual quiz/tutorial Part 2                                                                |
-| 13:15 - 14:00 | Group problem set (if we have time)                                                            |
+| 14:00 - 14:40 | Unit's introduction and overview: Textbook and texts; Content; Learning goals; How to do this  |
+| 14:40 - 15:00 | Getting started with R and RStudio                                                             |
+| 15:00 - 15:15 | Individual quiz/tutorial Part 1                                                                |
+| 15:15 - 15:45 | Stats: Data & Datasets, Variables, Mean                                                        |
+| 15:45 - 16:00 | Break                                                                                          |
+| 16:00 - 16:15 | Individual quiz/tutorial Part 2                                                                |
+| 16:15 - 17:00 | Group problem set (if we have time)                                                            |
 
 ---
 
@@ -69,7 +71,7 @@ This year I am teaching GOVT6139, SSPS4102 & SSPS6006.
 
 If you want to share you screen the from the class (e.g., to get help on your installation or code), join this meeting
 
-.center[https://uni-sydney.zoom.us/j/86005279457]
+.center[https://uni-sydney.zoom.us/j/82150046035]
 
 ---
 
@@ -133,8 +135,6 @@ class: inverse, center, middle
 
     * do the readings, 
     
-    * complete any [to-do (check "Syllabus" in Canvas)](https://canvas.sydney.edu.au/courses/49127/assignments/syllabus),
-    
     * come to class, 
     
     * engage with the in-class tasks.
@@ -155,6 +155,43 @@ class: inverse, center, middle
       * copy/paste code in RStudio; and
 
       * follow links.
+
+---
+
+# Student feedback form 2023 and 2024: What students liked 
+
+- **Engaging & Supportive Teaching** – The unit organisation and available support were widely appreciated.
+- **Valuable Skills Development** – Coding in R and statistical literacy were seen as useful for the workforce.
+- **Practical & Real-World Applications** – Students enjoyed connections to real-world data and examples.
+- **Challenging but Rewarding** – Many found the unit tough but felt well-supported throughout.
+
+---
+
+# What Students Liked
+
+### 💬 Student Quotes
+> _"This unit was incredibly helpful with statistical literacy. I feel much more comfortable interpreting statistics and discussing these concepts."_
+
+> _"Francesco was a very supportive tutor who was always willing to help us as much as he could. His positive attitude was possibly the only thing that kept me going through this subject, as it was very hard."_
+
+> _"Learning how to code is important, so I have enjoyed learning this. The structure of class and the R-Studio quizzes were helpful."_
+
+> _"I enjoyed learning how to use a new program, despite the difficulties of it. I also quite enjoyed the assessment tasks."_
+
+> _"This has been an entirely new skill for me to develop, which was useful and applicable within the workforce."_
+
+✅ **Overall:** A challenging but rewarding unit that helped students build essential data analytics skills with strong teaching support.
+
+---
+
+# What students didn't like: Areas for Improvement
+
+1. **Course Pace & Difficulty** – The fast pace was challenging.
+
+2. **Class Structure & Timing** – The 3-hour seminar format was considered long and difficult to stay engaged in.
+
+3. **Coding Integration** – Students suggested better integration between code and theory (statistical but also research design theory).
+
 
 ---
 
@@ -363,18 +400,18 @@ Remember, all announcements will come to you via Canvas - not email. So keep an 
 
 ### Let's take a quick tour!
 
-.center[https://canvas.sydney.edu.au/courses/59609]
+.center[https://canvas.sydney.edu.au/courses/64208]
 
 .center[<img src = 'https://media.giphy.com/media/jhzBQquG4KjaU/giphy.gif'>]
 
 SSPS6006 folks, note that you have **an additional site** for everything related to assessments!
 
-.center[https://canvas.sydney.edu.au/courses/59683]
+.center[https://canvas.sydney.edu.au/courses/64400]
 
 
 ---
 
-## Let's talk about... GenAI (1/4)
+## Let's talk about... GenAI (1/3)
 
 
 .center[<img src = 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg' width = '20%'></img>]
@@ -888,7 +925,7 @@ class: inverse
 
 ---
 
-## Week 01 Individual quiz/tutorial (in class)
+## Week 01 Group problem set (in class)
 
 * **Introductory stats**
 
@@ -899,10 +936,12 @@ countdown(minutes = 15, seconds = 00)
 ```
 
 ---
+class: inverse, center, middle
 
 # Attendance
 
 ---
+class: inverse, center, middle
 
 # Group problem set (Canvas)
 
