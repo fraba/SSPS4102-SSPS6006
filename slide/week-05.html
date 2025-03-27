@@ -41,7 +41,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 1, 2025 (updated: 2025-02-07)
+### Semester 1, 2025 (updated: 2025-03-27)
 ]
 
 ---
@@ -105,15 +105,15 @@ Let's check the aggregate results!
 
 | Time          | Content                                  |
 |---------------|------------------------------------------|
-| 11:00 - 11:15 | Data collection                          |
-| 11:15 - 11:25 | Lab: Data import and export with R       |
-| 11:25 - 11:45 | Lab: Data transformation with dplyr      |
-| 11:45 - 12:00 | Lab: dplyr's Verbs for Rows              |
-| 12:00 - 12:15 | Lab: dplyr's Verbs for Columns           |
-| 12:15 - 12:30 | Individual in-class quiz/tutorial Part 1 |
-| 12:30 - 12:45 | BREAK                                    |
-| 12:45 - 13:00 | Lab: pipes &amp; dplyr's Verbs for Groups    |
-| 13:00 - 14:00 | Group in-class problem set               |
+| 14:00 - 14:15 | Data collection                          |
+| 14:15 - 14:25 | Lab: Data import and export with R       |
+| 14:25 - 14:45 | Lab: Data transformation with dplyr      |
+| 14:45 - 15:00 | Lab: dplyr's Verbs for Rows              |
+| 15:00 - 15:15 | Lab: dplyr's Verbs for Columns           |
+| 15:15 - 15:30 | Individual in-class quiz/tutorial Part 1 |
+| 15:30 - 15:45 | BREAK                                    |
+| 15:45 - 16:00 | Lab: pipes &amp; dplyr's Verbs for Groups    |
+| 16:00 - 17:00 | Group in-class problem set               |
 
 ---
 class: inverse, center, middle
@@ -128,17 +128,16 @@ class: inverse, center, middle
 
 In *research design*, **data collection** is the process of *creating* your research data. In the social sciences there are a number of methods to create interesting data sets. They can be of two types:
 
-1. **Observational**: In an observational study, we don't influence in anyway the behaviour of the subjects of our study - who should not adapt their behavior because of or in response to our investigation. 
+1\. **Observational**: In an observational study, we don't influence in anyway the behaviour of the subjects of our study - who should not adapt their behavior because of or in response to our investigation. 
 
-2. **Experimental**: In an experiment we design and control the environment where our subjects will operate. 
 
 ]
 
 .pull-right[
 
-.center[&lt;img src = 'https://1.bp.blogspot.com/-Pt0cQYzFA1A/Xshlv9SviGI/AAAAAAAAAmY/zEMnvw3fq_spdjYmuJ6f8t4q9q20k1kbQCLcBGAsYHQ/w490/pasteur6.gif'&gt;&lt;/img&gt;]
+2\. **Experimental**: In an experiment we design and control the environment where our subjects will operate. 
 
-&lt;mark&gt;Try to classify a number of data collection instruments in **Menti**, either as Observational or Experimental...&lt;/mark&gt;
+.center[&lt;img src = 'https://1.bp.blogspot.com/-Pt0cQYzFA1A/Xshlv9SviGI/AAAAAAAAAmY/zEMnvw3fq_spdjYmuJ6f8t4q9q20k1kbQCLcBGAsYHQ/w490/pasteur6.gif'&gt;&lt;/img&gt;]
 
 ]
 
@@ -180,13 +179,13 @@ In data analytics, data collection generally has a slighlty different meaning. *
 
 ### Data collection in research design
 
-<div id="htmlwidget-c48de1de6b7f20febe1f" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c48de1de6b7f20febe1f">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ef46e0d3614d3abf7175" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ef46e0d3614d3abf7175">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data collection\", fillcolor = Orange]\n  b [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  c [label = \"Data analysis\"]\n  d [label = \"Results\"]\n\n  \n  a -> b -> c -> d;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ### Data collection in data analytics 
 
-<div id="htmlwidget-4060c07abbff1cb3eaac" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4060c07abbff1cb3eaac">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b3a6e6687b670f929948" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b3a6e6687b670f929948">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = oval, style = filled]\n  a [label = \"Data\", shape = egg, fillcolor = Lightblue]\n  b [label = \"Data collection\", fillcolor = Orange]\n  c [label = \"Computer\", shape = box]\n  d [label = \"Data analysis\"]\n  e [label = \"Results\"]\n\n  \n  a -> b -> c -> d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -254,8 +253,8 @@ Simply put, you can't `read(source = "http://en.wikipedia.org")`.
 
 A detail discussion about sourcing and reading data is out of the scope of this unit. Still, as example, here an example of a common "pipeline" to collect social media data. 
 
-<div id="htmlwidget-4454374f733dc4256b02" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4454374f733dc4256b02">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-56c81e9aa90cd52900f1" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-56c81e9aa90cd52900f1">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n\n  node [shape = oval, style = filled]\n  a [label = \"Query\\nPOST /twitter/api\\n{ query : metoo, since : 20171001 }\", \n  shape = box, fillcolor = Lightblue]\n  b [label = \"API\", fillcolor = Orange, shape = egg]\n  c [label = \"Data\\njson format\"]\n  \n  d [label = \"Read json\", shape = box, fillcolor = Lightblue]\n  \n  e [label = \"Computer\", shape = box]\n\n  \n  a -> b -> c; d -> c; c -> d; d -> e;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 If instead of an API, you have a database you should expect a very similar pipeline.
 
@@ -1175,8 +1174,8 @@ Before moving to group operations on data frame now let's introduce the `|&gt;` 
 
 The pipe operator, which you type with a `|` + `&gt;`, *chains* function together so that the value returned from the function *on the left* of the `|&gt;` flows as first argument into the function *on the right* of the `|&gt;`.
 
-<div id="htmlwidget-173ded90d56cbcddaeb1" style="width:100%;height:100px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-173ded90d56cbcddaeb1">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d04c16f10784b301d24f" style="width:100%;height:100px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d04c16f10784b301d24f">{"x":{"diagram":"\n  digraph graph2 {\n  \n  graph [layout = dot, rankdir = LR]\n  \n  # node definitions with substituted label text\n  node [shape = box, style = filled]\n  a [label = \"data\"]\n  b [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  c [label = \"fun()\", fillcolor = Orange]\n  d [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  e [label = \"fun()\", fillcolor = Orange]\n  f [label = \"|>\", shape = oval, fillcolor = Lightblue]\n  g [label = \"fun()\", fillcolor = Orange]\n\n  \n  a -> b -> c -> d -> e -> f -> g;\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 And in R...
 
@@ -1334,13 +1333,13 @@ nrow(us_population_by_county)
 ```
 
 
-|county            |state     | population|
-|:-----------------|:---------|----------:|
-|Van Zandt County  |Texas     |      52579|
-|Cumberland County |Tennessee |      56053|
-|McIntosh County   |Georgia   |      14333|
-|Cedar County      |Missouri  |      13982|
-|Pinal County      |Arizona   |     375770|
+|county             |state       | population|
+|:------------------|:-----------|----------:|
+|Hidalgo County     |Texas       |     774769|
+|San Joaquin County |California  |     685306|
+|Coles County       |Illinois    |      53873|
+|Goodhue County     |Minnesota   |      46183|
+|Tishomingo County  |Mississippi |      19593|
 
 ---
 

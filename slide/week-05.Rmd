@@ -99,15 +99,15 @@ Let's check the aggregate results!
 
 | Time          | Content                                  |
 |---------------|------------------------------------------|
-| 11:00 - 11:15 | Data collection                          |
-| 11:15 - 11:25 | Lab: Data import and export with R       |
-| 11:25 - 11:45 | Lab: Data transformation with dplyr      |
-| 11:45 - 12:00 | Lab: dplyr's Verbs for Rows              |
-| 12:00 - 12:15 | Lab: dplyr's Verbs for Columns           |
-| 12:15 - 12:30 | Individual in-class quiz/tutorial Part 1 |
-| 12:30 - 12:45 | BREAK                                    |
-| 12:45 - 13:00 | Lab: pipes & dplyr's Verbs for Groups    |
-| 13:00 - 14:00 | Group in-class problem set               |
+| 14:00 - 14:15 | Data collection                          |
+| 14:15 - 14:25 | Lab: Data import and export with R       |
+| 14:25 - 14:45 | Lab: Data transformation with dplyr      |
+| 14:45 - 15:00 | Lab: dplyr's Verbs for Rows              |
+| 15:00 - 15:15 | Lab: dplyr's Verbs for Columns           |
+| 15:15 - 15:30 | Individual in-class quiz/tutorial Part 1 |
+| 15:30 - 15:45 | BREAK                                    |
+| 15:45 - 16:00 | Lab: pipes & dplyr's Verbs for Groups    |
+| 16:00 - 17:00 | Group in-class problem set               |
 
 ---
 class: inverse, center, middle
@@ -122,17 +122,16 @@ class: inverse, center, middle
 
 In *research design*, **data collection** is the process of *creating* your research data. In the social sciences there are a number of methods to create interesting data sets. They can be of two types:
 
-1. **Observational**: In an observational study, we don't influence in anyway the behaviour of the subjects of our study - who should not adapt their behavior because of or in response to our investigation. 
+1\. **Observational**: In an observational study, we don't influence in anyway the behaviour of the subjects of our study - who should not adapt their behavior because of or in response to our investigation. 
 
-2. **Experimental**: In an experiment we design and control the environment where our subjects will operate. 
 
 ]
 
 .pull-right[
 
-.center[<img src = 'https://1.bp.blogspot.com/-Pt0cQYzFA1A/Xshlv9SviGI/AAAAAAAAAmY/zEMnvw3fq_spdjYmuJ6f8t4q9q20k1kbQCLcBGAsYHQ/w490/pasteur6.gif'></img>]
+2\. **Experimental**: In an experiment we design and control the environment where our subjects will operate. 
 
-<mark>Try to classify a number of data collection instruments in **Menti**, either as Observational or Experimental...</mark>
+.center[<img src = 'https://1.bp.blogspot.com/-Pt0cQYzFA1A/Xshlv9SviGI/AAAAAAAAAmY/zEMnvw3fq_spdjYmuJ6f8t4q9q20k1kbQCLcBGAsYHQ/w490/pasteur6.gif'></img>]
 
 ]
 
