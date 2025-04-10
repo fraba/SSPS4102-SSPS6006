@@ -75,29 +75,12 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 | Time        | Content                                       |
 |-------------|-----------------------------------------------|
-| 11:00-11:30 | Lab: Multiple regression models and predict() |
-| 11:30-11:40 | Individual quiz/tutorial Part 1               |
-| 11:40-12:30 | Probability                                   |
-| 12:30-12:45 | Break                                         |
-| 12:45-13:00 | Individual quiz/tutorial Part 1               |
-| 13:00-14:00 | Group in-class problem set                    |
-
-
----
-
-## Housekeeping: Free Access to Data Camp courses, tracks and projects
-
-- This is totally optional, and you should consider it if you want to put some extra time in developing your R skills
-
-- Access Data Camp classroom [here](https://www.datacamp.com/groups/shared_links/3ffac39d779d15680cd302d21bd72ca5fb49857b85e87494a2c3ed8f2438642b) (create account using your USYD email)
-
-- You should be able to access tracks, courses, and projects I have assigned to the team
-
-- This is very much experimental, feedback on this very much appreciated!
-
-.center[<img src = 'https://lts.lehigh.edu/sites/default/files/field/image/DataCamp%20for%20LTS%20News.png' width = '50%'>]
-
-
+| 14:00-14:30 | Lab: Multiple regression models and predict() |
+| 14:30-14:40 | Individual quiz/tutorial Part 1               |
+| 14:40-15:30 | Probability                                   |
+| 15:30-15:45 | Break                                         |
+| 15:45-16:00 | Individual quiz/tutorial Part 1               |
+| 16:00-17:00 | Group in-class problem set                    |
 
 ---
 class: inverse, center, middle
@@ -138,11 +121,11 @@ dag
 
 ---
 
-### NOW, using Padlet let's brainstorm a graphical model trying to address (also in terms of measurability) the BIG question of political science as of 2024. 
+### NOW, using Padlet let's brainstorm a graphical model trying to address (also in terms of measurability) the BIG question of political science in 2024 
 
 --
 
-### Will Taylor Swift’s Endorsement Affect the US Election? A Causal Graphical Model
+### Did Taylor Swift’s Endorsement Affect the 2024 US Election? A Causal Graphical Model
 
 .center[
 
