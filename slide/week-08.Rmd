@@ -82,14 +82,15 @@ Distributions
 
 | Time          | Content                              |
 |---------------|--------------------------------------|
-| 11:00 - 11:10 | Week 08 Student Feedback Survey      |
-| 11:10 - 11:30 | Stats: Control/Confounding Variables |
-| 11:30 - 11:50 | Stats: Uncertainty (Part 1)          |
-| 11:50 - 12:00 | Individual in-class quiz/tutorial    |
-| 12:00 - 12:15 | Stats: Uncertainty (Part 2)          |
-| 12:15 - 12:30 | Break                                |
-| 12:30 - 13:00 | Individual in-class problem set      |
-| 13:00 - 14:00 | Group in-class problem set           |
+| 14:00 - 14:10 | Week 08 Student Feedback Survey      |
+| 14:10 - 14:30 | Stats: Control/Confounding Variables |
+| 14:30 - 15:00 | Individual in-class problem set      |
+| 15:00 - 15:10 | Break                                |
+| 15:10 - 16:00 | Group in-class problem set           |
+| 16:00 - 16:20 | Stats: Uncertainty (Part 1)          |
+| 16:20 - 16:30 | Individual in-class quiz/tutorial    |
+| 16:30 - 17:00 | Stats: Uncertainty (Part 2)          |
+
 
 ---
 class: inverse, center, middle
@@ -225,6 +226,22 @@ You measure mental health using a validated scale that assesses anxiety, depress
 - Selecting control variables is a balance of theory, evidence, and practicality.
 - Proper control variables ensure that results reflect the true relationship between predictors and the outcome, without confounding influences.
 
+---
+class: inverse, center, middle
+
+# Individual in-class Problem set (with peer-review)
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Group in-class problem set
+
 
 ---
 class: inverse, center, middle
@@ -247,21 +264,6 @@ class: inverse, center, middle
 
 # Prof. Llaudet slides on Uncertainty (Part 2)
 
----
-class: inverse, center, middle
-
-# Individual in-class Problem set (with peer-review)
-
-```{r echo = FALSE}
-library(countdown)
-
-countdown(minutes = 10, seconds = 00)
-```
-
----
-class: inverse, center, middle
-
-# Group in-class problem set
 
 ---
 class: inverse, center, middle
