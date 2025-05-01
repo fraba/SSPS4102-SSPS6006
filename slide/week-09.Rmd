@@ -79,20 +79,46 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 | Time        | Content                         |
 |-------------|---------------------------------|
-| 11:00-11:40 | Machine learning                |
-| 11:40-12:00 | Lab: k-NN                       |
-| 12:00-12:15 | Individual quiz/tutorial Part 1 |
-| 12:15-12:30 | Lab: linear regression (again!) |
-| 12:30-12:45 | Individual ex. with peer-review |
-| 12:45-1:00  | Lab: logistic regression        |
-| 13:00-13:10 | Individual quiz/tutorial Part 2 |
-| 13:10-14:00 | Group in-class problem set      |
+| 14:00-14:40 | Machine learning                |
+| 14:40-15:00 | Lab: k-NN                       |
+| 15:00-15:15 | Individual quiz/tutorial Part 1 |
+| 15:15-15:30 | Lab: linear regression (again!) |
+| 15:30-15:45 | Individual ex. with peer-review |
+| 15:45-16:00 | Lab: logistic regression        |
+| 16:00-16:10 | Individual quiz/tutorial Part 2 |
+| 16:10-17:00 | Group in-class problem set      |
 
 
 ---
 class: inverse, center, middle
 
 # Closing the loop on Week 08 qualitative feedback
+
+
+---
+
+## 👍 What You Liked
+
+- Clear explanations, well-structured unit  
+- Individual quizzes and activities are helpful  
+- ChatGPT support is very useful  
+- Felt supported and encouraged to ask questions  
+- Enjoyed learning and applying R  
+- Real-world data and case studies made learning engaging  
+- Fun, hands-on assessments and in-class tasks  
+
+---
+
+## 👎 What Students Found Challenging
+
+- Assignment 1 was too hard and too heavily weighted (40%)  
+- Needed coding skills earlier—taught too close to deadline  
+- Lack of detailed guidance for major tasks  
+- 3-hour classes caused fatigue and attention drop  
+- Content sometimes moved too fast to follow  
+- Wanted more foundational coding instruction  
+- Too much early focus on theory, not enough on R  
+
 
 ---
 
