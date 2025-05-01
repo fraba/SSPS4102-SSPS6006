@@ -85,8 +85,9 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 | 15:15-15:30 | Lab: linear regression (again!) |
 | 15:30-15:45 | Individual ex. with peer-review |
 | 15:45-16:00 | Lab: logistic regression        |
-| 16:00-16:10 | Individual quiz/tutorial Part 2 |
-| 16:10-17:00 | Group in-class problem set      |
+| 16:00-16:30 | Individual/group in-class problem set      |
+| 16:30-17:00 | Individual quiz/tutorial Part 2 |
+
 
 
 ---
