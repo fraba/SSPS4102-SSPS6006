@@ -78,16 +78,38 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 | Time        | Content                             |
 |-------------|-------------------------------------|
-| 11:00-11:15 | Language and Modelling              |
-| 11:15-11:45 | Tokenization, Stop Words & Stemming |
-| 11:45-11:55 | Individual quiz/tutorial Part 1     |
-| 11:55-12:00 | Break                               |
-| 12:00-12:15 | Sentiment analysis                  |
-| 12:15-12:30 | Document-Frequency Matrix           |
-| 12:30-12:40 | Word Embeddings                     |
-| 12:40-12:45 | Individual quiz/tutorial Part 2     |
-| 12:45-13:15 | Individual on A3 with peer-review   |
-| 13:15-14:00 | Individual problem Set              |
+| 14:00-14:30 | Individual on A3 with peer-review   |
+| 14:30-15:15 | Individual Problem Set              |
+| 15:15-15:30 | Language and Modelling              |
+| 15:30-15:45 | Tokenization, Stop Words & Stemming |
+| 15:45-15:55 | Individual quiz/tutorial Part 1     |
+| 15:55-16:00 | Break                               |
+| 16:00-16:15 | Sentiment analysis                  |
+| 16:15-16:30 | Document-Frequency Matrix           |
+| 16:30-16:40 | Word Embeddings                     |
+| 16:40-17:00 | Individual quiz/tutorial Part 2     |
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 30, seconds = 00)
+```
+
+---
+class: inverse, center, middle
+
+# Individual problem set
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 45, seconds = 00)
+```
 
 
 ---
@@ -1319,25 +1341,8 @@ class: inverse, center, middle
 ```{r echo = FALSE}
 library(countdown)
 
-countdown(minutes = 5, seconds = 00)
+countdown(minutes = 20, seconds = 00)
 ```
-
----
-class: inverse, center, middle
-
-# Individual on A3 with peer-review
-
-```{r echo = FALSE}
-library(countdown)
-
-countdown(minutes = 30, seconds = 00)
-```
-
----
-class: inverse, center, middle
-
-# Individual problem set
-
 
 ---
 class: inverse, center, middle

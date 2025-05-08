@@ -6,13 +6,13 @@
     <meta name="author" content="Francesco Bailo" />
     <script src="week-10_files/header-attrs/header-attrs.js"></script>
     <link href="week-10_files/remark-css/default.css" rel="stylesheet" />
+    <link href="week-10_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="week-10_files/countdown/countdown.js"></script>
     <link href="week-10_files/htmltools-fill/fill.css" rel="stylesheet" />
     <script src="week-10_files/htmlwidgets/htmlwidgets.js"></script>
     <script src="week-10_files/viz/viz.js"></script>
     <link href="week-10_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
     <script src="week-10_files/grViz-binding/grViz.js"></script>
-    <link href="week-10_files/countdown/countdown.css" rel="stylesheet" />
-    <script src="week-10_files/countdown/countdown.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         TeX: { equationNumbers: { autoNumber: "AMS" } },
@@ -42,7 +42,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 1, 2025 (updated: 2025-02-07)
+### Semester 1, 2025 (updated: 2025-05-08)
 ]
 
 ---
@@ -84,16 +84,36 @@ I would like to acknowledge the Traditional Owners of Australia and recognise th
 
 | Time        | Content                             |
 |-------------|-------------------------------------|
-| 11:00-11:15 | Language and Modelling              |
-| 11:15-11:45 | Tokenization, Stop Words &amp; Stemming |
-| 11:45-11:55 | Individual quiz/tutorial Part 1     |
-| 11:55-12:00 | Break                               |
-| 12:00-12:15 | Sentiment analysis                  |
-| 12:15-12:30 | Document-Frequency Matrix           |
-| 12:30-12:40 | Word Embeddings                     |
-| 12:40-12:45 | Individual quiz/tutorial Part 2     |
-| 12:45-13:15 | Individual on A3 with peer-review   |
-| 13:15-14:00 | Individual problem Set              |
+| 14:00-14:30 | Individual on A3 with peer-review   |
+| 14:30-15:15 | Individual Problem Set              |
+| 15:15-15:30 | Language and Modelling              |
+| 15:30-15:45 | Tokenization, Stop Words &amp; Stemming |
+| 15:45-15:55 | Individual quiz/tutorial Part 1     |
+| 15:55-16:00 | Break                               |
+| 16:00-16:15 | Sentiment analysis                  |
+| 16:15-16:30 | Document-Frequency Matrix           |
+| 16:30-16:40 | Word Embeddings                     |
+| 16:40-17:00 | Individual quiz/tutorial Part 2     |
+
+---
+class: inverse, center, middle
+
+# Individual on A3 with peer-review
+
+<div class="countdown" id="timer_5d90c9a6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+class: inverse, center, middle
+
+# Individual problem set
+
+<div class="countdown" id="timer_26c74292" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">45</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
 
 
 ---
@@ -167,8 +187,8 @@ class: inverse, center, middle
 
 ## A text analysis pipeline
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-b88df4d86650e5e1236a" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-b88df4d86650e5e1236a">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-6fbf909e35677f86e603" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-6fbf909e35677f86e603">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -886,7 +906,7 @@ class: inverse, center, middle
 # Individual quiz/tutorial Part 1 
 (to Stemming included)
 
-<div class="countdown" id="timer_e0692f24" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_f483d122" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -972,23 +992,23 @@ sent_bing %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word         sentiment
-##    &lt;chr&gt;        &lt;chr&gt;    
-##  1 hotheaded    negative 
-##  2 affluent     positive 
-##  3 lone         negative 
-##  4 conflicts    negative 
-##  5 regretted    negative 
-##  6 preferring   positive 
-##  7 fanaticism   negative 
-##  8 inextricable negative 
-##  9 disinclined  negative 
-## 10 dishonest    negative 
-## 11 scorn        negative 
-## 12 sue          negative 
-## 13 unsecure     negative 
-## 14 gruff        negative 
-## 15 slanders     negative
+##    word           sentiment
+##    &lt;chr&gt;          &lt;chr&gt;    
+##  1 prik           negative 
+##  2 beastly        negative 
+##  3 disparagingly  negative 
+##  4 grainy         negative 
+##  5 arrogant       negative 
+##  6 flabbergast    negative 
+##  7 lags           negative 
+##  8 profanity      negative 
+##  9 better-known   positive 
+## 10 ignorant       negative 
+## 11 unexpectedly   negative 
+## 12 insurmountably negative 
+## 13 sap            negative 
+## 14 nauseatingly   negative 
+## 15 conspirator    negative
 ```
 
 ---
@@ -1001,23 +1021,23 @@ sent_afinn %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word          value
-##    &lt;chr&gt;         &lt;dbl&gt;
-##  1 unimpressed      -2
-##  2 jocular           2
-##  3 denounces        -2
-##  4 denied           -2
-##  5 nasty            -3
-##  6 punished         -2
-##  7 burdened         -2
-##  8 controversial    -2
-##  9 defenseless      -2
-## 10 frisky            2
-## 11 suffers          -2
-## 12 careful           2
-## 13 unsupported      -2
-## 14 criticizes       -2
-## 15 oks               2
+##    word       value
+##    &lt;chr&gt;      &lt;dbl&gt;
+##  1 damnit        -4
+##  2 bias          -1
+##  3 solve          1
+##  4 postpones     -1
+##  5 dire          -3
+##  6 strong         2
+##  7 greatest       3
+##  8 destroying    -3
+##  9 obsessed       2
+## 10 despairs      -3
+## 11 belittled     -2
+## 12 stressors     -2
+## 13 combat        -1
+## 14 joke           2
+## 15 falsify       -3
 ```
 
 ---
@@ -1030,23 +1050,23 @@ sent_loughran %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word          sentiment   
-##    &lt;chr&gt;         &lt;chr&gt;       
-##  1 furtherance   litigious   
-##  2 forbade       constraining
-##  3 corrupted     negative    
-##  4 reconsiders   uncertainty 
-##  5 inequity      negative    
-##  6 thereof       litigious   
-##  7 appear        uncertainty 
-##  8 distracting   negative    
-##  9 leadership    positive    
-## 10 obligate      constraining
-## 11 slowdowns     negative    
-## 12 suggest       uncertainty 
-## 13 shrinkages    negative    
-## 14 hereon        litigious   
-## 15 incarcerating negative
+##    word           sentiment   
+##    &lt;chr&gt;          &lt;chr&gt;       
+##  1 mislabel       negative    
+##  2 stressing      negative    
+##  3 pervasiveness  negative    
+##  4 bolstered      positive    
+##  5 contraction    negative    
+##  6 jurisdictional litigious   
+##  7 litigations    negative    
+##  8 extant         superfluous 
+##  9 promulgator    litigious   
+## 10 restraints     constraining
+## 11 nonperforming  negative    
+## 12 irrevocable    litigious   
+## 13 covenanted     constraining
+## 14 unsuited       negative    
+## 15 refrains       constraining
 ```
 
 ---
@@ -1059,23 +1079,23 @@ sent_nrc %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word        sentiment   
-##    &lt;chr&gt;       &lt;chr&gt;       
-##  1 leave       negative    
-##  2 sponge      negative    
-##  3 arraignment anger       
-##  4 trick       negative    
-##  5 incurable   sadness     
-##  6 witch       fear        
-##  7 passivity   negative    
-##  8 frolic      positive    
-##  9 disparaging anger       
-## 10 foresight   trust       
-## 11 hesitation  negative    
-## 12 saliva      anticipation
-## 13 spiteful    anger       
-## 14 serenity    anticipation
-## 15 weakly      negative
+##    word         sentiment
+##    &lt;chr&gt;        &lt;chr&gt;    
+##  1 cashier      trust    
+##  2 chaotic      anger    
+##  3 crumbling    sadness  
+##  4 conciliation joy      
+##  5 yell         fear     
+##  6 neurotic     negative 
+##  7 confined     disgust  
+##  8 stillborn    negative 
+##  9 endemic      negative 
+## 10 rapt         positive 
+## 11 aga          positive 
+## 12 fury         negative 
+## 13 prevention   positive 
+## 14 bluff        negative 
+## 15 scoff        negative
 ```
 
 ---
@@ -1296,7 +1316,7 @@ trump_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-40-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-42-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1310,7 +1330,7 @@ clinton_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-41-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-43-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1424,7 +1444,7 @@ trump_clinton_2016_freq |&gt;
   labs(x = "frequency", y = NULL)
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-46-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-48-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -1747,26 +1767,10 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_5cf4ab28" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_ab6e56b5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+<code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
-
----
-class: inverse, center, middle
-
-# Individual on A3 with peer-review
-
-<div class="countdown" id="timer_3b566be0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-
----
-class: inverse, center, middle
-
-# Individual problem set
-
 
 ---
 class: inverse, center, middle
