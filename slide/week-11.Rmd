@@ -62,16 +62,6 @@ ggplot2::theme_set(theme_bw())
 ## Acknowledgement of Country
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
----
-class: inverse, center, middle
-
-# Please take the anonymous Week 11 Student feedback survey on Canvas!
-
-```{r echo = FALSE}
-library(countdown)
-
-countdown(minutes = 5, seconds = 00)
-```
 
 ---
 
@@ -99,8 +89,7 @@ countdown(minutes = 5, seconds = 00)
 
 | Time        | Content                                |
 |-------------|----------------------------------------|
-| 14:00-14:10 | Week 11 Student feedback survey        |
-| 14:10-15:00 | A3 Workshop                            |
+| 14:00-15:00 | A3 Workshop                            |
 | 15:00-15:20 | Tidymodels for machine learning        |
 | 15:20-15:40 | Logistic regression with non-text data |
 | 15:40-15:50 | Linear regression with non-text data   |
@@ -109,15 +98,47 @@ countdown(minutes = 5, seconds = 00)
 | 16:40-17:00 | Logistic regression with text data     |
 
 ---
-
 class: inverse, center, middle
 
-# Week 11 Student feedback survey (from Canvas)
+# But first a few thoughts on using AI in learning (code and other stuff)
 
-```{r echo = FALSE}
-library(countdown)
-countdown(minutes = 5, seconds = 00)
-```
+
+.footnote[Klein, E. (2025). Opinion | ‘We Have to Really Rethink the Purpose of Education’ [Broadcast]. Retrieved 15 May 2025, from https://www.nytimes.com/2025/05/13/opinion/ezra-klein-podcast-rebecca-winthrop.html]
+
+---
+
+## 1. Use AI as a Coach, Not a Crutch
+
+- Think of AI as your **coding tutor**, not your substitute.
+- Let it **explain concepts**, **suggest alternatives**, and **debug with you** — but don’t let it write full solutions on your behalf.
+- **Understand before you copy**. Always ask yourself: *Can I explain what this code does and why it works?*
+
+> Learning is not about doing everything perfectly — it's about knowing how to learn from your mistakes.
+
+---
+
+## 2. Build the Muscle of Doing Hard Things
+
+- AI makes it easy to avoid friction — but **friction is where the learning happens**.
+- Struggling with bugs, experimenting with logic, and figuring things out trains your brain to focus, persist, and solve.
+- Avoid “passenger mode” — where you coast through tasks without actually learning. Be an **explorer**: dig in, ask questions, and push boundaries.
+
+> “We need to have kids build that muscle of doing hard things because I worry greatly that A.I. will basically make a frictionless world.”  
+> *(Klein, 2025)*
+
+---
+
+## 3. Learn to Learn — Not Just to Finish
+
+- The most valuable skill in an uncertain future is **learning how to learn**.
+- AI can accelerate your understanding if you use it to:
+  - Break down complex problems
+  - Test different approaches
+  - Deepen your grasp of theory
+- Focus on **comprehension over completion** — use AI to become a **self-directed learner**.
+
+> "The skills that I think are going to be most important are how motivated and engaged kids are to be able to learn new things."  
+> *(Klein, 2025)*
 
 ---
 

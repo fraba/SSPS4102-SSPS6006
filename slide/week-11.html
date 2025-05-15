@@ -67,15 +67,6 @@ pre code {
 ## Acknowledgement of Country
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
----
-class: inverse, center, middle
-
-# Please take the anonymous Week 11 Student feedback survey on Canvas!
-
-<div class="countdown" id="timer_398e5c6b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
 
 ---
 
@@ -103,8 +94,7 @@ class: inverse, center, middle
 
 | Time        | Content                                |
 |-------------|----------------------------------------|
-| 14:00-14:10 | Week 11 Student feedback survey        |
-| 14:10-15:00 | A3 Workshop                            |
+| 14:00-15:00 | A3 Workshop                            |
 | 15:00-15:20 | Tidymodels for machine learning        |
 | 15:20-15:40 | Logistic regression with non-text data |
 | 15:40-15:50 | Linear regression with non-text data   |
@@ -113,15 +103,47 @@ class: inverse, center, middle
 | 16:40-17:00 | Logistic regression with text data     |
 
 ---
-
 class: inverse, center, middle
 
-# Week 11 Student feedback survey (from Canvas)
+# But first a few thoughts on using AI in learning (code and other stuff)
 
-<div class="countdown" id="timer_aab61906" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+
+.footnote[Klein, E. (2025). Opinion | ‘We Have to Really Rethink the Purpose of Education’ [Broadcast]. Retrieved 15 May 2025, from https://www.nytimes.com/2025/05/13/opinion/ezra-klein-podcast-rebecca-winthrop.html]
+
+---
+
+## 1. Use AI as a Coach, Not a Crutch
+
+- Think of AI as your **coding tutor**, not your substitute.
+- Let it **explain concepts**, **suggest alternatives**, and **debug with you** — but don’t let it write full solutions on your behalf.
+- **Understand before you copy**. Always ask yourself: *Can I explain what this code does and why it works?*
+
+&gt; Learning is not about doing everything perfectly — it's about knowing how to learn from your mistakes.
+
+---
+
+## 2. Build the Muscle of Doing Hard Things
+
+- AI makes it easy to avoid friction — but **friction is where the learning happens**.
+- Struggling with bugs, experimenting with logic, and figuring things out trains your brain to focus, persist, and solve.
+- Avoid “passenger mode” — where you coast through tasks without actually learning. Be an **explorer**: dig in, ask questions, and push boundaries.
+
+&gt; “We need to have kids build that muscle of doing hard things because I worry greatly that A.I. will basically make a frictionless world.”  
+&gt; *(Klein, 2025)*
+
+---
+
+## 3. Learn to Learn — Not Just to Finish
+
+- The most valuable skill in an uncertain future is **learning how to learn**.
+- AI can accelerate your understanding if you use it to:
+  - Break down complex problems
+  - Test different approaches
+  - Deepen your grasp of theory
+- Focus on **comprehension over completion** — use AI to become a **self-directed learner**.
+
+&gt; "The skills that I think are going to be most important are how motivated and engaged kids are to be able to learn new things."  
+&gt; *(Klein, 2025)*
 
 ---
 
@@ -129,7 +151,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review
 
-<div class="countdown" id="timer_33a965c2" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_f045ea08" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -152,8 +174,8 @@ class: inverse, center, middle
 
 ## A machine learning pipline
 
-<div id="htmlwidget-a0a4b8bcedffc7ad5f22" style="width:100%;height:500px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a0a4b8bcedffc7ad5f22">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b7232ff1f180623b6f65" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b7232ff1f180623b6f65">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -278,7 +300,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-9-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-7-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -295,7 +317,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-10-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-8-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -312,7 +334,7 @@ voting_train %&gt;%
   geom_bar()
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-11-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-9-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 .center[(And this is where the boomers come from!)]
 
@@ -793,14 +815,14 @@ ggplot(linear_predictions) +
   lims(x = c(-63,63), y = c(-63,63))
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-33-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-31-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, center, middle
 
 # Individual quiz/tutorial Part I (up to "R2 and RMSE")
 
-<div class="countdown" id="timer_05936e1b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_1d3f66af" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -841,7 +863,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part II ("p-values, hypothesis testing, regression analysis")
 
-<div class="countdown" id="timer_68b7d114" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_401007f5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -888,7 +910,7 @@ debate_transcripts |&gt;
   geom_col() + labs(x = "year", y = "Number of speeches per year")
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-37-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-35-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
