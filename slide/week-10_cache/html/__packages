@@ -15,8 +15,8 @@ DiagrammeR
 cowplot
 gapminder
 ggrepel
+countdown
 tidytext
 SnowballC
 gutenbergr
 tokenizers
-countdown

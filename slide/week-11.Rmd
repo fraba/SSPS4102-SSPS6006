@@ -99,15 +99,14 @@ countdown(minutes = 5, seconds = 00)
 
 | Time        | Content                                |
 |-------------|----------------------------------------|
-| 11:00-11:10 | Week 11 Student feedback survey        |
-| 11:10-12:00 | A3 Workshop                            |
-| 12:00-12:20 | Tidymodels for machine learning        |
-| 12:20-12:40 | Logistic regression with non-text data |
-| 12:40-12:50 | Linear regression with non-text data   |
-| 12:50-13:00 | Individual quiz/tutorial Part 1        |
-| 13:00-13:20 | Linear regression with text data       |
-| 13:20-13:40 | Logistic regression with text data     |
-| 13:40-14:00 | Individual quiz/tutorial Part 2        |
+| 14:00-14:10 | Week 11 Student feedback survey        |
+| 14:10-15:00 | A3 Workshop                            |
+| 15:00-15:20 | Tidymodels for machine learning        |
+| 15:20-15:40 | Logistic regression with non-text data |
+| 15:40-15:50 | Linear regression with non-text data   |
+| 15:50-16:20 | Individual quiz/tutorial               |
+| 16:20-16:40 | Linear regression with text data       |
+| 16:40-17:00 | Logistic regression with text data     |
 
 ---
 
@@ -561,8 +560,8 @@ where:
 
 ## Interpretation of $R^2$
 
-- **$R^2 = 1$**: Perfect fit. The model explains all variability in the data.
-- **$R^2 = 0$**: No fit. The model explains none of the variability.
+- $R^2 = 1$: Perfect fit. The model explains all variability in the data.
+- $R^2 = 0$: No fit. The model explains none of the variability.
 - **Between 0 and 1**: Partially explains the variance.
     - For example, $R^2 = 0.75$ implies that 75% of the variability in the outcome is explained by the model.
 
@@ -663,6 +662,48 @@ class: inverse, center, middle
 library(countdown)
 
 countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Recap: What Are P-Values?
+
+- A **p-value** measures the probability of observing your data (or something more extreme) assuming the **null hypothesis ($H_0$)** is true.
+- It answers: *“If there really were no effect, how surprising is this data?”*
+- A **small p-value** (typically ≤ 0.05) suggests the data is **unlikely under $H_0$** → provides evidence **against $H_0$**.
+- A **large p-value** means the data is **consistent with $H_0$** → we **fail to reject H₀**.
+- **Example**: A p-value of 0.006 means there’s only a 0.6% chance of seeing the result we did (or more extreme) if $H_0$ is true.
+
+---
+
+## Hypothesis Testing: A Practical Guide
+
+1. **Set hypotheses**:
+   - Null hypothesis: $H_0: \beta = 0$
+   - Alternative hypothesis: $H_1: \beta \ne 0$
+
+2. **Compute the test statistic**: $z = \frac{\hat{\beta}}{\text{SE}(\hat{\beta})}$
+
+3. **Get the p-value** using the standard normal distribution:
+   - If $\text{p-value} \leq 0.05$ → **Reject $H_0$**
+   - If $\text{p-value} > 0.05$ → **Fail to reject $H_0$**
+
+4. **Conclude**:
+   - Significant result → evidence that the effect is likely not zero in the population.
+   - Always report: direction, size, and unit of measurement of the effect.
+
+
+
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part II ("p-values, hypothesis testing, regression analysis")
+
+```{r echo = FALSE}
+library(countdown)
+
+countdown(minutes = 20, seconds = 00)
 ```
 
 
@@ -993,18 +1034,6 @@ accuracy(logistic_predictions, truth = speaker, estimate = .pred_class)
 
 ```{r}
 conf_mat(logistic_predictions, truth = speaker, estimate = .pred_class)
-```
-
-
----
-class: inverse, center, middle
-
-# Individual quiz/tutorial Part II
-
-```{r echo = FALSE}
-library(countdown)
-
-countdown(minutes = 10, seconds = 00)
 ```
 
 

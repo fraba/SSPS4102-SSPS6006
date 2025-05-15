@@ -376,18 +376,33 @@ class: inverse, center, middle
 
 **Example**: Let's use Mary Shelley's Frankestein for the analysis.
 
-```{r eval = FALSE}
+```{r eval = FALSE, include = FALSE}
 install.packages("gutenbergr")
 ```
 
-Note: gutenbergr download books into data frames where each row is a book's line.
+Note: This will download books into data frames where each row is a book's line.
 
-```{r}
+```{r include = FALSE}
 library(gutenbergr)
 frankenstein <- 
   gutenberg_works(title == "Frankenstein; Or, The Modern Prometheus") |>
-  gutenberg_download()
+  gutenberg_download(mirror = "http://mirrors.xmission.com/gutenberg/")
 ```
+
+```{r}
+library(readr)
+
+url <- "https://www.gutenberg.org/cache/epub/41445/pg41445.txt"  
+# Read the file into R as a character vector (one line per element)
+lines <- readr::read_lines(url)
+
+# Convert to a two-column tibble
+frankenstein <- data.frame(
+  line = seq_along(lines),
+  text = lines
+)
+```
+
 
 ---
 
@@ -403,13 +418,13 @@ install.packages("tokenizers")
 
 
 ```{r}
-frankenstein$text[49]
+frankenstein$text[180]
 ```
 
 
 ```{r}
 library(tokenizers)
-word_tokens <- tokenizers::tokenize_words(frankenstein$text[49])
+word_tokens <- tokenizers::tokenize_words(frankenstein$text[180])
 word_tokens
 ```
 
@@ -475,7 +490,8 @@ library(tidytext)
 frankenstein |> # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
-                          token = "words") # Tokenize what?
+                          token = "words") |> # Tokenize what?
+  head(10)
 ```
 
 ---
@@ -487,8 +503,8 @@ We can probably already do some cleaning, by removing all the lines that are not
 ```{r}
 frankenstein <-
   frankenstein |>
-  dplyr::slice(46:dplyr::n()) 
-  # this will only include rows from 46 to the last row.
+  dplyr::slice(55:dplyr::n()) 
+  # this will only include rows from 55 to the last row.
   # which we get with the function `n()`
 ```
 
@@ -511,7 +527,8 @@ frankenstein |> # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
                           token = "ngrams", # Tokenize what?
-                          n = 3) # How many grams?
+                          n = 3) |> # How many grams?
+    head(10)
 ```
 
 ---
@@ -531,7 +548,8 @@ library(tidytext)
 frankenstein |> # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
-                          token = "words") 
+                          token = "words") |>
+  head(10)
 ```
 
 ]
@@ -546,7 +564,8 @@ frankenstein |> # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
                           token = "ngrams", # Tokenize what?
-                          n = 3) # How many grams?
+                          n = 3) |> # How many grams?
+  head(10)
 ```
 
 ]

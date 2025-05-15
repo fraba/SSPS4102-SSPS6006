@@ -42,7 +42,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 1, 2025 (updated: 2025-05-08)
+### Semester 1, 2025 (updated: 2025-05-15)
 ]
 
 ---
@@ -100,7 +100,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review
 
-<div class="countdown" id="timer_5d90c9a6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_be7e693c" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -110,7 +110,7 @@ class: inverse, center, middle
 
 # Individual problem set
 
-<div class="countdown" id="timer_26c74292" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_dcb0b337" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">45</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -187,8 +187,8 @@ class: inverse, center, middle
 
 ## A text analysis pipeline
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-6fbf909e35677f86e603" style="width:100%;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-6fbf909e35677f86e603">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-233b828b99c95b720201" style="width:100%;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-233b828b99c95b720201">{"x":{"diagram":"\ndigraph text_analysis_workflow {\n  \n  # Define graph attributes\n  graph [layout = dot, rankdir = LR]\n  \n  # Define node styles and labels\n  node [shape = box, style = filled, color = lightgrey]\n  \n  text_data      [label = \"Text Data\"]\n  preprocessing  [label = \"Preprocessing:\nCleaning,\nTokenization,\nStemming,\nRemoving \nStop words\"]\n  feature_extraction [label = \"Feature Extraction\"]\n  model          [label = \"Model\"]\n  classification  [label = \"Classification\"]\n  prediction     [label = \"Prediction\"]\n  \n  # Define edges to show the flow\n  text_data -> preprocessing\n  preprocessing -> feature_extraction\n  feature_extraction -> model\n  model -> classification\n  model -> prediction\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -392,19 +392,26 @@ class: inverse, center, middle
 **Example**: Let's use Mary Shelley's Frankestein for the analysis.
 
 
+
+Note: This will download books into data frames where each row is a book's line.
+
+
+
+
 ``` r
-install.packages("gutenbergr")
+library(readr)
+
+url &lt;- "https://www.gutenberg.org/cache/epub/41445/pg41445.txt"  
+# Read the file into R as a character vector (one line per element)
+lines &lt;- readr::read_lines(url)
+
+# Convert to a two-column tibble
+frankenstein &lt;- data.frame(
+  line = seq_along(lines),
+  text = lines
+)
 ```
 
-Note: gutenbergr download books into data frames where each row is a book's line.
-
-
-``` r
-library(gutenbergr)
-frankenstein &lt;- 
-  gutenberg_works(title == "Frankenstein; Or, The Modern Prometheus") |&gt;
-  gutenberg_download()
-```
 
 ---
 
@@ -422,24 +429,26 @@ install.packages("tokenizers")
 
 
 ``` r
-frankenstein$text[49]
+frankenstein$text[180]
 ```
 
 ```
-## [1] NA
+## [1] "These are my enticements, and they are sufficient to conquer all fear of"
 ```
 
 
 
 ``` r
 library(tokenizers)
-word_tokens &lt;- tokenizers::tokenize_words(frankenstein$text[49])
+word_tokens &lt;- tokenizers::tokenize_words(frankenstein$text[180])
 word_tokens
 ```
 
 ```
 ## [[1]]
-## [1] NA
+##  [1] "these"       "are"         "my"          "enticements" "and"        
+##  [6] "they"        "are"         "sufficient"  "to"          "conquer"    
+## [11] "all"         "fear"        "of"
 ```
 
 ---
@@ -506,12 +515,22 @@ library(tidytext)
 frankenstein |&gt; # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
-                          token = "words") # Tokenize what?
+                          token = "words") |&gt; # Tokenize what?
+  head(10)
 ```
 
 ```
-## # A tibble: 0 × 2
-## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
+##    line         word
+## 1     1          the
+## 2     1      project
+## 3     1    gutenberg
+## 4     1        ebook
+## 5     1           of
+## 6     1 frankenstein
+## 7     1           or
+## 8     1          the
+## 9     1       modern
+## 10    1   prometheus
 ```
 
 ---
@@ -524,8 +543,8 @@ We can probably already do some cleaning, by removing all the lines that are not
 ``` r
 frankenstein &lt;-
   frankenstein |&gt;
-  dplyr::slice(46:dplyr::n()) 
-  # this will only include rows from 46 to the last row.
+  dplyr::slice(55:dplyr::n()) 
+  # this will only include rows from 55 to the last row.
   # which we get with the function `n()`
 ```
 
@@ -549,12 +568,22 @@ frankenstein |&gt; # From before
   tidytext::unnest_tokens(output = word, # Output column name
                           input = text, # Input column with text
                           token = "ngrams", # Tokenize what?
-                          n = 3) # How many grams?
+                          n = 3) |&gt; # How many grams?
+    head(10)
 ```
 
 ```
-## # A tibble: 0 × 2
-## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
+##    line               word
+## 1    55      did i request
+## 2    55     i request thee
+## 3    55 request thee maker
+## 4    55    thee maker from
+## 5    55      maker from my
+## 6    55       from my clay
+## 7    56        to mould me
+## 8    56       mould me man
+## 9    56         me man did
+## 10   56          man did i
 ```
 
 ---
@@ -571,8 +600,17 @@ frankenstein |&gt; # From before
 
 
 ```
-## # A tibble: 0 × 2
-## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
+##    line    word
+## 1    55     did
+## 2    55       i
+## 3    55 request
+## 4    55    thee
+## 5    55   maker
+## 6    55    from
+## 7    55      my
+## 8    55    clay
+## 9    56      to
+## 10   56   mould
 ```
 
 ]
@@ -583,8 +621,17 @@ frankenstein |&gt; # From before
 
 
 ```
-## # A tibble: 0 × 2
-## # ℹ 2 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;
+##    line               word
+## 1    55      did i request
+## 2    55     i request thee
+## 3    55 request thee maker
+## 4    55    thee maker from
+## 5    55      maker from my
+## 6    55       from my clay
+## 7    56        to mould me
+## 8    56       mould me man
+## 9    56         me man did
+## 10   56          man did i
 ```
 
 ]
@@ -607,7 +654,7 @@ frankenstein$text[4]
 ```
 
 ```
-## [1] NA
+## [1] ""
 ```
 
 ``` r
@@ -871,8 +918,13 @@ head(frankenstein_tokens)
 ```
 
 ```
-## # A tibble: 0 × 3
-## # ℹ 3 variables: gutenberg_id &lt;int&gt;, word &lt;chr&gt;, stemmed_word &lt;chr&gt;
+##   line    word stemmed_word
+## 1   55 request      request
+## 2   55    thee         thee
+## 3   55   maker        maker
+## 4   55    clay         clai
+## 5   56   mould        mould
+## 6   56 solicit      solicit
 ```
 
 ---
@@ -906,7 +958,7 @@ class: inverse, center, middle
 # Individual quiz/tutorial Part 1 
 (to Stemming included)
 
-<div class="countdown" id="timer_f483d122" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_887f7818" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -994,21 +1046,21 @@ sent_bing %&gt;%
 ## # A tibble: 15 × 2
 ##    word           sentiment
 ##    &lt;chr&gt;          &lt;chr&gt;    
-##  1 prik           negative 
-##  2 beastly        negative 
-##  3 disparagingly  negative 
-##  4 grainy         negative 
-##  5 arrogant       negative 
-##  6 flabbergast    negative 
-##  7 lags           negative 
-##  8 profanity      negative 
-##  9 better-known   positive 
-## 10 ignorant       negative 
-## 11 unexpectedly   negative 
-## 12 insurmountably negative 
-## 13 sap            negative 
-## 14 nauseatingly   negative 
-## 15 conspirator    negative
+##  1 draconian      negative 
+##  2 unwell         negative 
+##  3 insociable     negative 
+##  4 exploitation   negative 
+##  5 scolded        negative 
+##  6 cravenly       negative 
+##  7 capriciousness negative 
+##  8 ill-usage      negative 
+##  9 agonizingly    negative 
+## 10 humming        negative 
+## 11 marvelousness  positive 
+## 12 exceptionally  positive 
+## 13 exceptional    positive 
+## 14 viper          negative 
+## 15 gems           positive
 ```
 
 ---
@@ -1021,23 +1073,23 @@ sent_afinn %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word       value
-##    &lt;chr&gt;      &lt;dbl&gt;
-##  1 damnit        -4
-##  2 bias          -1
-##  3 solve          1
-##  4 postpones     -1
-##  5 dire          -3
-##  6 strong         2
-##  7 greatest       3
-##  8 destroying    -3
-##  9 obsessed       2
-## 10 despairs      -3
-## 11 belittled     -2
-## 12 stressors     -2
-## 13 combat        -1
-## 14 joke           2
-## 15 falsify       -3
+##    word          value
+##    &lt;chr&gt;         &lt;dbl&gt;
+##  1 intimidates      -2
+##  2 lobbying         -2
+##  3 sincere           2
+##  4 tense            -2
+##  5 manipulating     -1
+##  6 faith             1
+##  7 attractions       2
+##  8 humorous          2
+##  9 beautifully       3
+## 10 top               2
+## 11 derides          -2
+## 12 disputes         -2
+## 13 awaits           -1
+## 14 error            -2
+## 15 disadvantaged    -2
 ```
 
 ---
@@ -1050,23 +1102,23 @@ sent_loughran %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word           sentiment   
-##    &lt;chr&gt;          &lt;chr&gt;       
-##  1 mislabel       negative    
-##  2 stressing      negative    
-##  3 pervasiveness  negative    
-##  4 bolstered      positive    
-##  5 contraction    negative    
-##  6 jurisdictional litigious   
-##  7 litigations    negative    
-##  8 extant         superfluous 
-##  9 promulgator    litigious   
-## 10 restraints     constraining
-## 11 nonperforming  negative    
-## 12 irrevocable    litigious   
-## 13 covenanted     constraining
-## 14 unsuited       negative    
-## 15 refrains       constraining
+##    word          sentiment
+##    &lt;chr&gt;         &lt;chr&gt;    
+##  1 drought       negative 
+##  2 curtailments  negative 
+##  3 petition      litigious
+##  4 embarrass     negative 
+##  5 disapproves   negative 
+##  6 discredited   negative 
+##  7 interferes    negative 
+##  8 preeminence   positive 
+##  9 subparagraphs litigious
+## 10 misleadingly  negative 
+## 11 cumbersome    negative 
+## 12 misdemeanors  negative 
+## 13 conspiring    negative 
+## 14 disaster      negative 
+## 15 misstatement  negative
 ```
 
 ---
@@ -1079,23 +1131,23 @@ sent_nrc %&gt;%
 
 ```
 ## # A tibble: 15 × 2
-##    word         sentiment
-##    &lt;chr&gt;        &lt;chr&gt;    
-##  1 cashier      trust    
-##  2 chaotic      anger    
-##  3 crumbling    sadness  
-##  4 conciliation joy      
-##  5 yell         fear     
-##  6 neurotic     negative 
-##  7 confined     disgust  
-##  8 stillborn    negative 
-##  9 endemic      negative 
-## 10 rapt         positive 
-## 11 aga          positive 
-## 12 fury         negative 
-## 13 prevention   positive 
-## 14 bluff        negative 
-## 15 scoff        negative
+##    word          sentiment   
+##    &lt;chr&gt;         &lt;chr&gt;       
+##  1 misunderstand negative    
+##  2 intrusive     disgust     
+##  3 elusive       surprise    
+##  4 interdiction  negative    
+##  5 predilection  anticipation
+##  6 nether        fear        
+##  7 lucky         positive    
+##  8 hermit        sadness     
+##  9 unavoidable   negative    
+## 10 excited       anticipation
+## 11 iron          positive    
+## 12 perilous      anticipation
+## 13 infanticide   fear        
+## 14 lash          anger       
+## 15 enemy         anger
 ```
 
 ---
@@ -1316,7 +1368,7 @@ trump_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-42-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-43-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1330,7 +1382,7 @@ clinton_2016_nrc |&gt;
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-43-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-44-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1444,7 +1496,7 @@ trump_clinton_2016_freq |&gt;
   labs(x = "frequency", y = NULL)
 ```
 
-&lt;img src="week-10_files/figure-html/unnamed-chunk-48-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-10_files/figure-html/unnamed-chunk-49-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -1767,7 +1819,7 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part 2
 
-<div class="countdown" id="timer_ab6e56b5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_900d3c19" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>

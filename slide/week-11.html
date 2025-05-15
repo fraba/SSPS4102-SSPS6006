@@ -41,7 +41,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 1, 2025 (updated: 2025-02-07)
+### Semester 1, 2025 (updated: 2025-05-15)
 ]
 
 ---
@@ -72,7 +72,7 @@ class: inverse, center, middle
 
 # Please take the anonymous Week 11 Student feedback survey on Canvas!
 
-<div class="countdown" id="timer_d89e6aa6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_398e5c6b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -103,15 +103,14 @@ class: inverse, center, middle
 
 | Time        | Content                                |
 |-------------|----------------------------------------|
-| 11:00-11:10 | Week 11 Student feedback survey        |
-| 11:10-12:00 | A3 Workshop                            |
-| 12:00-12:20 | Tidymodels for machine learning        |
-| 12:20-12:40 | Logistic regression with non-text data |
-| 12:40-12:50 | Linear regression with non-text data   |
-| 12:50-13:00 | Individual quiz/tutorial Part 1        |
-| 13:00-13:20 | Linear regression with text data       |
-| 13:20-13:40 | Logistic regression with text data     |
-| 13:40-14:00 | Individual quiz/tutorial Part 2        |
+| 14:00-14:10 | Week 11 Student feedback survey        |
+| 14:10-15:00 | A3 Workshop                            |
+| 15:00-15:20 | Tidymodels for machine learning        |
+| 15:20-15:40 | Logistic regression with non-text data |
+| 15:40-15:50 | Linear regression with non-text data   |
+| 15:50-16:20 | Individual quiz/tutorial               |
+| 16:20-16:40 | Linear regression with text data       |
+| 16:40-17:00 | Logistic regression with text data     |
 
 ---
 
@@ -119,7 +118,7 @@ class: inverse, center, middle
 
 # Week 11 Student feedback survey (from Canvas)
 
-<div class="countdown" id="timer_08da4348" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_aab61906" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -130,7 +129,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review
 
-<div class="countdown" id="timer_eab1d7ac" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_33a965c2" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">30</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -153,8 +152,8 @@ class: inverse, center, middle
 
 ## A machine learning pipline
 
-<div id="htmlwidget-dd0f12cd68028a147665" style="width:100%;height:500px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-dd0f12cd68028a147665">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a0a4b8bcedffc7ad5f22" style="width:100%;height:500px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a0a4b8bcedffc7ad5f22">{"x":{"diagram":"digraph {\n  # Define graph properties for a more spaced layout\n  graph [layout = dot, rankdir = TB]\n  \n  # Define nodes with increased font size\n  node [shape = ellipse, style = filled, fillcolor = lightblue, fontsize=55]\n  raw_data     [label = \"Raw Data\"]\n  train_data   [label = \"Training Data\"]\n  test_data    [label = \"Test Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = green, fontsize=55]\n  preprocess_train [label = \"Preprocess\nTraining Data\"]\n  preprocess_test  [label = \"Preprocess\nTest Data\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = orange, fontsize=55]\n  model_spec      [label = \"Model Specification\"]\n  model_training  [label = \"Model Training\"]\n  \n  node [shape = ellipse, style = filled, fillcolor = pink, fontsize=55]\n  trained_model   [label = \"Trained Model\"]\n  predict         [label = \"Predict on Test Data\"]\n  evaluate        [label = \"Evaluate Predictions\"]\n  \n  # Define edges to create space between steps\n  raw_data -> train_data [minlen=2]\n  raw_data -> test_data [minlen=2]\n  \n  train_data -> preprocess_train [minlen=2]\n  preprocess_train -> model_spec [minlen=2]\n  model_spec -> model_training [minlen=2]\n  model_training -> trained_model [minlen=2]\n  \n  test_data -> preprocess_test [minlen=2]\n  preprocess_test -> predict [minlen=2]\n  predict -> evaluate [minlen=2]\n  trained_model -> predict [minlen=2]\n  }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -683,8 +682,8 @@ where:
 
 ## Interpretation of `\(R^2\)`
 
-- **$R^2 = 1$**: Perfect fit. The model explains all variability in the data.
-- **$R^2 = 0$**: No fit. The model explains none of the variability.
+- `\(R^2 = 1\)`: Perfect fit. The model explains all variability in the data.
+- `\(R^2 = 0\)`: No fit. The model explains none of the variability.
 - **Between 0 and 1**: Partially explains the variance.
     - For example, `\(R^2 = 0.75\)` implies that 75% of the variability in the outcome is explained by the model.
 
@@ -801,9 +800,50 @@ class: inverse, center, middle
 
 # Individual quiz/tutorial Part I (up to "R2 and RMSE")
 
-<div class="countdown" id="timer_cfba2a7e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_05936e1b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Recap: What Are P-Values?
+
+- A **p-value** measures the probability of observing your data (or something more extreme) assuming the **null hypothesis (`\(H_0\)`)** is true.
+- It answers: *“If there really were no effect, how surprising is this data?”*
+- A **small p-value** (typically ≤ 0.05) suggests the data is **unlikely under `\(H_0\)`** → provides evidence **against `\(H_0\)`**.
+- A **large p-value** means the data is **consistent with `\(H_0\)`** → we **fail to reject H₀**.
+- **Example**: A p-value of 0.006 means there’s only a 0.6% chance of seeing the result we did (or more extreme) if `\(H_0\)` is true.
+
+---
+
+## Hypothesis Testing: A Practical Guide
+
+1. **Set hypotheses**:
+   - Null hypothesis: `\(H_0: \beta = 0\)`
+   - Alternative hypothesis: `\(H_1: \beta \ne 0\)`
+
+2. **Compute the test statistic**: `\(z = \frac{\hat{\beta}}{\text{SE}(\hat{\beta})}\)`
+
+3. **Get the p-value** using the standard normal distribution:
+   - If `\(\text{p-value} \leq 0.05\)` → **Reject `\(H_0\)`**
+   - If `\(\text{p-value} &gt; 0.05\)` → **Fail to reject `\(H_0\)`**
+
+4. **Conclude**:
+   - Significant result → evidence that the effect is likely not zero in the population.
+   - Always report: direction, size, and unit of measurement of the effect.
+
+
+
+
+---
+class: inverse, center, middle
+
+# Individual quiz/tutorial Part II ("p-values, hypothesis testing, regression analysis")
+
+<div class="countdown" id="timer_68b7d114" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
 
@@ -848,7 +888,7 @@ debate_transcripts |&gt;
   geom_col() + labs(x = "year", y = "Number of speeches per year")
 ```
 
-&lt;img src="week-11_files/figure-html/unnamed-chunk-36-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-11_files/figure-html/unnamed-chunk-37-1.svg" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1279,17 +1319,6 @@ conf_mat(logistic_predictions, truth = speaker, estimate = .pred_class)
 ##   Donald Trump              23              12
 ##   Hillary Clinton            2               0
 ```
-
-
----
-class: inverse, center, middle
-
-# Individual quiz/tutorial Part II
-
-<div class="countdown" id="timer_a8531e01" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
 
 
 ---
