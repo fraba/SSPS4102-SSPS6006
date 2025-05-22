@@ -300,22 +300,42 @@ countdown(minutes = 15, seconds = 00)
 ```
 
 ---
-class: inverse, center, middle
 
-#  Please take the Unit of Study Survey (USS) now!
+## How to make your USS feedback count
 
-### You might win a JB HiFi Giftcard!
+.small[
 
-### student-surveys.sydney.edu.au / students
+Your Unit of Study Survey (USS) feedback is **confidential**. It’s a way to share what you enjoyed and found most useful in your learning, and to provide constructive feedback. It’s also a way to ‘pay it forward’ for the students coming behind you, so that their **learning experience** in this class is as good, or even better, than your own. 
 
-.center[<img src = 'https://student-surveys.sydney.edu.au/common/images/student-surveys-QR.png' width = '40%'>]
+When you complete your USS survey (https://student-surveys.sydney.edu.au), please:
 
-```{r echo = FALSE}
-library(countdown)
+]
 
-countdown(minutes = 10, seconds = 00)
-```
+.pull-left[
 
+.small[
+
+**Be specific**. 
+Which class tasks, assessments or other activities helped you to learn? Why were they helpful? Which one(s) didn’t help you to learn? Why didn’t they work for you? 
+
+**Be constructive**. 
+What practical changes can you suggest to class tasks, assessments or other activities, to help the next class learn better? 
+
+**Be relevant**. 
+Imagine you are the teacher. 
+
+]
+
+]
+
+
+.pull-right[
+
+ What sort of feedback would you find most useful to help make your teaching more effective?
+
+.center[<img src = 'https://student-surveys.sydney.edu.au/common/images/student-surveys-QR.png' width = '60%'>]
+
+]
 ---
 
 class: inverse, center, middle
