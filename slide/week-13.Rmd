@@ -93,6 +93,57 @@ class: inverse, center, middle
 - Mixed-Methods Research
 - Workshopping A3
 
+
+---
+class: inverse, center, middle
+
+# Interpeting coefficients of regressions (w/t interaction term)
+
+---
+
+## Let's first simulate some data
+
+Note: That we simulate data so to define $true$ coefficients $\beta$ instead of  $\widehat{estimated}$ coefficients $\hat{\beta}$. 
+
+```{r}
+set.seed(123) # This to replicate same numbers
+
+# Simulate 200 observations
+n <- 200
+Education <- round(runif(n, 8, 20))  # between 8 and 20 years
+Gender <- factor(sample(c("Male", "Female"), n, replace = TRUE))
+
+# Define true coefficients
+intercept <- 20000
+b_Education <- 1000
+b_GenderFemale <- -2000
+b_Interaction <- 500
+```
+
+
+---
+
+## Let's add an true interaction effect to the simulated data
+
+(More on this later)
+
+```{r}
+# Simulate Income with interaction
+Income <- intercept +
+  b_Education * Education +
+  ifelse(Gender == "Female", b_GenderFemale, 0) +
+  ifelse(Gender == "Female", b_Interaction * Education, 0) +
+  rnorm(n, mean = 0, sd = 5000)  # add noise
+
+# Create data frame
+data <- data.frame(Income, Education, Gender)
+head(data)
+```
+
+
+
+
+
 ---
 
 class: inverse, center, middle
