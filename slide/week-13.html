@@ -37,7 +37,7 @@ class: center, middle, inverse, title-slide
 ### Francesco Bailo
 ]
 .date[
-### Semester 1, 2025 (updated: 2025-05-28)
+### Semester 1, 2025 (updated: 2025-05-29)
 ]
 
 ---
@@ -96,13 +96,73 @@ class: inverse, center, middle
 
 
 ---
-class: inverse, center, middle
+class: segue-red
 
-# Interpeting coefficients of regressions (w/t interaction term)
+# Constructing research questions, testing hypothesis and interpeting  regressions coefficients (w/t interaction term)
 
 ---
 
-## Let's first simulate some data
+## Theory first, always 
+
+### Back off for a sec, quantitative analysis, we are (social) scientists!
+
+
+.center[&lt;img src = 'https://www.reactiongifs.com/wp-content/uploads/2012/12/bill_murray_ghostbusters.gif'&gt;]
+
+### And we are guided by theory. Always.
+
+---
+
+## So what is the theory?
+
+What we know about `\(Education\)`, `\(Gender\)` and `\(Income\)`? 
+
+.pull-left[
+
+1. We know that going to school, getting more `\(Education\)` years, increase our income because we *know* more and we can *do* more.  
+
+2. We know that women earn less because of multiple contributing factors, including
+
+- **Part-time work**:  Women do more unpaid work, so more work part-time (28% vs. 8% men).
+
+
+
+]
+
+.pull-right[
+
+- **Family impact**:  Women take more career breaks for childcare (1 in 3 vs. 1.3% men).
+
+- **Low-paid sectors**:  Women are over-represented in lower-paid fields like care, health, education.
+
+- **Fewer managers**:  Fewer women in top jobs (35% of managers), and female managers earn 23% less.
+
+]
+
+
+.footnote[Source: https://www.europarl.europa.eu/topics/en/article/20200109STO69925/understanding-the-gender-pay-gap-definition-facts-and-causes]
+
+---
+
+3\. We know "that women experience larger relative returns to higher education, indicating that women have more to gain from investing in education" (Seehuus &amp; Strømme, 2025).
+
+### But how do we model this?
+
+- More `\(Education\)` causes more `\(Income\)`;
+
+- `\(GenderMale\)` causes more `\(Income\)`;
+
+*BUT*
+
+- `\(GenderFemale\)` in interaction with more `\(Education\)` causes more `\(Income\)`.
+
+
+.footnote[Seehuus, S., &amp; Strømme, T. B. (2025). Gendered Returns to Education: The Association between Educational Attainment, Gender Composition in Field of Study and Income. *Sociology*, 0(0). https://doi.org/10.1177/00380385241303448]
+
+
+---
+
+## Let's first simulate some data based on this theory...
 
 Note: That we simulate data so to define `\(true\)` coefficients `\(\beta\)` instead of  `\(\widehat{estimated}\)` coefficients `\(\hat{\beta}\)`. 
 
@@ -110,16 +170,16 @@ Note: That we simulate data so to define `\(true\)` coefficients `\(\beta\)` ins
 ``` r
 set.seed(123) # This to replicate same numbers
 
-# Simulate 200 observations
-n &lt;- 200
-Education &lt;- round(runif(n, 8, 20))  # between 8 and 20 years
+# Simulate 1000 observations
+n &lt;- 1000
+Education &lt;- sample(8:20, n, replace = TRUE)  # between 8 and 20 years
 Gender &lt;- factor(sample(c("Male", "Female"), n, replace = TRUE))
 
 # Define true coefficients
-intercept &lt;- 20000
-b_Education &lt;- 1000
-b_GenderFemale &lt;- -2000
-b_Interaction &lt;- 500
+intercept &lt;- 20000 # Baseline, Female with 0 years of education.
+b_Education &lt;- 1000 # Proposition 1
+b_GenderFemale &lt;- -5000  # Proposition 2
+b_Interaction &lt;- 100 # Proposition 3
 ```
 
 
@@ -133,9 +193,9 @@ b_Interaction &lt;- 500
 ``` r
 # Simulate Income with interaction
 Income &lt;- intercept +
-  b_Education * Education +
-  ifelse(Gender == "Female", b_GenderFemale, 0) +
-  ifelse(Gender == "Female", b_Interaction * Education, 0) +
+  b_Education * Education + # Proposition 1
+  ifelse(Gender == "Female", b_GenderFemale, 0) + # Proposition 2
+  ifelse(Gender == "Female", b_Interaction * Education, 0) + # Proposition 3
   rnorm(n, mean = 0, sd = 5000)  # add noise
 
 # Create data frame
@@ -145,17 +205,431 @@ head(data)
 
 ```
 ##     Income Education Gender
-## 1 45494.05        11 Female
-## 2 50062.06        17 Female
-## 3 36174.27        13 Female
-## 4 41715.97        19   Male
-## 5 44428.30        19 Female
-## 6 29118.77         9 Female
+## 1 21072.30        10 Female
+## 2 30419.65        10   Male
+## 3 27100.02        17 Female
+## 4 29806.13         9   Male
+## 5 29875.36        13   Male
+## 6 39585.82        18 Female
+```
+
+
+---
+
+### Summary stats (always summarise your variables and their critical relationships)
+
+`\(Education\)` summary stats, not that interesting since we simulate `\(Education\)` to be independent from `\(Gender\)`. 
+
+
+``` r
+data |&gt;
+  dplyr::group_by(Gender) |&gt;
+  dplyr::summarise(mean(Education), sd(Education))
+```
+
+```
+## # A tibble: 2 × 3
+##   Gender `mean(Education)` `sd(Education)`
+##   &lt;fct&gt;              &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Female              14.1            3.70
+## 2 Male                14.1            3.58
+```
+
+---
+
+
+``` r
+ggplot(data) +
+  geom_density(aes(x = Education)) +
+  facet_grid(Gender~.) +
+  geom_vline(data = data %&gt;% group_by(Gender) %&gt;% 
+               summarise(mean=mean(Education)), 
+             aes(xintercept=mean))
+```
+
+&lt;img src="week-13_files/figure-html/unnamed-chunk-4-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+`\(Income\)` ~ `\(Gender\)` is instead more interesting...
+
+
+``` r
+data |&gt;
+  dplyr::group_by(Gender) |&gt;
+  dplyr::summarise(mean(Income), sd(Income))
+```
+
+```
+## # A tibble: 2 × 3
+##   Gender `mean(Income)` `sd(Income)`
+##   &lt;fct&gt;           &lt;dbl&gt;        &lt;dbl&gt;
+## 1 Female         30416.        6289.
+## 2 Male           34418.        6154.
+```
+
+---
+
+``` r
+ggplot(data) +
+  geom_density(aes(x = Income)) +
+  facet_grid(Gender~.) +
+  geom_vline(data = data %&gt;% group_by(Gender) %&gt;% 
+               summarise(mean=mean(Income)), 
+             aes(xintercept=mean))
+```
+
+&lt;img src="week-13_files/figure-html/unnamed-chunk-6-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.pull-left[
+
+&lt;img src="week-13_files/figure-html/unnamed-chunk-7-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+### We note two things
+
+1. Expected (mean) `\(Income\)` is higher for `\(GenderMale\)` than for `\(GenderFemale\)`. 
+
+2. The shape of the two curves is different. This is because something is going on in the relationship between `\(GenderFemale\)` and `\(Income\)` that is not simply explained by a linear relationship between `\(Income\)` and `\(Education\)`. 
+
+
+]
+
+---
+class: segue-red
+
+# Let's analyse our data with regression analysis!
+
+---
+
+## What Is a Linear Regression?
+
+- **Linear regression** models the relationship between a dependent variable `\(y\)` and one or more independent variables `\(x_1, x_2, \dots, x_p\)`.
+  
+- The general form:
+  $$
+  y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon
+  $$
+  where:
+  - `\(\beta_0\)` = intercept (value of `\(y\)` when all `\(x\)` = 0)
+  - `\(\beta_i\)` = coefficient (effect of `\(x_i\)` on `\(y\)`)
+  - `\(\epsilon\)` = error term (unexplained variation)
+
+- **Goal**: Find the best-fitting (straight) line that minimises the sum of squared errors between predicted and actual `\(y\)`.
+
+- Example in R:
+  ```r
+  model &lt;- lm(y ~ x1 + x2, data = mydata)
+  ```
+
+---
+
+### What Is a Regression Coefficient?
+
+- A **coefficient** tells us:
+  → How much `\(y\)` changes when predictor `\(x\)` increases by 1, **holding others constant**.
+- Example in R:
+  ```r
+  model &lt;- lm(y ~ x1, data = mydata)
+  summary(model)
+  ```
+- If `\(\beta_1 = 2\)`, then for each +1 unit in `\(x_1\)`, `\(y\)` increases by 2.
+
+&lt;img src="week-13_files/figure-html/unnamed-chunk-8-1.svg" width="35%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpreting the Intercept
+
+- The **intercept** `\((\text{Intercept})\)` is the expected value of `\(y\)` when all predictors = 0.
+- Example:
+  ```r
+  model &lt;- lm(Income ~ Education, data = data)
+  ```
+- Intercept = predicted income when `\(Education = 0\)`.
+
+---
+
+&lt;img src="week-13_files/figure-html/unnamed-chunk-9-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Adding a Second Predictor
+
+- With two predictors:
+  ```r
+  model &lt;- lm(y ~ x1 + x2, data = mydata)
+  ```
+- `\(\beta_1\)`: effect of `\(x_1\)` when `\(x_2\)` is held constant.
+- `\(\beta_2\)`: effect of `\(x_2\)` when `\(x_1\)` is held constant.
+
+---
+
+## Introducing Interaction Terms
+
+- Interaction = when the effect of one variable **depends on** another.
+- R syntax:
+  ```r
+  model &lt;- lm(y ~ x1 * x2, data = mydata)
+  ```
+- Expands to:
+  $$
+  y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 (x_1 \times x_2)
+  $$
+  
+---
+
+## Interpreting Interaction Coefficients
+
+
+  $$
+  y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 (x_1 \times x_2)
+  $$
+
+
+- `\(\beta_1\)`: effect of `\(x_1\)` when `\(x_2 = 0\)`.
+- `\(\beta_2\)`: effect of `\(x_2\)` when `\(x_1 = 0\)`.
+- `\(\beta_3\)`: **change** in the effect of `\(x_1\)` per +1 unit in `\(x_2\)`.
+
+
+## But let's go back to our simulated data...
+
+---
+
+## This is what we did to define the true coefficients (a.k.a. paramaters)
+
+
+``` r
+set.seed(123) # This to replicate same numbers
+
+# Simulate 1000 observations
+n &lt;- 1000
+Education &lt;- sample(8:20, n, replace = TRUE)  # between 8 and 20 years
+Gender &lt;- factor(sample(c("Male", "Female"), n, replace = TRUE))
+
+# Define true coefficients
+intercept &lt;- 20000 # Baseline, Female with 0 years of education.
+b_Education &lt;- 1000 # Proposition 1
+b_GenderFemale &lt;- -5000  # Proposition 2
+b_Interaction &lt;- 100 # Proposition 3
+
+# Simulate Income with interaction
+Income &lt;- intercept +
+  b_Education * Education + # Proposition 1
+  ifelse(Gender == "Female", b_GenderFemale, 0) + # Proposition 2
+  ifelse(Gender == "Female", b_Interaction * Education, 0) + # Proposition 3
+  rnorm(n, mean = 0, sd = 5000)  # add noise
+
+data &lt;- data.frame(Income, Education, Gender)
+```
+
+
+---
+
+## Run the Regression and Get Estimated Coefficients
+
+Note: 
+
+- *True* coefficients `\(\neq\)` `\(\widehat{estimated}\)` coefficients. 
+
+- *True* coef. `\(= \widehat{estimated}\)` coef. + `\(errors\)` (with `\(errors\)` being uknown).
+
+
+``` r
+model &lt;- lm(Income ~ Education, data = data)
+```
+
+---
+
+
+``` r
+model &lt;- lm(Income ~ Education, data = data)
+summary(model)
+```
+
+```
+## 
+## Call:
+## lm(formula = Income ~ Education, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -16756.0  -3655.7    119.8   3653.9  18510.6 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 18013.91     679.57   26.51   &lt;2e-16 ***
+## Education    1025.14      46.61   22.00   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5362 on 998 degrees of freedom
+## Multiple R-squared:  0.3265,	Adjusted R-squared:  0.3258 
+## F-statistic: 483.8 on 1 and 998 DF,  p-value: &lt; 2.2e-16
+```
+
+Note: Because we simulated the data we knew that `\(\beta=1000\)` dollars. Now we have the estimated coefficients: `\(\hat{\beta} = 1025.138834\)` dollars. 
+
+---
+
+## Let's add `\(Gender\)` as second predictor! 
+
+
+``` r
+model &lt;- lm(Income ~ Education + Gender, data = data)
+summary(model)
+```
+
+```
+## 
+## Call:
+## lm(formula = Income ~ Education + Gender, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14680.6  -3462.7    -20.1   3540.5  16561.2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 15894.92     651.34   24.40   &lt;2e-16 ***
+## Education    1027.32      43.21   23.78   &lt;2e-16 ***
+## GenderMale   4031.28     314.58   12.81   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4971 on 997 degrees of freedom
+## Multiple R-squared:  0.4217,	Adjusted R-squared:  0.4206 
+## F-statistic: 363.6 on 2 and 997 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+- Our true coefficient `\(\beta\)` for `\(GenderFemale\)` was -5000 dollars, therefore for  `\(GenderMale\)` is +5000.
+
+- Based on our model, the estimated coefficient `\(\hat{\beta}\)` for `\(GenderMale\)` is 4031.2765746.
+
+
+``` r
+model
+```
+
+```
+## 
+## Call:
+## lm(formula = Income ~ Education + Gender, data = data)
+## 
+## Coefficients:
+## (Intercept)    Education   GenderMale  
+##       15895         1027         4031
+```
+
+---
+
+## Let's add an interaction term between `\(Gender\)` and `\(Education\)`
+
+Yet, our theory suggests that an interaction between `\(Gender\)` and `\(Education\)` in affecting `\(Income\)`: 
+
+- Women benefit more than men from *additional* education in terms of income.
+
+
+``` r
+model &lt;- lm(Income ~ Gender * Education, data = data)
+```
+
+- Instead of `+` I know use `*`.
+
+---
+
+
+``` r
+data &lt;- 
+  data |&gt;
+  dplyr::mutate(Gender = factor(Gender, 
+                                levels = c("Male", "Female")))
 ```
 
 
 
+``` r
+model &lt;- lm(Income ~ Gender * Education, data = data)
+summary(model)
+```
 
+```
+## 
+## Call:
+## lm(formula = Income ~ Gender * Education, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14794.7  -3439.1    -49.2   3520.1  16617.3 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)            20199.28     888.56  22.733  &lt; 2e-16 ***
+## GenderFemale           -4579.29    1260.61  -3.633 0.000295 ***
+## Education               1007.96      61.06  16.509  &lt; 2e-16 ***
+## GenderFemale:Education    38.81      86.45   0.449 0.653578    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4973 on 996 degrees of freedom
+## Multiple R-squared:  0.4219,	Adjusted R-squared:  0.4201 
+## F-statistic: 242.3 on 3 and 996 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+## Interpreting the coefficients in the presence of an interaction term
+
+
+
+|                       |   est|  true|description                                          |
+|:----------------------|-----:|-----:|:----------------------------------------------------|
+|(Intercept)            | 20199| 20000|Male baseline with 0 years in education              |
+|GenderFemale           | -4579| -5000|What Females earns with 0 years of education         |
+|Education              |  1008|  1000|What Male earns per year of education                |
+|GenderFemale:Education |    39|   100|Extra Income per extra year of education for Females |
+
+---
+
+So, when yo have an interaction term:
+
+`$$\beta_{0} + \beta_{1}x_{1} + \beta_{2}x_{2} + \beta_{3}x_{1}x_{2}$$`
+.small[
+
+* `\(\beta_1\)`: the marginal effect of `\(X_{i1}\)` on predicted `\(Y_i\)` when `\(X_{i2} = 0\)`.
+* `\(\beta_2\)`: the marginal effect of `\(X_{i2}\)` on predicted `\(Y_i\)` when `\(X_{i1} = 0\)`.
+* `\(\beta_3\)`: the change in the marginal effect of `\(X_{i1}\)` due to a one-unit change in `\(X_{i2}\)` **OR** the change in the marginal effect of `\(X_{i2}\)` due to a one-unit change in `\(X_{i1}\)`.
+
+&gt; Interactions are a standard part of social science research because they allow us to assess how the relationship between the outcome and an independent variable varies by the values of another variable. In the context of our study of wait times at a voting precinct, if `\(X_{i1}\)` is income and `\(X_{i2}\)` is the Black/non-Black voter indicator, then `\(\beta_3\)` represents the change in the slope of the wait time-income relationship between Black and non-Black voters.  
+
+]
+
+.footnote[This slide is from "A User’s Guide to Statistical Inference and Regression" by Matthew Blackwell. Source: https://mattblackwell.github.io/gov2002-book/]
+
+---
+
+## Centering variables to improve interpretability
+
+.small[
+
+In many cases, the so-called marginal coefficients on the lower-order terms ( `\(\beta_1\)` for `\(X_{i1}\)` and `\(\beta_2\)` for `\(X_{i2}\)` ) are uninteresting because they represent the marginal effect of one variable when the other is 0. If `\(X_{i1}\)` is age and `\(X_{i2}\)` is the Black/non-Black indicator, then `\(\beta_2\)` is the estimated difference in average voter wait times for voters who are zero years old, an obviously nonsensical parameter. We can improve the interpretability of the coefficient by recentering the age variable. Suppose we include a mean-centered version of age, 
+
+`$$\widetilde{X}_{i1} = X_{i1} - \overline{X}_1$$`
+
+in place of `\(X_{i1}\)`. That is, we regress `\(Y_i\)` on `\(\widetilde{X}_{i1}\)`, `\(X_{i2}\)`, and `\(\widetilde{X}_{i1}X_{i2}\)`. In this case, `\(\beta_2\)` (the coefficient on the race indicator `\(X_{i2}\)` ) is the marginal effect of `\(X_{i2}\)` when `\(\widetilde{X}_{i1} = 0\)` or when `\(X_{i1} = \overline{X}_1\)`. Thus, this coefficient is now the estimated difference in average voter wait times for the average-aged voter, which is far more interpretable. This recentering has no effect on either `\(\beta_1\)` or `\(\beta_3\)`, which is rather remarkable.
+
+]
+
+.footnote[This slide is from "A User’s Guide to Statistical Inference and Regression" by Matthew Blackwell. Source: https://mattblackwell.github.io/gov2002-book/]
 
 ---
 
@@ -163,7 +637,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review (from Canvas)
 
-<div class="countdown" id="timer_4d6c3434" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_aed2a897" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -208,7 +682,7 @@ On Canvas take, the
 
 (it's anonymous).
 
-<div class="countdown" id="timer_03c19c4b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_d02a2192" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -219,7 +693,7 @@ The very same questions you just answered were got mostly wrong in two famous st
 
 Percentages of participants in each group who made at least one mistake, in Haller &amp; Krauss, (2002) and Oakes (1986)
 
-&lt;img src="week-13_files/figure-html/unnamed-chunk-5-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="week-13_files/figure-html/unnamed-chunk-21-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 .footnote[
@@ -766,13 +1240,13 @@ class: inverse, center, middle
 <script src="assets/remark-zoom.js"></script>
 <script src="https://platform.twitter.com/widgets.js"></script>
 <script>var slideshow = remark.create({
-  "highlightStyle": "github",
-  "highlightLines": true,
-  "countIncrementalSlides": false,
-  "ratio": "4:3",
-  "navigation": {
-    "scroll": false
-  }
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3",
+"navigation": {
+"scroll": false
+}
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
