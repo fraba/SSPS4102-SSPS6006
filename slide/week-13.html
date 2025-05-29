@@ -87,6 +87,7 @@ class: inverse, center, middle
 
 ## Plan for today
 
+- Interpreting Regression Coefficients (recap) w/t Interaction Terms (bonus)
 - Individual on A3 with peer-review
 - The Replication Crisis and P-Values (again)
 - The Ethics of Artificial Intelligence
@@ -637,7 +638,7 @@ class: inverse, center, middle
 
 # Individual on A3 with peer-review (from Canvas)
 
-<div class="countdown" id="timer_aed2a897" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_20491153" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -682,7 +683,7 @@ On Canvas take, the
 
 (it's anonymous).
 
-<div class="countdown" id="timer_d02a2192" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_87234ae7" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -745,6 +746,144 @@ A p-value of, let's say, 0.05 means that
 &gt; Statement 6 reflects the so-called "replication fallacy" ... one could interpret `\(\alpha\)` = .01 in a frequentistic framework **as relative frequency of rejections** of `\(H_0\)` if `\(H_0\)` **is true**. The **example however gives no evidence of the `\(H_0\)` being true**. "In the minds of many, 1 - p erroneously turned into the relative frequency of rejections of `\(H_0\)`, that is, into the probability that significant results could be replicated"  (Gigerenzer, 1993a).
 
 .footnote[Haller, H., &amp; Krauss, S. (2002). Misinterpretations of significance: A problem students share with their teachers. *Methods of Psychological Research*, 7(1), 1–20.]
+
+
+---
+
+## What is the replication fallacy?
+
+- **Replication fallacy**:  
+  The mistaken belief that:
+  
+  &gt; If you get \( p = 0.05 \), you have a 95% chance  of replicating the result.
+
+- People assume:
+  
+  $$
+  \text{Replication probability} = 1 - p
+  $$
+
+- This is **wrong** — let’s break down why.
+
+---
+
+## Step 1: What does a p-value actually mean?
+
+- `\(p = 0.05\)` means:
+  
+  &gt; Assuming the **null hypothesis** `\(H_0\)` is true,  
+  there’s a 5% chance of seeing this result  
+  (or something more extreme).
+
+- It does **not** tell us:
+  - The probability that `\(H_0\)` is true.
+  - The probability the result is “real.”
+  - The probability the result will replicate.
+
+---
+
+## Step 2: Why can’t we just use `\(1 - p\)`?
+
+- Even if the original finding is significant,  replication depends on:
+  
+  - The **true effect size**.  
+  - The **statistical power** of the test.  
+  - The **sampling variability**.
+
+- A small p-value doesn’t guarantee that the effect is strong or reproducible.
+
+---
+
+## Step 3: An intuitive example
+
+- Imagine a study with **50% power**.
+
+- Even if the effect is real, you only have a **50% chance** to detect it again.
+
+- The p-value only tells you how surprising the original result was under `\(H_0\)`, not how robust it is.
+
+---
+
+## Step 4: Why do people fall for the fallacy?
+
+- Common misunderstandings:
+  - `\(p = 0.05\)` → 95% chance the effect is real.
+  - `\(p = 0.01\)` → 99% chance it will replicate.
+
+- Reality:
+  - Replication = depends on power, effect size, noise.
+  - Many significant findings have low power and are unlikely to replicate.
+
+---
+
+## Step 5: Coin flip example
+
+Null hypothesis: This coin is fair. Alternative hypothesis: This coin is biased. 
+
+- Flip coin 10 times.
+
+- What’s the probability of getting ≥8 heads?
+
+  $$
+  P(X \geq 8) \approx 0.0547
+  $$
+
+- Two-tailed test (include ≤2 tails):
+
+  $$
+  2 \times 0.0547 \approx 0.109
+  $$
+
+- Not significant at `\(p = 0.05\)` —  you’d need ≥9 heads for `\(p \approx 0.02\)`.
+
+---
+
+### The coin flip example shows:
+
+- Even with relatively rare outcomes (like 8/10 heads), you might **not** reach statistical significance.
+
+- To cross the `\(p &lt; 0.05\)` threshold, you need even more extreme outcomes (like 9/10 heads).
+
+---
+
+# How it ties to replication
+
+Let’s say you flip 10 coins and this time you get 9 heads:
+
+- You calculate `\(p \approx 0.02\)` → significant.
+
+If you believe in the replication fallacy, you think:
+
+&gt; “There’s a 98% chance I’ll get another significant result if I repeat this.”
+
+But that’s wrong — because:
+
+- Your chance of getting another 9+ heads is in fact only ~1% under the null.
+- Even under the alternative (if the coin is slightly biased), the **power** of the test might still be low, meaning your replication success is much less than 98%.
+
+---
+
+# Small sample + extreme result = fragile finding
+
+In small-sample experiments (like 10 trials):
+
+- Significant results often hinge on rare, extreme patterns.
+- The chance of seeing that same extreme again is small, even if the underlying effect is real.
+
+This is exactly why **p-values do NOT directly tell you replication probability**.
+
+---
+
+## Step 6: Key takeaway
+
+- **P-values do not equal replication probabilities.**
+
+- Replication success depends on:
+  - Statistical power.
+  - True effect size.
+  - Experimental design and variability.
+
+- This is why the replication crisis exists — we overestimate how robust single findings are.
 
 
 ---
@@ -1240,13 +1379,13 @@ class: inverse, center, middle
 <script src="assets/remark-zoom.js"></script>
 <script src="https://platform.twitter.com/widgets.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "4:3",
-"navigation": {
-"scroll": false
-}
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "4:3",
+  "navigation": {
+    "scroll": false
+  }
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
