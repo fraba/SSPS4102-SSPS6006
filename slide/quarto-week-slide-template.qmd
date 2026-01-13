@@ -1,0 +1,169 @@
+---
+title: "Week 01</br>Introduction and overview"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+     # can set self-contained to false if not uploading to Canvas
+     # true makes the HTML files pretty big
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false # don't add each slide to browser history
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and  recognise their continuing connection to land, water and culture. The  University of Sydney is located on the land of the Gadigal people  of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE}
+library(tidyverse)
+```
+
+# First section
+
+## Quarto
+
+::: callout-note
+### Note title
+
+Note text
+:::
+
+::: callout-tip
+### Tip title
+
+Tip text
+:::
+
+::: callout-important
+### Important title
+
+Important text
+:::
+
+::: notes
+Speaker notes go here. Press `s` to see.
+:::
+
+::: footer
+Footers for comments, or links to further resources. These don't show up when printing the slides to pdf!
+:::
+
+## Asides
+
+> Block quote
+
+-   For further details on customisations available see [here](https://quarto.org/docs/presentations/revealjs/)
+-   Icons can be included by installing the [fontawesome](https://github.com/quarto-ext/fontawesome) Quarto [extension](https://quarto.org/docs/extensions/).
+
+::: aside
+Asides will be on the slide when printed.
+:::
+
+# Layouts
+
+## Layout
+
+::: {layout-ncol="2"}
+### List One
+
+-   [Item A]{.blue}
+-   [Item B]{.red}
+-   [Item C]{.purple}
+-   Item D
+
+### List Two
+
+-   **Item X**
+-   *Item Y*
+-   ~~Item Z~~
+:::
+
+## Columns (more customisable)
+
+::: columns
+::: {.column width="40%"}
+Left column
+:::
+
+::: {.column width="60%"}
+Right column
+:::
+:::
+
+## Plots: below code
+
+```{r}
+library(ggplot2)
+p1 = iris |> ggplot() +
+  aes(x = Petal.Length, y = Petal.Width, colour = Species) + 
+  geom_point(size = 4) + theme_classic(base_size = 20)
+p1
+```
+
+## Plots: hide code using `echo: false`
+
+```{r}
+#| echo: false
+p1
+```
+
+## Plots: auto two column using `output-location: column`
+
+```{r}
+#| output-location: column
+#| fig-height: 8
+p1 = iris |> ggplot() +
+  aes(x = Petal.Length, 
+      y = Petal.Width, 
+      colour = Species) + 
+  geom_point(size = 4) + 
+  theme_classic(base_size = 30)
+p1
+```
+
+## Bullets
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+
+. . .
+
+Reference @tidyverse
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+## Handy R package
+
+The [`quartostamp`](https://matt-dray.github.io/quartostamp/index.html) R package provides RStudio "Addins" that make life easier for working with Quarto documents. It has a bunch of templates, e.g. for creating
+
+-   callout blocks
+-   columns
+-   tabsets
+-   footnotes
+-   pauses
+-   speaker notes...
+
+## References
