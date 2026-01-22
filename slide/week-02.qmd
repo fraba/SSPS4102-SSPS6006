@@ -1,0 +1,1149 @@
+---
+title: "Week 02</br>Reproducible Workflows and Version Control"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(knitr)
+```
+
+# Why Reproducibility Matters
+
+## Learning objectives
+
+By the end of this lecture, you will be able to:
+
+1. Create reproducible documents with Quarto
+2. Organise projects using R Projects
+3. Use Git and GitHub for version control
+4. Import data from various file formats
+
+::: notes
+These skills form the foundation of professional data analysis workflows.
+:::
+
+## What is reproducibility?
+
+::: callout-note
+### Definition
+
+**Reproducibility** means that everything you did—all of it, end-to-end—can be independently redone by someone else.
+:::
+
+. . .
+
+This includes:
+
+- Getting the same data
+- Running the same code
+- Producing the same results
+- Understanding the same decisions
+
+## Why does reproducibility matter?
+
+::: columns
+::: {.column width="50%"}
+**For science**:
+
+- Enables verification
+- Builds trust in findings
+- Allows others to extend your work
+- Required by many journals
+:::
+
+::: {.column width="50%"}
+**For you**:
+
+- Future you is "someone else"
+- Makes collaboration easier
+- Catches errors early
+- Professional standard
+:::
+:::
+
+::: aside
+From Alexander (2023), *Telling Stories with Data*
+:::
+
+## The reproducibility crisis
+
+Many published findings cannot be reproduced:
+
+- Psychology: ~40% of studies replicate
+- Cancer biology: ~10-25% replicate
+- Economics: ~50% replicate
+
+. . .
+
+::: callout-warning
+### The problem
+
+Poor documentation, lost data, and undocumented decisions make it impossible to verify or build on previous work.
+:::
+
+## Components of reproducible research
+
+1. **Code** — Scripts that transform data into results
+2. **Data** — Raw and processed datasets
+3. **Environment** — Software versions and dependencies
+4. **Documentation** — Explanations of decisions and methods
+
+. . .
+
+> "The use of projects is required to meet the minimal level of reproducibility expected of credible work."
+
+# Quarto: Literate Programming
+
+## What is Quarto?
+
+::: callout-note
+### Definition
+
+**Quarto** integrates code and natural language in a way called "literate programming". It combines text, code, and output in a single document.
+:::
+
+. . .
+
+Key features:
+
+- Successor to R Markdown
+- Works with R, Python, Julia, and more
+- Produces HTML, PDF, Word, slides, websites
+- Free and open source
+
+::: aside
+From Alexander (2023), Chapter 3
+:::
+
+## Why use Quarto?
+
+::: columns
+::: {.column width="50%"}
+**Advantages**:
+
+- "Live" documents where code executes
+- Single source, multiple outputs
+- Consistent formatting
+- Easy to update
+:::
+
+::: {.column width="50%"}
+**For this course**:
+
+- Professional standard
+- Combines analysis and writing
+- Makes work shareable
+- Required for assignments
+:::
+:::
+
+## Creating a Quarto document
+
+In RStudio:
+
+1. **File** → **New File** → **Quarto Document...**
+2. Add a title and your name
+3. Unclick "Use visual markdown editor" (for now)
+4. Click **Create**
+
+. . .
+
+::: callout-tip
+### Two editing modes
+
+- **Source**: See the raw markup
+- **Visual**: WYSIWYG editing (like Word)
+
+Start with Source to learn the syntax!
+:::
+
+## The structure of a Quarto document
+
+A Quarto document has three parts:
+
+1. **YAML header** — Document settings (between `---`)
+2. **Markdown text** — Your written content
+3. **Code chunks** — Executable R code
+
+```{verbatim}
+---
+title: "My Analysis"
+author: "Your Name"
+format: html
+---
+
+# Introduction
+
+Some text here.
+
+```{r}
+1 + 1
+```
+```
+
+## YAML header basics
+
+The YAML header controls document settings:
+
+```yaml
+---
+title: "My document"
+author: "Rohan Alexander"
+date: today
+format: html
+---
+```
+
+. . .
+
+Common options:
+
+- `title`, `author`, `date` — Document metadata
+- `format: html` or `format: pdf` — Output type
+- `abstract` — Summary text
+
+## Adding references
+
+Include a bibliography file in the YAML:
+
+```yaml
+---
+title: "My document"
+bibliography: references.bib
+---
+```
+
+. . .
+
+Then cite in your text:
+
+- `@citeR` produces: R Core Team (2023)
+- `[@citeR]` produces: (R Core Team 2023)
+
+::: callout-tip
+### Finding citations
+
+Use [Google Scholar](https://scholar.google.com) or [doi2bib](https://www.doi2bib.org) to get BibTeX entries.
+:::
+
+## Essential Markdown commands
+
+::: columns
+::: {.column width="50%"}
+**Emphasis**:
+
+- `*italic*` → *italic*
+- `**bold**` → **bold**
+
+**Headers**:
+
+```
+# First level
+## Second level
+### Third level
+```
+:::
+
+::: {.column width="50%"}
+**Lists**:
+
+```
+- Item 1
+- Item 2
+  + Sub-item
+```
+
+**Links**:
+
+```
+[text](https://url.com)
+```
+:::
+:::
+
+::: notes
+The Markdown Quick Reference in RStudio (Help menu) is very useful.
+:::
+
+## Code chunks
+
+Code chunks contain R code that will execute:
+
+````{verbatim}
+```{r}
+# Calculate the mean of some numbers
+mean(c(1, 2, 3, 4, 5))
+```
+````
+
+. . .
+
+Produces:
+
+```{r}
+# Calculate the mean of some numbers
+mean(c(1, 2, 3, 4, 5))
+```
+
+## Chunk options
+
+Control how chunks behave with special comments:
+
+````{verbatim}
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+```
+````
+
+. . .
+
+| Option | Effect |
+|--------|--------|
+| `echo: false` | Hide the code, show output |
+| `eval: false` | Show code, don't run it |
+| `include: false` | Run code, hide everything |
+| `warning: false` | Suppress warnings |
+| `message: false` | Suppress messages |
+
+## Example: Including a graph
+
+````{verbatim}
+```{r}
+#| label: fig-example
+#| fig-cap: "A simple scatterplot"
+#| echo: false
+
+mtcars |>
+  ggplot(aes(x = wt, y = mpg)) +
+  geom_point() +
+  theme_minimal()
+```
+````
+
+```{r}
+#| label: fig-example-actual
+#| fig-cap: "A simple scatterplot"
+#| echo: false
+#| fig-width: 8
+#| fig-height: 4
+
+mtcars |>
+  ggplot(aes(x = wt, y = mpg)) +
+  geom_point(size = 3, colour = "#00539b") +
+  labs(x = "Weight (1000 lbs)", y = "Miles per gallon") +
+  theme_minimal(base_size = 14)
+```
+
+## Cross-references
+
+Reference figures and tables by their label:
+
+- Figures: `@fig-labelname` → Figure 1
+- Tables: `@tbl-labelname` → Table 1
+- Equations: `@eq-labelname` → Equation 1
+
+. . .
+
+::: callout-important
+### Naming convention
+
+Labels must start with the type prefix:
+
+- `fig-` for figures
+- `tbl-` for tables
+- `eq-` for equations
+:::
+
+## Rendering your document
+
+Click the **Render** button (or press `Ctrl/Cmd + Shift + K`)
+
+. . .
+
+This will:
+
+1. Run all the R code
+2. Convert Markdown to formatted text
+3. Produce the output document
+
+::: callout-warning
+### Common error
+
+The Quarto document must be self-contained. Objects in your R environment are **not** automatically available—you must load data within the document.
+:::
+
+# R Projects and File Structure
+
+## Why use R Projects?
+
+::: callout-important
+### The problem with `setwd()`
+
+Using `setwd("C:/Users/yourname/Documents/project/")` means:
+
+- Your code won't work on anyone else's computer
+- Your code won't work if you move the folder
+- Your code won't work on a different operating system
+:::
+
+. . .
+
+**R Projects solve this** by making all file paths relative to the project folder.
+
+## What is an R Project?
+
+An R Project is a folder with a special `.Rproj` file that tells RStudio:
+
+- This is a project
+- Set the working directory here
+- Keep project-specific settings
+
+. . .
+
+> "The use of R Projects enables 'reliable, polite behavior across different computers or users and over time'."
+
+::: aside
+Bryan and Hester (2020)
+:::
+
+## Creating an R Project
+
+In RStudio:
+
+1. **File** → **New Project...**
+2. Select **New Directory** or **Existing Directory**
+3. Give it a meaningful name
+4. Click **Create Project**
+
+. . .
+
+::: callout-tip
+### Good project names
+
+- Use lowercase
+- No spaces (use underscores or hyphens)
+- Be descriptive: `australian_elections_2022`
+:::
+
+## Recommended folder structure
+
+```
+my_project/
+├── my_project.Rproj
+├── README.md
+├── inputs/
+│   ├── data/
+│   │   └── raw_data.csv
+│   └── literature/
+├── outputs/
+│   ├── data/
+│   │   └── cleaned_data.csv
+│   └── paper/
+│       ├── paper.qmd
+│       └── references.bib
+└── scripts/
+    ├── 00-simulate_data.R
+    ├── 01-download_data.R
+    ├── 02-clean_data.R
+    └── 03-test_data.R
+```
+
+::: aside
+Adapted from Wilson et al. (2017)
+:::
+
+## Folder structure explained
+
+::: columns
+::: {.column width="50%"}
+**inputs/**
+
+- Raw, unedited data
+- Never overwrite these!
+- Related literature/PDFs
+
+**outputs/**
+
+- Data you create
+- Your paper/report
+- Figures and tables
+:::
+
+::: {.column width="50%"}
+**scripts/**
+
+- R scripts for each step
+- Numbered for order
+- Transform inputs → outputs
+
+**README.md**
+
+- Overview of the project
+- How to run the code
+- Data sources
+:::
+:::
+
+## The README file
+
+Every project needs a README that explains:
+
+1. What the project is about
+2. How the files are organised
+3. How to reproduce the analysis
+4. Where the data came from
+
+. . .
+
+::: callout-tip
+### Template
+
+Use the [Social Science Data Editors template](https://social-science-data-editors.github.io/template_README/) as a starting point.
+:::
+
+# Reading and Writing Data in R
+
+## The working directory
+
+Your **working directory** is where R looks for files by default.
+
+```{r}
+#| eval: false
+# Check your working directory
+getwd()
+
+# Set working directory (avoid this!)
+setwd("path/to/folder")
+```
+
+. . .
+
+::: callout-warning
+### Don't use `setwd()`!
+
+With R Projects, the working directory is automatically set to the project folder. Using `setwd()` breaks reproducibility.
+:::
+
+## Reading CSV files
+
+CSV (Comma-Separated Values) is the most common data format:
+
+```{r}
+#| eval: false
+# Base R
+data <- read.csv("inputs/data/mydata.csv")
+
+# Tidyverse (recommended)
+library(readr)
+data <- read_csv("inputs/data/mydata.csv")
+```
+
+. . .
+
+::: callout-note
+### `read_csv()` vs `read.csv()`
+
+`read_csv()` from the tidyverse is faster and handles data types better. We'll use it throughout this course.
+:::
+
+## Reading other file types
+
+```{r}
+#| eval: false
+# Tab-separated files
+data <- read_tsv("data.tsv")
+
+# Files with other delimiters
+data <- read_delim("data.txt", delim = "|")
+
+# Excel files (need readxl package)
+library(readxl)
+data <- read_excel("data.xlsx")
+
+# Space-separated (base R)
+data <- read.table("data.txt", header = TRUE)
+```
+
+## The `header` argument
+
+Many data files have column names in the first row:
+
+```{r}
+#| eval: false
+# First row contains column names
+data <- read.table("data.txt", header = TRUE)
+
+# First row is data (no column names)
+data <- read.table("data.txt", header = FALSE)
+```
+
+. . .
+
+::: callout-tip
+### Tidyverse default
+
+`read_csv()` assumes `header = TRUE` by default—one less thing to remember!
+:::
+
+## Writing data
+
+Save your processed data:
+
+```{r}
+#| eval: false
+# Save as CSV (tidyverse)
+write_csv(cleaned_data, "outputs/data/cleaned_data.csv")
+
+# Save as CSV (base R)
+write.csv(cleaned_data, "outputs/data/cleaned_data.csv")
+
+# Save R object (preserves data types)
+saveRDS(cleaned_data, "outputs/data/cleaned_data.rds")
+```
+
+## Examining your data
+
+After loading data, always check it:
+
+```{r}
+#| eval: false
+# First few rows
+head(data)
+
+# Last few rows
+tail(data)
+
+# Structure and types
+str(data)
+
+# Dimensions
+nrow(data)  # Number of rows
+ncol(data)  # Number of columns
+dim(data)   # Both
+
+# Column names
+names(data)
+```
+
+## Example: Reading and examining data
+
+```{r}
+# Create some example data
+example_data <- tibble(
+  name = c("Alice", "Bob", "Carol"),
+  age = c(25, 30, 35),
+  score = c(85.5, 92.0, 78.5)
+)
+
+# Examine it
+head(example_data)
+```
+
+```{r}
+names(example_data)
+```
+
+## Accessing columns
+
+Two ways to access a column:
+
+```{r}
+# Using $ notation
+example_data$age
+```
+
+```{r}
+# Using bracket notation
+example_data[, "age"]
+```
+
+# More R Basics
+
+## Vectors
+
+A **vector** is a list of items of the same type:
+
+```{r}
+# Create vectors
+numbers <- c(1, 2, 3, 4, 5)
+names <- c("Alice", "Bob", "Carol")
+
+# Sequences
+1:10
+seq(0, 100, by = 10)
+```
+
+## Operations on vectors
+
+Mathematical operations work element-by-element:
+
+```{r}
+x <- c(1, 2, 3)
+y <- c(10, 20, 30)
+
+x + y    # Addition
+x * y    # Multiplication
+x^2      # Power
+```
+
+## Summarising vectors
+
+```{r}
+values <- c(10, 20, 30, 40, 50)
+
+sum(values)      # Total
+mean(values)     # Average
+length(values)   # Count
+```
+
+## Missing values
+
+R represents missing data as `NA`:
+
+```{r}
+data_with_missing <- c(1, 2, NA, 4, 5)
+
+# Many functions return NA if data contains NA
+mean(data_with_missing)
+
+# Use na.rm = TRUE to ignore missing values
+mean(data_with_missing, na.rm = TRUE)
+```
+
+## Subsetting with brackets
+
+Access specific elements with `[ ]`:
+
+```{r}
+letters_example <- c("A", "B", "C", "D", "E")
+
+letters_example[1]        # First element
+letters_example[c(1, 3)]  # First and third
+letters_example[2:4]      # Second through fourth
+```
+
+## Logical comparisons
+
+```{r}
+x <- 5
+
+x > 3   # Greater than
+x == 5  # Equal to (note: two equals signs!)
+x != 3  # Not equal to
+x <= 5  # Less than or equal to
+```
+
+. . .
+
+::: callout-warning
+### Common mistake
+
+`=` is assignment, `==` is comparison!
+
+- `x = 5` assigns the value 5 to x
+- `x == 5` asks "is x equal to 5?"
+:::
+
+# Version Control with Git and GitHub
+
+## Why version control?
+
+::: columns
+::: {.column width="50%"}
+**The old way**:
+
+- `analysis.R`
+- `analysis_v2.R`
+- `analysis_final.R`
+- `analysis_final_FINAL.R`
+- `analysis_final_FINAL_v2.R`
+:::
+
+::: {.column width="50%"}
+**The Git way**:
+
+- `analysis.R`
+- + history of all changes
+- + messages explaining changes
+- + ability to go back
+:::
+:::
+
+## What is Git?
+
+::: callout-note
+### Definition
+
+**Git** is a version control system that tracks changes to files over time. It keeps snapshots of your project that you can return to.
+:::
+
+. . .
+
+Key concepts:
+
+- **Repository (repo)**: A project folder tracked by Git
+- **Commit**: A snapshot of your project at a point in time
+- **History**: The record of all commits
+
+## What is GitHub?
+
+::: callout-note
+### Definition
+
+**GitHub** is a website that hosts Git repositories online. It makes it easy to share code, collaborate, and back up your work.
+:::
+
+. . .
+
+Think of it as:
+
+- **Git** = Track changes locally
+- **GitHub** = Share and back up to the cloud
+
+## Setting up Git
+
+Check if Git is installed (in Terminal):
+
+```bash
+git --version
+```
+
+. . .
+
+Configure your identity:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+::: callout-important
+### Use your real details
+
+These appear in your commit history and should match your GitHub account.
+:::
+
+## Creating a GitHub account
+
+1. Go to [github.com](https://github.com)
+2. Create a free account
+3. Choose a professional username
+
+. . .
+
+::: callout-tip
+### Username advice
+
+Your username becomes part of your professional profile. Choose something:
+
+- Professional
+- Related to your name
+- Easy to remember
+:::
+
+## The Git workflow
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 2.5
+
+workflow <- tibble(
+  step = factor(c("Pull", "Work", "Stage", "Commit", "Push"),
+                levels = c("Pull", "Work", "Stage", "Commit", "Push")),
+  x = 1:5,
+  y = 1
+)
+
+ggplot(workflow, aes(x = x, y = y)) +
+  geom_point(size = 15, colour = "#00539b") +
+  geom_text(aes(label = step), colour = "white", fontface = "bold", size = 4) +
+  geom_segment(aes(x = x + 0.3, xend = x + 0.7, y = y, yend = y),
+               data = workflow |> filter(x < 5),
+               arrow = arrow(length = unit(0.3, "cm")),
+               colour = "#00539b", linewidth = 1) +
+  theme_void() +
+  coord_cartesian(xlim = c(0.5, 5.5))
+```
+
+1. **Pull**: Get the latest version from GitHub
+2. **Work**: Make your changes
+3. **Stage**: Select files to include in the snapshot
+4. **Commit**: Take the snapshot with a message
+5. **Push**: Upload to GitHub
+
+## Using Git in RStudio
+
+RStudio has a Git pane that makes this easier:
+
+1. **Pull** (blue down arrow): Get changes from GitHub
+2. **Stage** (checkbox): Select files to commit
+3. **Commit** (button): Open commit window
+4. **Push** (green up arrow): Send to GitHub
+
+. . .
+
+::: callout-tip
+### Start with Pull
+
+Always pull before you start working to get any changes.
+:::
+
+## Writing good commit messages
+
+A commit message should explain *what* changed and *why*:
+
+```
+Add graphs to data section
+
+- Added unemployment line chart
+- Added inflation bar chart
+- Updated figure references in text
+```
+
+. . .
+
+::: callout-important
+### Commit regularly
+
+Frequent, small commits are better than rare, large ones. They make it easier to find and fix problems.
+:::
+
+## The `.gitignore` file
+
+Some files should **not** be tracked:
+
+- Large data files (>100MB)
+- Sensitive information
+- Temporary files
+- System files (`.DS_Store`)
+
+. . .
+
+List these in a `.gitignore` file:
+
+```
+# Ignore data files
+*.csv
+data/
+
+# Ignore system files
+.DS_Store
+```
+
+## Connecting RStudio to GitHub
+
+1. Create a Personal Access Token (PAT) on GitHub
+2. In R, run:
+
+```{r}
+#| eval: false
+# Install packages if needed
+install.packages(c("usethis", "gitcreds"))
+
+# Create a PAT (opens GitHub in browser)
+usethis::create_github_token()
+
+# Save your PAT
+gitcreds::gitcreds_set()
+```
+
+::: callout-warning
+### Keep your PAT secret
+
+Never include your PAT in any R script or document!
+:::
+
+## Starting a new project with Git
+
+**Option 1**: Create on GitHub first
+
+1. Create new repo on GitHub
+2. Copy the URL
+3. In RStudio: File → New Project → Version Control → Git
+4. Paste URL and create
+
+. . .
+
+**Option 2**: Create locally first
+
+```{r}
+#| eval: false
+# After creating an R Project
+usethis::use_git()      # Initialise Git
+usethis::use_github()   # Create GitHub repo
+```
+
+## Don't panic!
+
+::: callout-tip
+### Git can be confusing
+
+> "It is normal to be intimidated by Git and GitHub. Many data scientists only know a little about how to use it, and that is okay."
+
+The key commands are: **pull**, **commit**, **push**.
+
+Everything else can be learned as needed!
+:::
+
+# Putting It All Together
+
+## A reproducible workflow
+
+::: {layout-ncol="2"}
+### Setup (once)
+
+1. Create GitHub repo
+2. Clone as R Project
+3. Set up folder structure
+4. Create README
+
+### Each session
+
+1. **Pull** from GitHub
+2. Write code in scripts
+3. Document in Quarto
+4. **Commit** with message
+5. **Push** to GitHub
+:::
+
+## Example project structure
+
+```
+assignment_1/
+├── assignment_1.Rproj
+├── README.md
+├── .gitignore
+├── inputs/
+│   └── data/
+│       └── raw_survey.csv
+├── outputs/
+│   ├── data/
+│   │   └── cleaned_survey.csv
+│   └── paper/
+│       ├── assignment_1.qmd
+│       └── references.bib
+└── scripts/
+    ├── 01-download_data.R
+    └── 02-clean_data.R
+```
+
+## Checklist for reproducibility
+
+✅ Used an R Project (no `setwd()`)
+
+✅ All data loaded from files (not environment)
+
+✅ All packages loaded at the start
+
+✅ Code runs from top to bottom
+
+✅ Results documented in Quarto
+
+✅ Project tracked with Git/GitHub
+
+✅ README explains how to run the code
+
+# Wrap-up
+
+## This week's readings
+
+::: columns
+::: {.column width="50%"}
+**Telling Stories with Data**:
+
+- Ch 3: Reproducible workflows
+  - 3.2 Quarto
+  - 3.3 R Projects and file structure
+  - 3.4 Version control
+:::
+
+::: {.column width="50%"}
+**Regression and Other Stories**:
+
+- Appendix A.3: The basics
+- Appendix A.4: Reading, writing, and looking at data
+:::
+:::
+
+## Key takeaways
+
+1. **Quarto** combines code and text for reproducible documents
+2. **R Projects** make your work portable and shareable
+3. **Folder structure** keeps your project organised
+4. **Git and GitHub** track changes and enable collaboration
+5. **`read_csv()`** and **`write_csv()`** handle data files
+
+## Next week
+
+**Week 3: Data Acquisition and Measurement**
+
+- Understanding measurement properties
+- Working with government data
+- Accessing data through APIs
+- Handling missing data
+
+::: callout-important
+### Before next week
+
+- Create a GitHub account
+- Set up Git on your computer
+- Create your first R Project with Git
+- Practice creating a Quarto document
+:::
+
+## Questions?
+
+::: columns
+::: {.column width="50%"}
+**Office hours**:
+
+- TBA
+
+**Email**:
+
+- francesco.bailo@sydney.edu.au
+:::
+
+::: {.column width="50%"}
+**Resources**:
+
+- [Happy Git with R](https://happygitwithr.com/)
+- [Quarto documentation](https://quarto.org/)
+- [R for Data Science](https://r4ds.hadley.nz/)
+:::
+:::
+
+## References

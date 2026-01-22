@@ -1,0 +1,973 @@
+---
+title: "Week 05</br>Data Cleaning and Probability Simulation"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Learning Objectives
+
+By the end of this week, you will be able to:
+
+1. Clean and prepare raw data systematically
+2. Write tests and documentation for data cleaning
+3. Handle missing values appropriately
+4. Understand probability distributions
+5. Simulate data for testing and validation
+
+::: notes
+This week bridges two important skills: systematic data cleaning (essential for any real-world analysis) and probability simulation (which helps us understand uncertainty and validate our methods).
+:::
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(testthat)
+library(janitor)
+```
+
+# Part 1: Data Cleaning Workflow
+
+## Why Data Cleaning Matters
+
+::: callout-important
+### The Reality of Real Data
+Most data you encounter will be messy. Data cleaning often takes 80% of analysis time but receives far less attention than modelling.
+:::
+
+. . .
+
+Data cleaning is not just about fixing errors—it's about:
+
+- Understanding your data deeply
+- Ensuring reproducibility
+- Building trust in your analysis
+- Documenting your decisions
+
+::: notes
+Robert Caro, the biographer of Lyndon Johnson, spent years tracking down everyone connected to the 36th President. We need to understand our data to this same extent—we want to metaphorically "turn every page."
+:::
+
+---
+
+## The Data Science Workflow
+
+Remember our workflow from Week 1:
+
+$$\text{Plan} \rightarrow \text{Simulate} \rightarrow \text{Acquire} \rightarrow \text{Explore} \rightarrow \text{Share}$$
+
+. . .
+
+Data cleaning sits between **Acquire** and **Explore**, but planning for it begins much earlier.
+
+::: notes
+This workflow is iterative. You'll often need to return to earlier stages as you learn more about your data.
+:::
+
+---
+
+## Step 1: Save the Original Data
+
+::: callout-tip
+### Golden Rule
+Always save the original, unedited data in a separate folder and **never modify it**.
+:::
+
+. . .
+
+Why?
+
+- Reproducibility: Others can verify your work
+- Flexibility: You might change cleaning decisions later
+- Provenance: You can trace what happened to the data
+
+::: notes
+If you obtained data from a third-party like a government website, you have no control over whether they will continue to host that data, update it, or change the address where it's available.
+:::
+
+---
+
+## Step 2: Plan Your Endpoint
+
+Before cleaning, sketch the dataset you want to end up with:
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Planning a dataset of Australian state populations
+set.seed(2024)
+simulated_population <- tibble(
+  state = c("New South Wales", "Victoria", "Queensland", 
+            "Western Australia", "South Australia", "Tasmania",
+            "Northern Territory", "Australian Capital Territory"),
+  population = runif(n = 8, min = 0.2, max = 8) |> round(digits = 2)
+)
+simulated_population
+```
+
+::: notes
+The process of sketching this endpoint forces you to make decisions early and be clear about your desired outcome. What columns do you need? What should their types be? What are reasonable values?
+:::
+
+---
+
+## Planning Forces Decisions
+
+By simulating first, you must decide:
+
+- **Column names**: Full names or abbreviations?
+- **Units**: Population in millions or raw numbers?
+- **Data types**: Character, numeric, factor?
+- **Valid ranges**: What values are reasonable?
+
+. . .
+
+::: callout-note
+### Tidy Data Principles
+Plan for "tidy data": each variable in its own column, each observation in its own row, each value in its own cell.
+:::
+
+---
+
+## Step 3: Start Small
+
+When working with messy data, get it into a **rectangular format** as quickly as possible.
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Messy string data
+unedited_data <- c("NSW 8.2 VIC 6.5 QLD 5.1")
+
+# Convert to tidy format
+tidy_data <- tibble(raw = unedited_data) |>
+  separate_longer_delim(raw, delim = " ") |>
+  mutate(type = rep(c("state", "population"), length.out = n())) |>
+  mutate(row = rep(1:(n()/2), each = 2)) |>
+  pivot_wider(names_from = type, values_from = raw) |>
+  select(-row) |>
+  mutate(population = as.numeric(population))
+
+tidy_data
+```
+
+::: notes
+Look for regularities in your data—delimiters like commas, spaces, or repeated text patterns that you can exploit to create structure.
+:::
+
+---
+
+## Step 4: Write Tests
+
+::: callout-important
+### Tests Are Not Optional
+Tests ensure your cleaning code does what you think it does, and catches problems early.
+:::
+
+. . .
+
+Basic test structure using `stopifnot()`:
+
+```{r}
+#| echo: true
+#| error: true
+# Test that all populations are positive
+stopifnot(all(tidy_data$population > 0))
+
+# Test that we have the expected number of states
+stopifnot(nrow(tidy_data) == 3)
+
+# Test that population is numeric
+stopifnot(is.numeric(tidy_data$population))
+```
+
+::: notes
+The engineers working on software for the Apollo program initially considered writing tests to be "busy work." But they eventually came to realise that NASA would not have faith in software unless it was accompanied by a comprehensive suite of tests.
+:::
+
+---
+
+## Using the testthat Package
+
+```{r}
+#| echo: true
+#| message: false
+library(testthat)
+
+# More readable tests
+expect_equal(nrow(tidy_data), 3)
+expect_true(all(tidy_data$population > 0))
+expect_type(tidy_data$population, "double")
+```
+
+. . .
+
+If tests pass, nothing happens. If they fail, execution stops with an informative error.
+
+---
+
+## What to Test?
+
+::: {layout-ncol="2"}
+
+### Validity Tests
+- Correct data types (class)
+- Values within expected ranges
+- No impossible values
+- Correct number of observations
+
+### Consistency Tests
+- Internal: Do columns sum correctly?
+- External: Do values match known facts?
+- Temporal: Are dates in order?
+
+:::
+
+::: notes
+Start with tests for validity—these will typically check the class of variables, their unique values, and the number of observations. Then turn to internal consistency checks, and finally external consistency using outside information.
+:::
+
+---
+
+## Step 5: Iterate and Generalise
+
+Data cleaning is iterative:
+
+1. Plan → 2. Clean a sample → 3. Test → 4. Refine → 5. Scale up
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Fixing common text issues
+messy_names <- c("Patricia", "Ptricia", "PatricIa", "Patric1a", "Patricia ")
+
+cleaned_names <- messy_names |>
+  str_to_title() |>           # Fix capitalisation
+  str_replace_all("1", "i") |> # Fix OCR errors (1 → i)
+  str_trim()                   # Remove trailing spaces
+
+tibble(original = messy_names, cleaned = cleaned_names)
+```
+
+::: notes
+Notice how we address issues systematically: first capitalisation, then common OCR errors, then whitespace. Document each step!
+:::
+
+---
+
+# Part 2: Checking and Testing
+
+## Three Tools for Finding Anomalies
+
+::: {layout-ncol="3"}
+
+### 1. Graphs
+Visualise distributions and relationships to spot outliers
+
+### 2. Counts
+Identify rare values and common errors
+
+### 3. Tests
+Programmatically verify expectations
+
+:::
+
+::: notes
+We are interested in values that are in the dataset that should not be, but also the opposite situation—values that should be in the dataset but are not. This is the concept of "negative space" in design.
+:::
+
+---
+
+## Using Graphs to Find Problems
+
+```{r}
+#| echo: true
+#| fig-height: 4
+# Simulated youth survey with an error
+youth_survey_data <- tibble(
+  ages = c(15.9, 14.9, 16.6, 15.8, 16.7, 17.9, 12.6, 11.5, 16.2, 19.5, 150)
+)
+
+youth_survey_data |>
+  ggplot(aes(x = ages)) +
+  geom_histogram(binwidth = 5) +
+  theme_minimal() +
+  labs(x = "Age of respondent", y = "Count", 
+       title = "Spot the problem!")
+```
+
+::: notes
+The value of 150 is clearly an error—likely a missing decimal point (should be 15.0). Graphs make such outliers immediately visible.
+:::
+
+---
+
+## Using Counts to Prioritise
+
+```{r}
+#| echo: true
+# Where to focus cleaning efforts?
+country_names <- tibble(
+  country = c("Australia", "Australie", "Australia", "Austrelia",
+              "Australia", "australia", "Australia", "Australie")
+)
+
+country_names |>
+  count(country, sort = TRUE)
+```
+
+. . .
+
+Focus on fixing "Australie" first—it gives the biggest improvement!
+
+::: notes
+We want to focus on getting most of the data right, so we are interested in the counts of unique values. Sort in descending order and deal with issues in this order.
+:::
+
+---
+
+## Testing Class Is Critical
+
+::: callout-important
+### Class Affects Everything
+Getting the class of variables wrong can completely change your analysis results!
+:::
+
+. . .
+
+```{r}
+#| echo: true
+# Same data, different classes → different results
+data <- tibble(
+  response = c(1, 1, 0, 1, 0, 1),
+  group_numeric = c(1, 2, 1, 2, 1, 2),
+  group_factor = factor(c(1, 2, 1, 2, 1, 2))
+)
+
+# These give DIFFERENT regression results!
+# lm(response ~ group_numeric, data = data)  # Treats as continuous
+# lm(response ~ group_factor, data = data)   # Treats as categorical
+```
+
+::: notes
+When group is numeric, regression imposes a consistent relationship between levels. When it's a factor, each level gets its own coefficient. Neither is "wrong"—but you must choose deliberately.
+:::
+
+---
+
+## Specifying Column Types
+
+::: callout-tip
+### Be Explicit About Types
+Don't let R guess—specify column types when reading data.
+:::
+
+```{r}
+#| echo: true
+#| eval: false
+# Instead of this:
+data <- read_csv("myfile.csv")
+
+# Do this:
+data <- read_csv(
+  "myfile.csv",
+  col_types = cols(
+    name = col_character(),
+    age = col_integer(),
+    income = col_double(),
+    state = col_factor()
+  )
+)
+```
+
+---
+
+## Testing Dates
+
+Dates deserve special attention because they often go wrong:
+
+. . .
+
+```{r}
+#| echo: true
+library(lubridate)
+
+# Common date formats
+dates_raw <- c("2024-03-15", "15/03/2024", "March 15, 2024")
+
+# Parse with appropriate functions
+ymd("2024-03-15")
+dmy("15/03/2024")
+mdy("March 15, 2024")
+```
+
+. . .
+
+Always use ISO 8601 format (YYYY-MM-DD) in your cleaned data!
+
+::: notes
+A shibboleth for whether someone has worked with dates is their reaction when you tell them you're going to be working with dates. If they share a horror story, they've likely worked with dates before!
+:::
+
+---
+
+## The clean_names() Function
+
+```{r}
+#| echo: true
+library(janitor)
+
+# Messy column names
+messy_data <- tibble(
+  `First Name` = "Alice",
+  `weird#symbol` = 42,
+  `InCoNsIsTaNtCaPs` = TRUE
+)
+
+messy_data |>
+  clean_names()
+```
+
+::: notes
+Machine-readable names avoid spaces and special characters, use consistent case, and are unique within a dataset.
+:::
+
+---
+
+# Part 3: Probability Foundations
+
+## Why Probability?
+
+Probability helps us:
+
+1. **Model variation** in the world
+2. **Understand sampling distributions** of estimates  
+3. **Represent uncertainty** in predictions
+4. **Train our intuitions** about randomness
+
+::: notes
+Patterns of randomness are notoriously contrary to normal human thinking—our brains don't seem to be able to do a good job understanding that random swings will be present in the short term but average out in the long run.
+:::
+
+---
+
+## The Normal Distribution
+
+::: callout-note
+### Central Limit Theorem
+The sum of many small, independent random variables approximately follows a normal distribution.
+:::
+
+. . .
+
+```{r}
+#| echo: true
+#| fig-height: 3.5
+tibble(x = seq(-4, 4, 0.01)) |>
+  mutate(density = dnorm(x)) |>
+  ggplot(aes(x = x, y = density)) +
+  geom_line(linewidth = 1) +
+  geom_vline(xintercept = c(-1, 1), linetype = "dashed", colour = "blue") +
+  annotate("text", x = 0, y = 0.2, label = "68%", size = 5) +
+  theme_minimal() +
+  labs(title = "Standard Normal Distribution", 
+       subtitle = "68% of values fall within 1 SD of the mean")
+```
+
+---
+
+## Key Properties of the Normal
+
+For a normal distribution with mean μ and standard deviation σ:
+
+- **50%** of values fall within ±0.67σ of μ
+- **68%** of values fall within ±1σ of μ  
+- **95%** of values fall within ±2σ of μ
+- **99.7%** of values fall within ±3σ of μ
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Heights of Australian women (mean = 162cm, SD = 7cm)
+qnorm(c(0.025, 0.975), mean = 162, sd = 7)  # 95% interval
+```
+
+---
+
+## Other Important Distributions
+
+::: {layout-ncol="2"}
+
+### Binomial Distribution
+For counting successes in n independent trials, each with probability p.
+
+```{r}
+#| echo: true
+# Probability of exactly 3 heads in 10 coin flips
+dbinom(3, size = 10, prob = 0.5)
+```
+
+### Poisson Distribution
+For counting events that occur at a constant average rate.
+
+```{r}
+#| echo: true
+# Probability of exactly 5 emails per hour (avg = 3)
+dpois(5, lambda = 3)
+```
+
+:::
+
+::: notes
+The binomial is useful when you have a fixed number of trials. The Poisson is useful for count data like arrivals, incidents, or occurrences.
+:::
+
+---
+
+## Mean, Variance, and Standard Deviation
+
+For any distribution:
+
+- **Mean (μ)**: The average value (centre of the distribution)
+- **Variance (σ²)**: Average squared distance from the mean
+- **Standard Deviation (σ)**: Square root of variance (same units as data)
+
+. . .
+
+```{r}
+#| echo: true
+# Sample calculations
+heights <- c(165, 170, 155, 180, 160, 175, 168)
+mean(heights)
+var(heights)
+sd(heights)
+```
+
+---
+
+# Part 4: Simulation in R
+
+## Why Simulate?
+
+Simulation is powerful because it lets us:
+
+1. **Understand distributions** by generating data from them
+2. **Test our methods** on data where we know the truth
+3. **Propagate uncertainty** through complex calculations
+4. **Validate cleaning procedures** by creating test cases
+
+::: notes
+Simulation can help us better understand how variation plays out. It's also the most convenient and general way to represent uncertainties in forecasts.
+:::
+
+---
+
+## Simulating from Distributions
+
+```{r}
+#| echo: true
+#| fig-height: 4
+set.seed(2024)  # For reproducibility
+
+# Simulate 1000 values from different distributions
+sims <- tibble(
+  normal = rnorm(1000, mean = 5, sd = 2),
+  uniform = runif(1000, min = 0, max = 10),
+  poisson = rpois(1000, lambda = 5)
+)
+
+sims |>
+  pivot_longer(everything(), names_to = "distribution", values_to = "value") |>
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~distribution, scales = "free") +
+  theme_minimal()
+```
+
+---
+
+## Key R Functions for Simulation
+
+| Distribution | Random | Density | Quantile |
+|-------------|--------|---------|----------|
+| Normal | `rnorm()` | `dnorm()` | `qnorm()` |
+| Binomial | `rbinom()` | `dbinom()` | `qbinom()` |
+| Uniform | `runif()` | `dunif()` | `qunif()` |
+| Poisson | `rpois()` | `dpois()` | `qpois()` |
+
+. . .
+
+- `r*()` generates random values
+- `d*()` gives probability density/mass
+- `q*()` gives quantiles (inverse CDF)
+
+---
+
+## Example: How Many Girls in 400 Births?
+
+```{r}
+#| echo: true
+#| fig-height: 3.5
+# Probability of a girl is approximately 48.8%
+set.seed(2024)
+n_sims <- 1000
+
+n_girls <- rbinom(n_sims, size = 400, prob = 0.488)
+
+tibble(n_girls = n_girls) |>
+  ggplot(aes(x = n_girls)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", colour = "white") +
+  geom_vline(xintercept = 400 * 0.488, colour = "red", linewidth = 1) +
+  theme_minimal() +
+  labs(x = "Number of girls", y = "Frequency",
+       title = "Simulated number of girls in 400 births")
+```
+
+---
+
+## Using Simulation for Validation
+
+::: callout-tip
+### Fake-Data Simulation
+Simulate data from your model, then check that your analysis can recover the true parameters.
+:::
+
+. . .
+
+```{r}
+#| echo: true
+# Simulate data where we KNOW the true relationship
+set.seed(2024)
+n <- 100
+true_intercept <- 5
+true_slope <- 2
+true_sd <- 1
+
+fake_data <- tibble(
+  x = runif(n, 0, 10),
+  y = true_intercept + true_slope * x + rnorm(n, 0, true_sd)
+)
+
+# Fit model and check if we recover the truth
+model <- lm(y ~ x, data = fake_data)
+coef(model)  # Should be close to 5 and 2
+```
+
+---
+
+## Simulation for Data Cleaning Tests
+
+Use simulation to create test datasets with known properties:
+
+```{r}
+#| echo: true
+# Simulate a "clean" dataset
+set.seed(2024)
+clean_ages <- tibble(
+  age = round(rnorm(100, mean = 45, sd = 15))
+) |>
+  mutate(age = pmax(18, pmin(age, 100)))  # Bound between 18-100
+
+# Now introduce some realistic errors
+messy_ages <- clean_ages |>
+  mutate(
+    age = case_when(
+      row_number() == 5 ~ 450,      # Typo: extra digit
+      row_number() == 10 ~ -25,     # Sign error
+      row_number() == 15 ~ NA_real_, # Missing value
+      TRUE ~ age
+    )
+  )
+
+# Test your cleaning code on this!
+```
+
+---
+
+## The Power of replicate()
+
+```{r}
+#| echo: true
+# Simulate the sampling distribution of the mean
+simulate_mean <- function(n, mu, sigma) {
+  sample_data <- rnorm(n, mean = mu, sd = sigma)
+  mean(sample_data)
+}
+
+# Run 1000 simulations
+means <- replicate(1000, simulate_mean(n = 30, mu = 100, sigma = 15))
+
+# The sampling distribution
+cat("Mean of means:", round(mean(means), 2), "\n")
+cat("SE of mean:", round(sd(means), 2), "\n")
+cat("Theoretical SE:", round(15/sqrt(30), 2))
+```
+
+::: notes
+The `replicate()` function is cleaner than writing explicit loops for repeated simulations. It automatically combines results into a vector or matrix.
+:::
+
+---
+
+# Part 5: Statistical Inference Basics
+
+## The Sampling Distribution
+
+::: callout-important
+### Key Concept
+The sampling distribution is the distribution of a statistic (like the mean) across many hypothetical samples from the same population.
+:::
+
+. . .
+
+It arises from:
+
+- **Random sampling** from a population
+- **Measurement error** in observations
+- **Model error** from imperfect models
+
+::: notes
+Even if data have not been collected by any random process, for statistical inference it is helpful to assume some probability model for the data.
+:::
+
+---
+
+## Estimates and Standard Errors
+
+For any estimate:
+
+- **Point estimate**: Our best single guess (e.g., sample mean)
+- **Standard error**: The standard deviation of the sampling distribution
+
+. . .
+
+```{r}
+#| echo: true
+# Standard error of a proportion
+n <- 1000  # Sample size
+p_hat <- 0.55  # Observed proportion
+
+# Standard error formula for proportions
+se <- sqrt(p_hat * (1 - p_hat) / n)
+cat("Estimate:", p_hat, "\nStandard error:", round(se, 4))
+```
+
+---
+  
+## Confidence Intervals
+
+A 95% confidence interval:
+
+$$\text{estimate} \pm 2 \times \text{standard error}$$
+
+. . .
+
+```{r}
+#| echo: true
+# 95% CI for the proportion
+ci_lower <- p_hat - 2 * se
+ci_upper <- p_hat + 2 * se
+cat("95% CI: [", round(ci_lower, 3), ",", round(ci_upper, 3), "]")
+```
+
+. . .
+
+::: callout-note
+### Interpretation
+If we repeated the study many times, 95% of the confidence intervals would contain the true parameter.
+:::
+
+---
+
+## Standard Error for Comparisons
+
+For comparing two independent groups:
+
+$$\text{SE}_{\text{difference}} = \sqrt{\text{SE}_1^2 + \text{SE}_2^2}$$
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Gender gap in survey
+n_men <- 400; p_men <- 0.57
+n_women <- 600; p_women <- 0.45
+
+se_men <- sqrt(p_men * (1 - p_men) / n_men)
+se_women <- sqrt(p_women * (1 - p_women) / n_women)
+
+difference <- p_men - p_women
+se_diff <- sqrt(se_men^2 + se_women^2)
+
+cat("Difference:", difference, "\nSE:", round(se_diff, 3))
+```
+
+---
+
+## Problems with Statistical Significance
+
+::: callout-warning
+### Common Misinterpretations
+
+1. Statistical significance ≠ practical importance
+2. Non-significance ≠ no effect
+3. "Significant" vs "not significant" may not itself be significant
+4. P-hacking inflates false positive rates
+
+:::
+
+. . .
+
+Better approach: Report estimates with uncertainty intervals and interpret substantively.
+
+::: notes
+We do not generally use null hypothesis significance testing in our own work. In social science, just about every treatment one might consider will have some effect—the question is how large.
+:::
+
+---
+
+# Part 6: Putting It Together
+
+## The Simulation-First Workflow
+
+1. **Plan** your desired dataset structure
+2. **Simulate** fake data with known properties
+3. **Write tests** based on the simulation
+4. **Acquire** real data
+5. **Clean** using your tested procedures
+6. **Validate** by checking tests pass
+
+::: notes
+This workflow ensures reproducibility and catches problems early. The tests you write for simulated data will catch real problems in actual data.
+:::
+
+---
+
+## Example: Running Times Data
+
+```{r}
+#| echo: true
+#| error: true
+# Step 1: Simulate expected data
+set.seed(2024)
+n <- 200
+expected_ratio <- 8.4  # Marathon ≈ 8.4 × 5km time
+
+sim_run_data <- tibble(
+  five_km = runif(n, min = 15, max = 30),  # 15-30 minutes
+  marathon = five_km * expected_ratio + rnorm(n, 0, 20)
+) |>
+  mutate(across(everything(), ~round(.x, 1)))
+
+# Step 2: Write tests
+stopifnot(
+  all(sim_run_data$five_km >= 15),
+  all(sim_run_data$five_km <= 30),
+  all(sim_run_data$marathon >= 100),  # No sub-100 min marathons!
+  all(sim_run_data$marathon <= 350)
+)
+```
+
+---
+
+## Visualising the Simulated Data
+
+```{r}
+#| echo: true
+#| fig-height: 4.5
+sim_run_data |>
+  ggplot(aes(x = five_km, y = marathon)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = TRUE) +
+  theme_minimal() +
+  labs(x = "5km time (minutes)", y = "Marathon time (minutes)",
+       title = "Simulated Running Times",
+       subtitle = "Expected relationship: marathon ≈ 8.4 × 5km time")
+```
+
+---
+
+## Summary: Key Functions
+
+| Task | R Functions |
+|------|-------------|
+| **Data cleaning** | `mutate()`, `filter()`, `select()`, `str_replace()`, `clean_names()` |
+| **Testing** | `stopifnot()`, `expect_equal()`, `expect_true()` |
+| **Simulation** | `rnorm()`, `rbinom()`, `runif()`, `sample()`, `replicate()` |
+| **Summaries** | `mean()`, `sd()`, `var()`, `quantile()` |
+| **Dates** | `ymd()`, `dmy()`, `mdy()` from lubridate |
+
+---
+
+## This Week's Readings
+
+**TSwD (Alexander, 2023)**
+
+- Chapter 9: Clean and prepare (9.2-9.7)
+
+**ROS (Gelman, Hill & Vehtari, 2021)**
+
+- Chapter 3: Some basic methods in mathematics and probability
+- Chapter 4: Statistical inference  
+- Chapter 5: Simulation
+
+::: notes
+Focus on understanding the workflow for data cleaning and the logic of simulation. The R code will become more natural with practice.
+:::
+
+---
+
+## Next Week
+
+**Week 6: Simple Linear Regression**
+
+- Fitting and interpreting linear models
+- The least squares criterion
+- Making predictions
+- Using simulation to understand regression
+
+::: notes
+The simulation skills you learn this week will be directly applicable when we start building regression models.
+:::
+
+---
+
+## Questions?
+
+::: callout-tip
+### Lab This Week
+Practice data cleaning and simulation with real Australian census data.
+:::
+
+::: footer
+Materials adapted from Alexander (2023) and Gelman, Hill & Vehtari (2021)
+:::

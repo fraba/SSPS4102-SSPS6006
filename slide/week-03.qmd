@@ -1,0 +1,1185 @@
+---
+title: "Week 03</br>Data Acquisition and Measurement"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Understand measurement properties and error
+- Work with census and government data
+- Learn probabilistic and non-probability sampling
+- Access data through APIs
+- Work with messy data in R
+
+::: notes
+This week we move from the foundational concepts of data science workflow to the practical challenges of acquiring and measuring data. We'll cover the theoretical foundations of measurement, then move to practical skills for accessing government data and APIs.
+:::
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(knitr)
+```
+
+# Measurement
+
+## Why Measurement Matters
+
+Reducing the complexity of our world into a dataset requires us to:
+
+. . .
+
+- Know what we give up when we do this
+- Be deliberate and thoughtful as we proceed
+- Consider who profits from the data collected
+- Think about whose power it reflects
+
+::: callout-important
+### Key Insight
+Data are not neutral. Understanding, capturing, classifying, and naming data is an exercise in building a world and reflects power.
+:::
+
+::: notes
+As we think of our world, and telling stories about it, one of the most difficult aspects is to reduce the beautiful complexity of it into a dataset that we can use. Some datasets are so large that one specific data point does not matter—it could be swapped for another without any effect. But this is not always reasonable: how different would your life be if you had a different mother?
+:::
+
+---
+
+## What is Measurement?
+
+The International Organisation of Legal Metrology defines measurement as:
+
+> "The process of experimentally obtaining one or more quantity values that can reasonably be attributed to a quantity"
+
+. . .
+
+This definition highlights several concerns:
+
+- **Instrumentation** – what we use to conduct the measurement
+- **Units** – the reference for comparison
+- **Validity** – is the measurement appropriate?
+- **Reliability** – is the measurement consistent?
+
+::: notes
+Philosophy brings more nuance and depth to their definitions of measurement, but this practical definition from metrology makes clear that we have a variety of concerns. It implies comparison of quantities, including counting of entities.
+:::
+
+---
+
+## Instrumentation
+
+**What we use to conduct the measurement determines what we can measure.**
+
+::: {layout-ncol="2"}
+### Historical Examples
+
+- Microscopes (16th century) led to observation of cells, bacteria
+- Timekeeping evolution: sundials → atomic clocks
+- Modern sports differentiate competitors to thousandths of a second
+
+### Modern Instruments
+
+- Surveys
+- Sensors (temperature, accelerometers)
+- Satellite imagery
+- Cookies and behavioural tracking
+- A/B testing frameworks
+:::
+
+::: notes
+Consider the measurement of time. With a sundial it was difficult to be much more specific about elapsed time than an hour or so. But the gradual development of more accurate instruments of timekeeping would eventually enable some sports to differentiate competitors to the thousandth of the second, and through GPS, allow navigation that is accurate to within metres.
+:::
+
+---
+
+## Properties of Measurements: Validity
+
+::: callout-note
+### Validity
+Valid measurements are those where the quantity we are measuring is related to the estimand and research question of interest. It speaks to **appropriateness**.
+:::
+
+. . .
+
+**Examples of validity challenges:**
+
+- What makes a "one-hit wonder" in music?
+- How do we measure "intelligence" or university quality?
+- Why does WHO define maternal deaths as within 42 days of delivery?
+
+. . .
+
+For constructed measures, Flake and Fried (2020) recommend questioning:
+
+- The underlying construct of interest
+- The decision process that led to the measure
+- What alternatives were considered
+
+::: notes
+For some units, such as a metre or a second, there is a clear definition. But for other aspects that we may wish to measure it is less clear and so the validity of the measurement becomes critical. The measurement of grace, virtue, and intelligence is difficult. That is not to say there are not people with more or less of these qualities, but the measurement is challenging.
+:::
+
+---
+
+## Properties of Measurements: Reliability
+
+::: callout-note
+### Reliability
+Reliability implies some degree of **consistency** – multiple measurements of one particular aspect, at one particular time, should be essentially the same.
+:::
+
+. . .
+
+**Examples:**
+
+- If two enumerators count shops on a street, their counts should match
+- If they differ, we should understand why (e.g., different instructions)
+- Migration data: in-migration of Country A from B should match out-migration of B to A
+
+::: notes
+If two enumerators count the number of shops on a street, then we would hope that their counts are the same. And if they were different then we would hope we could understand the reason for the difference. For instance, perhaps one enumerator misunderstood the instructions and incorrectly counted only shops that were open.
+:::
+
+---
+
+## Measurement Error
+
+**Measurement error** is the difference between the value we observe and the actual value.
+
+. . .
+
+Types of measurement error:
+
+::: {layout-ncol="2"}
+### Censored Data
+We have partial knowledge of the actual value
+
+- **Right-censored**: Know value is above some observed value
+- **Left-censored**: Know value is below some observed value
+
+### Other Types
+- **Winsorised**: We observe the actual value but change it to a less extreme one
+- **Truncated**: We do not even record extreme values
+:::
+
+::: notes
+Censored data is when we have some partial knowledge of the actual value. Right-censored data is when we know that the actual value is above some observed value, but we do not know by how much. For instance, immediately following the Chernobyl disaster in 1986, the only available instruments to measure radiation had a certain maximum limit.
+:::
+
+---
+
+## Visualising Censored and Truncated Data
+
+```{r}
+#| echo: true
+#| fig-height: 4
+set.seed(853)
+newborn_weight <- tibble(
+  weight = rep(rnorm(n = 1000, mean = 3.5, sd = 0.5), times = 3),
+  measurement = rep(c("Actual", "Censored", "Truncated"), each = 1000)
+)
+
+newborn_weight <- newborn_weight |>
+  mutate(weight = case_when(
+    weight <= 2.75 & measurement == "Censored" ~ 2.75,
+    weight >= 4.25 & measurement == "Truncated" ~ NA_real_,
+    TRUE ~ weight
+  ))
+
+newborn_weight |>
+  ggplot(aes(x = weight)) +
+  geom_histogram(bins = 50, fill = "steelblue", alpha = 0.7) +
+  facet_wrap(vars(measurement)) +
+  theme_minimal() +
+  labs(x = "Newborn Weight (kg)", y = "Count")
+```
+
+::: notes
+This example shows newborn baby weight with a normal distribution centered around 3.5kg. In the censored scenario, any value less than or equal to 2.75kg is assigned 2.75kg. In the truncated scenario, any baby expected to weigh more than 4.25kg is transferred to a different hospital.
+:::
+
+---
+
+## Comparing Means: The Impact of Measurement Error
+
+```{r}
+#| echo: true
+newborn_weight |>
+  summarise(mean = mean(weight, na.rm = TRUE), .by = measurement) |>
+  kable(col.names = c("Measurement Type", "Mean Weight (kg)"), digits = 3)
+```
+
+. . .
+
+::: callout-important
+### Key Takeaway
+Different types of measurement error introduce different biases:
+
+- **Censored data** can inflate means (pile-up at threshold)
+- **Truncated data** can deflate means (extreme values removed)
+:::
+
+---
+
+## Missing Data
+
+Regardless of how good our data acquisition process is, there will be **missing data**.
+
+. . .
+
+::: callout-tip
+### Important Distinction
+A variable must be measured, or at least thought about, in order to be missing. With insufficient consideration, there is the danger of missing data that we do not even know are missing because the variables were never considered.
+:::
+
+. . .
+
+**Types of missing data mechanisms:**
+
+- **MCAR** – Missing Completely At Random
+- **MAR** – Missing At Random
+- **MNAR** – Missing Not At Random
+
+::: notes
+The extent to which we must worry about missing data differs by mechanism. For instance, if we are interested in the effect of gender on political support, it may be that men are less likely to respond to surveys, but this is not related to who they will support. If that differential response is only due to being a man, and not related to political support, then we may be able to continue, provided we include gender in the regression.
+:::
+
+---
+
+## Missing Data Mechanisms
+
+::: {layout-ncol="3"}
+### MCAR
+Missing Completely At Random
+
+- Rarely occurs
+- If it does, inference should still reflect the broader population
+
+### MAR
+Missing At Random
+
+- Missingness depends on observed variables
+- Can often be addressed with appropriate modelling
+
+### MNAR
+Missing Not At Random
+
+- Missingness depends on the unobserved value itself
+- Most problematic for inference
+:::
+
+. . .
+
+::: callout-warning
+### Non-response Matters
+Gelman et al. (2016) argue that much of the changes in public opinion reported before elections are not people changing their mind, but **differential non-response**.
+:::
+
+---
+
+# Censuses and Government Data
+
+## "Farmed Data"
+
+We describe datasets that have been developed specifically for the purpose of being used as data as **"farmed data"**.
+
+. . .
+
+**Characteristics of farmed datasets:**
+
+- Typically well put together
+- Thoroughly documented
+- Work of collecting, preparing, and cleaning is mostly done for us
+- Conducted on a known release cycle
+
+. . .
+
+**Examples:**
+
+- Unemployment and inflation (monthly)
+- GDP (quarterly)
+- Census (every 5-10 years)
+
+::: notes
+Farmed datasets are typically well put together, thoroughly documented, and the work of collecting, preparing, and cleaning these datasets is mostly done for us. They are also, usually, conducted on a known release cycle.
+:::
+
+---
+
+## Census Data
+
+**Censuses of population** have the power and financial resources of the state behind them.
+
+. . .
+
+- The 2020 United States Census cost approximately **US$15.6 billion**
+- First modern census (naming every individual): Canada, 1666
+- Census data are not unimpeachable
+
+. . .
+
+::: callout-warning
+### Common Census Errors
+
+- Under-enumeration (not counting everyone)
+- Over-enumeration (counting people twice)
+- Misreporting
+:::
+
+::: notes
+Census data, like all data, are not unimpeachable. Anderson and Fienberg (1999) describe how the history of the census in the United States is one of undercount, and that even George Washington complained about this in the 1790s. The extent of the undercount was estimated due to the Selective Service registration system used for conscription in World War II.
+:::
+
+---
+
+## Accessing Australian Census Data
+
+Australia conducts a census every five years through the **Australian Bureau of Statistics (ABS)**.
+
+. . .
+
+**Accessing ABS data in R:**
+
+```{r}
+#| eval: false
+#| echo: true
+# Install the readabs package
+install.packages("readabs")
+library(readabs)
+
+# Read ABS time series data
+unemployment <- read_abs(series_id = "A84423050A")
+
+# Search for datasets
+search_abs_tables("population")
+```
+
+. . .
+
+::: callout-tip
+### TableBuilder
+For detailed census data, the ABS provides **TableBuilder** – a free online tool for creating custom tables from census data.
+:::
+
+---
+
+## IPUMS: International Census Data
+
+**IPUMS** (Integrated Public Use Microdata Series) provides access to a wide range of datasets, including international census microdata.
+
+. . .
+
+**Workflow for accessing IPUMS data:**
+
+1. Create an account at [ipums.org](https://ipums.org)
+2. Select your sample (e.g., "2019 ACS")
+3. Choose variables of interest
+4. Download in .dta format
+5. Read into R with `haven::read_dta()`
+
+. . .
+
+::: callout-important
+### Citation Required
+It is critical that we cite IPUMS datasets when we use them. See the download page for the appropriate citation.
+:::
+
+::: notes
+The United States is in the enviable situation where there is usually a better approach than using the census. IPUMS provides access to a wide range of datasets. The American Community Survey (ACS) is available on an annual basis, compared with a census which could be quite out-of-date by the time the data are available.
+:::
+
+---
+
+## Example: Cleaning IPUMS Data
+
+```{r}
+#| eval: false
+#| echo: true
+library(haven)
+library(tidyverse)
+
+ipums_extract <- read_dta("usa_00015.dta")
+
+cleaned_ipums <- ipums_extract |>
+  select(stateicp, sex, age, educd) |>
+  to_factor() |>
+  mutate(age = as.numeric(age)) |>
+  filter(age >= 18) |>
+  rename(gender = sex) |>
+  mutate(
+    age_group = case_when(
+      age <= 29 ~ "18-29",
+      age <= 44 ~ "30-44",
+      age <= 59 ~ "45-59",
+      age >= 60 ~ "60+",
+      TRUE ~ "Trouble"
+    )
+  )
+```
+
+::: notes
+This code shows how to clean IPUMS data by selecting relevant variables, converting to factors, filtering for adults, and creating age groups. This pattern of cleaning and preparing data is common when working with survey and census data.
+:::
+
+---
+
+# Sampling Essentials
+
+## The Challenge of Sampling
+
+> "Statistics is the science of how to collect and analyse data and draw statements and conclusions about unknown populations." – Wu and Thompson (2020)
+
+. . .
+
+We can never have **all** the data we would like.
+
+. . .
+
+::: callout-note
+### Key Terminology
+
+- **Target population**: The collection of all items about which we would like to speak
+- **Sampling frame**: A list of all the items from the target population that we could get data about
+- **Sample**: The items from the sampling frame that we get data about
+:::
+
+::: notes
+Let us say that we have some data. For instance, a particular toddler goes to sleep at 6:00pm every night. We might be interested to know whether that bedtime is common among all toddlers. If we only had one toddler then our ability to use their bedtime to speak about all toddlers would be limited.
+:::
+
+---
+
+## Target Population, Sampling Frame, and Sample
+
+**Example 1: Books ever written**
+
+- **Target population**: All books ever written
+- **Sampling frame**: All books in the Library of Congress, or Google Books (25 million)
+- **Sample**: Books available through Project Gutenberg
+
+. . .
+
+**Example 2: Brazilians in Germany**
+
+- **Target population**: All Brazilians who live in Germany
+- **Sampling frame**: All Brazilians in Germany who have Facebook
+- **Sample**: Brazilians in Germany with Facebook whom we can gather data about
+
+::: notes
+Consider wanting to speak of the attitudes of all Brazilians who live in Germany. The target population is all Brazilians who live in Germany. One possible source of information would be Facebook and so in that case, the sampling frame might be all Brazilians who live in Germany who have Facebook.
+:::
+
+---
+
+## Probability vs Non-Probability Sampling
+
+::: {layout-ncol="2"}
+### Probability Sampling
+Every unit in the sampling frame has some **known chance** of being sampled, and the specific sample is obtained **randomly**.
+
+- Enables inference to the population
+- More expensive and difficult
+- Foundation of classical statistics
+
+### Non-Probability Sampling
+Units are sampled based on **convenience, quotas, judgement**, or other non-random processes.
+
+- Cheaper and quicker
+- Cannot make formal probability statements
+- May be biased in various ways
+:::
+
+. . .
+
+::: callout-tip
+### Key Insight
+The difference between probability and non-probability sampling is often one of **degree** rather than dichotomy.
+:::
+
+---
+
+## Types of Probability Sampling
+
+```{r}
+#| echo: false
+#| fig-height: 5
+set.seed(853)
+illustrative_sampling <- tibble(
+  unit = 1:100,
+  simple_random_sampling = sample(
+    x = c("In", "Out"), size = 100, replace = TRUE, prob = c(0.2, 0.8)
+  )
+)
+
+starting_point <- 3
+illustrative_sampling <- illustrative_sampling |>
+  mutate(
+    systematic_sampling = if_else(
+      unit %in% seq.int(from = starting_point, to = 100, by = 5),
+      "In", "Out"
+    )
+  )
+
+picked_in_strata <- illustrative_sampling |>
+  mutate(strata = (unit - 1) %/% 10) |>
+  slice_sample(n = 2, by = strata) |>
+  pull(unit)
+
+illustrative_sampling <- illustrative_sampling |>
+  mutate(stratified_sampling = if_else(unit %in% picked_in_strata, "In", "Out"))
+
+picked_clusters <- c(0, 9)
+illustrative_sampling <- illustrative_sampling |>
+  mutate(
+    cluster = (unit - 1) %/% 10,
+    cluster_sampling = if_else(cluster %in% picked_clusters, "In", "Out")
+  ) |>
+  select(-cluster)
+
+new_labels <- c(
+  simple_random_sampling = "Simple Random Sampling",
+  systematic_sampling = "Systematic Sampling",
+  stratified_sampling = "Stratified Sampling",
+  cluster_sampling = "Cluster Sampling"
+)
+
+illustrative_sampling |>
+  pivot_longer(
+    cols = names(new_labels),
+    names_to = "sampling_method",
+    values_to = "in_sample"
+  ) |>
+  mutate(sampling_method = factor(sampling_method, levels = names(new_labels))) |>
+  filter(in_sample == "In") |>
+  ggplot(aes(x = unit, y = in_sample)) +
+  geom_point(size = 3, colour = "steelblue") +
+  facet_wrap(vars(sampling_method), dir = "v", ncol = 1,
+             labeller = labeller(sampling_method = new_labels)) +
+  theme_minimal() +
+  labs(x = "Unit", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+```
+
+---
+
+## Simple Random Sampling
+
+**Every unit has the same chance of being included.**
+
+```{r}
+#| echo: true
+set.seed(853)
+# 20% chance of being selected
+sample(x = c("In", "Out"), size = 10, replace = TRUE, prob = c(0.2, 0.8))
+```
+
+. . .
+
+- The purest form of random sampling
+- Easy to understand and implement
+- May be inefficient for rare populations
+
+---
+
+## Systematic Sampling
+
+**Select every k-th unit after a random starting point.**
+
+```{r}
+#| echo: true
+set.seed(853)
+# Random start between 1-5, then every 5th unit
+starting_point <- sample(x = 1:5, size = 1)
+selected_units <- seq.int(from = starting_point, to = 100, by = 5)
+head(selected_units, 10)
+```
+
+. . .
+
+**Example**: Bowley (1913) used systematic sampling in Reading, England:
+
+> "One building in ten was marked throughout the local directory in alphabetical order of streets..."
+
+::: notes
+With systematic sampling, we proceed by selecting some value, and we then sample every fifth unit to obtain a 20 per cent sample. To begin, we randomly pick a starting point from units one to five, say three. And so sampling every fifth unit would mean looking at the third, the eighth, the thirteenth, and so on.
+:::
+
+---
+
+## Stratified Sampling
+
+**Divide population into mutually exclusive strata, then sample within each stratum.**
+
+```{r}
+#| echo: true
+set.seed(853)
+data_with_strata <- tibble(
+  unit = 1:100,
+  strata = (unit - 1) %/% 10  # Groups of 10
+)
+
+# Sample 2 from each stratum
+sampled <- data_with_strata |>
+  slice_sample(n = 2, by = strata)
+
+table(sampled$strata)
+```
+
+. . .
+
+**Use case**: Ensuring adequate representation of small states/regions
+
+::: notes
+We use stratification to help with the efficiency of sampling or with the balance of the survey. For instance, the population of the United States is around 335 million, with around 40 million people in California and around half a million people in Wyoming. Even a survey of 10,000 responses would only expect to have 15 responses from Wyoming.
+:::
+
+---
+
+## Cluster Sampling
+
+**Select clusters of units, then sample all or some units within selected clusters.**
+
+```{r}
+#| echo: true
+set.seed(853)
+# Select 2 clusters (out of 10)
+picked_clusters <- sample(x = 0:9, size = 2)
+picked_clusters
+
+# All units in those clusters are included
+selected <- tibble(unit = 1:100) |>
+  mutate(cluster = (unit - 1) %/% 10) |>
+  filter(cluster %in% picked_clusters)
+
+nrow(selected)
+```
+
+. . .
+
+**Advantage**: Can be cheaper due to geographic concentration
+
+---
+
+## Non-Probability Sampling Methods
+
+| Method | Description | Trade-offs |
+|--------|-------------|------------|
+| **Convenience** | Sample from easily accessible units | Quick, cheap; potentially biased |
+| **Quota** | Fill predefined quotas for subgroups | Ensures representation; not random within groups |
+| **Snowball** | Ask respondents to recruit others | Reaches hidden populations; network bias |
+| **Respondent-driven** | Like snowball with compensation for recruiting | Better for hidden populations; complex weighting |
+
+::: notes
+Non-probability samples have an important role to play because they are typically cheaper and quicker to obtain than probability samples. Low response rates mean that true probability samples are rare, and so grappling with the implications of non-probability sampling is important.
+:::
+
+---
+
+# APIs
+
+## What is an API?
+
+::: callout-note
+### Application Programming Interface (API)
+A website that is set up for another **computer** to be able to access it, rather than a person.
+:::
+
+. . .
+
+**How it works:**
+
+1. We provide a URL (with parameters)
+2. The server processes our request
+3. We receive data back (usually in JSON or XML format)
+
+. . .
+
+**Example**: Google Maps
+
+- Human navigation: scroll, click, drag
+- API access: `https://www.google.com/maps/@-35.28,149.12,16z`
+
+::: notes
+In everyday language, and for our purposes, an Application Programming Interface (API) is a situation in which someone has set up specific files on their computer such that we can follow their instructions to get them. For instance, when we use a gif on Slack, one way it could work in the background is that Slack asks Giphy's server for the appropriate gif.
+:::
+
+---
+
+## Why Use APIs?
+
+**Advantages of APIs:**
+
+- Data provider specifies what data they will provide
+- Terms of use are usually clear (rate limits, commercial use)
+- Less likely to be subject to unexpected changes
+- Legal and ethical considerations are clearer
+
+. . .
+
+::: callout-important
+### Best Practice
+When an API is available, we should try to use it rather than web scraping.
+:::
+
+---
+
+## Using APIs with httr
+
+```{r}
+#| eval: false
+#| echo: true
+library(httr)
+
+# Make a GET request to the arXiv API
+arxiv <- GET("http://export.arxiv.org/api/query?id_list=2111.09299")
+
+# Check the status code
+status_code(arxiv)  # 200 = success, 400 = error
+
+# View the content
+content(arxiv)
+```
+
+. . .
+
+**Common status codes:**
+
+- `200`: Success
+- `400`: Bad request
+- `401`: Unauthorised
+- `404`: Not found
+- `429`: Too many requests (rate limited)
+
+::: notes
+After installing and loading httr we use GET() to obtain data from an API directly. This will try to get some specific data and the main argument is "url". We can use status_code() to check our response.
+:::
+
+---
+
+## API Response Formats: XML
+
+**XML** (Extensible Markup Language) uses nested tags:
+
+```xml
+<entry>
+  <title>Some Research Paper Title</title>
+  <author>Jane Smith</author>
+  <published>2023-01-15</published>
+</entry>
+```
+
+. . .
+
+**Parsing XML in R:**
+
+```{r}
+#| eval: false
+#| echo: true
+library(xml2)
+
+# Read and explore XML structure
+content(arxiv) |>
+  read_xml() |>
+  html_structure()
+
+# Extract specific elements
+content(arxiv) |>
+  read_xml() |>
+  xml_child(search = 8) |>   # Navigate to entry
+  xml_child(search = 4) |>   # Navigate to title
+  xml_text()                  # Extract text
+```
+
+---
+
+## API Response Formats: JSON
+
+**JSON** (JavaScript Object Notation) uses key-value pairs:
+
+```json
+{
+  "firstName": "Rohan",
+  "lastName": "Alexander",
+  "age": 36,
+  "favFoods": {
+    "first": "Pizza",
+    "second": "Bagels"
+  }
+}
+```
+
+. . .
+
+**Parsing JSON in R:**
+
+```{r}
+#| eval: false
+#| echo: true
+library(jsonlite)
+
+# Parse JSON from a Dataverse API
+politics_datasets <- fromJSON(
+  "https://demo.dataverse.org/api/search?q=politics"
+)
+
+# Access nested data
+as_tibble(politics_datasets[["data"]][["items"]])
+```
+
+---
+
+## API Keys and Authentication
+
+Many APIs require authentication via **API keys**.
+
+. . .
+
+::: callout-warning
+### Keep Your Keys Secret!
+API keys should be kept private. Never commit them to GitHub.
+:::
+
+. . .
+
+**Best practice: Use .Renviron**
+
+```{r}
+#| eval: false
+#| echo: true
+library(usethis)
+
+# Open .Renviron file
+edit_r_environ()
+
+# Add your keys (use single quotes)
+# SPOTIFY_CLIENT_ID = 'your_client_id_here'
+# SPOTIFY_CLIENT_SECRET = 'your_secret_here'
+
+# Save and restart R
+```
+
+::: notes
+These are things that we want to keep to ourselves because otherwise anyone with the details could use our developer account as though they were us. One way to keep these details secret with minimum hassle is to keep them in our "System Environment".
+:::
+
+---
+
+## Example: Spotify API with spotifyr
+
+```{r}
+#| eval: false
+#| echo: true
+library(spotifyr)
+
+# Get artist audio features (keys are read from .Renviron)
+radiohead <- get_artist_audio_features("radiohead")
+
+# Explore the data
+radiohead |>
+  select(track_name, album_name, duration_ms, valence) |>
+  head()
+```
+
+. . .
+
+**Valence**: Spotify's measure of "musical positiveness" (0 to 1)
+
+- Higher values = more positive sounding
+- What does this actually measure?
+
+::: notes
+One interesting variable provided by Spotify about each song is "valence". The Spotify documentation describes this as a measure between zero and one that signals "the musical positiveness" of the track. Little information is available about how it was created. It is doubtful that one number can completely represent how positive a song is.
+:::
+
+---
+
+# Working with Messy Data
+
+## The Reality of Real Data
+
+Real-world data is rarely clean and ready to use.
+
+. . .
+
+**Common issues:**
+
+- Missing values coded in unexpected ways (98, 99, -999, etc.)
+- Multiple variables combined into one column
+- Inconsistent units or scales
+- Human rounding and reporting errors
+- Measurement instrument limitations
+
+::: notes
+Cleaning data is a critical skill. As Gelman, Hill, and Vehtari describe, much analysis can be done wrong if we don't carefully examine and clean our data first.
+:::
+
+---
+
+## Step 1: Look at the Data
+
+**Always start by examining your data!**
+
+```{r}
+#| eval: false
+#| echo: true
+# Examine a variable
+table(sex)
+#   1    2
+# 749 1282
+
+# Create more descriptive variable
+male <- 2 - sex  # 0 for men, 1 for women
+```
+
+. . .
+
+```{r}
+#| eval: false
+#| echo: true
+# Cross-tabulation reveals patterns
+table(height_feet, height_inches)
+#              height_inches
+# height_feet   0  1  2  3  4  5  6  7  8  9 10 11 98 99
+#           4   0  0  0  0  0  0  0  0  0  1  3 17  0  0
+#           5  66 56 144...
+#           9   0  0  0  0  0  0  0  0  0  0  0  0  0 26
+```
+
+::: notes
+We start with table(sex), which simply yields the counts. No problems. But we prefer to have a more descriptive name, so we define a new variable, male. Next, we look at height with a cross-tabulation, which reveals missing data codes (98, 99) and potential data errors.
+:::
+
+---
+
+## Step 2: Identify Problems
+
+```{r}
+#| echo: true
+# Simulated weight data showing common patterns
+set.seed(853)
+sample_weights <- c(
+  100, 105, 110, 115, 120, 125, 130,  # Round numbers
+  112, 118, 123, 127,                  # In-between
+  200, 210,                            # "Nice" numbers
+  998, 999                             # Missing codes
+)
+
+table(sample_weights)
+```
+
+. . .
+
+**Patterns to notice:**
+
+- People round to nearest 5 or 10
+- "Nice" numbers are overrepresented (e.g., 200 lbs, exactly 6 feet)
+- Missing data codes at extreme values
+
+---
+
+## Step 3: Recode Missing Values
+
+```{r}
+#| echo: true
+# Example: Recode impossible values as NA
+height_inches <- c(0, 5, 11, 98, 99, 6, 4)
+height_feet <- c(5, 5, 5, 9, 9, 6, 7)
+
+# Recode missing
+height_inches[height_inches > 11] <- NA
+height_feet[height_feet >= 7] <- NA
+
+# Combine into single variable
+height <- 12 * height_feet + height_inches
+height
+```
+
+::: notes
+Most of the data look fine, but there are some people with 9 feet and 98 or 99 inches (missing data codes) and one person who is 7 feet 7 inches tall (probably a data error). We recode as missing and then create a combined height variable.
+:::
+
+---
+
+## Step 4: Handle Complex Variables
+
+**Example**: Earnings with multiple response formats
+
+```{r}
+#| eval: false
+#| echo: true
+# Some people gave exact amounts
+table(is.na(earn_exact))
+# FALSE  TRUE
+#  1380   651
+
+# Non-responders were asked categorical question
+# Code 90 = nonresponse, Code 1 = "more than $100,000"
+
+# Handle special codes
+earn_approx[earn2 >= 90] <- NA
+earn_approx[earn2 == 1] <- median(
+  earn_exact[earn_exact > 100000], 
+  na.rm = TRUE
+) / 1000
+
+# Combine
+earn <- ifelse(is.na(earn_exact), 1000 * earn_approx, earn_exact)
+```
+
+::: notes
+Coding the earnings responses is more complicated. The variable earn_exact contains responses in dollars per year for those who answered the question. Nonrespondents were asked a second, discrete, earnings question. We need to carefully combine these.
+:::
+
+---
+
+## Key R Functions for Messy Data
+
+| Function | Purpose |
+|----------|---------|
+| `table()` | Frequency counts, cross-tabulation |
+| `is.na()` | Check for missing values |
+| `complete.cases()` | Identify rows with no missing values |
+| `ifelse()` | Conditional recoding |
+| `case_when()` | Multiple condition recoding |
+| `factor()` | Create categorical variables |
+
+. . .
+
+```{r}
+#| echo: true
+# Example: Check for complete cases
+data <- tibble(
+  x = c(1, 2, NA, 4),
+  y = c("a", NA, "c", "d")
+)
+complete.cases(data)
+```
+
+---
+
+## The Data Cleaning Workflow
+
+::: callout-tip
+### Three Steps for Each Variable
+
+1. **Look at the data** – use `table()`, `summary()`, `str()`
+2. **Identify errors or missing data** – note patterns, codes
+3. **Transform or combine** – create analysis-ready variables
+:::
+
+. . .
+
+**Remember:**
+
+- The new variable may still have missing values
+- Document your cleaning decisions
+- Save both raw and cleaned data
+- Make your cleaning reproducible (script, not manual)
+
+---
+
+# Summary
+
+## Key Takeaways
+
+::: {layout-ncol="2"}
+### Measurement
+- Validity = appropriateness
+- Reliability = consistency
+- Measurement error introduces bias
+- Missing data mechanisms matter
+
+### Sampling
+- Target population ≠ Sampling frame ≠ Sample
+- Probability sampling enables inference
+- Non-probability sampling has trade-offs
+- Always consider who is included/excluded
+:::
+
+::: {layout-ncol="2"}
+### Data Acquisition
+- APIs provide structured data access
+- Use httr for direct API calls
+- Store API keys securely
+- JSON and XML are common formats
+
+### Messy Data
+- Always examine data before analysis
+- Identify and recode missing values
+- Document cleaning decisions
+- Make cleaning reproducible
+:::
+
+---
+
+## Readings for This Week
+
+**Telling Stories with Data (TSwD):**
+
+- Chapter 6: Farm data (6.2-6.4)
+- Chapter 7: Gather data (7.2 APIs)
+
+**Regression and Other Stories (ROS):**
+
+- Appendix A.6: Working with messy data
+
+---
+
+## Next Week
+
+**Week 4: Data Visualisation**
+
+- Creating effective visualisations with ggplot2
+- Principles of good graphics
+- Choosing appropriate plot types
+- Comparing distributions
+
+::: callout-tip
+### Preparation
+Install the `ggplot2` package if you haven't already:
+```{r}
+#| eval: false
+#| echo: true
+install.packages("ggplot2")
+```
+:::
+
+---
+
+## References
+
+::: {#refs}
+:::
+
+::: footer
+Slides created with Quarto RevealJS
+:::

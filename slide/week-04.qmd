@@ -1,0 +1,1017 @@
+---
+title: "Week 04</br>Data Visualisation"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(datasauRus)
+library(patchwork)
+```
+
+## Learning Objectives
+
+By the end of this week, you will be able to:
+
+- Create effective visualisations with `ggplot2`
+- Apply principles of good graphics
+- Choose appropriate plot types for different data
+- Compare distributions and identify relationships
+
+::: notes
+This week focuses on the critical skill of data visualisation. We'll learn both the principles behind effective graphics and the practical R skills to create them.
+:::
+
+## This Week's Readings
+
+::: {layout-ncol="2"}
+### TSwD
+
+- Ch 5: Static communication
+    - 5.2 Graphs (bar charts, scatterplots, line plots, histograms, boxplots)
+
+### ROS
+
+- Ch 2.3-2.5: All graphs are comparisons, Data and adjustment
+:::
+
+::: notes
+The readings complement each other well. TSwD provides the practical ggplot2 skills while ROS provides the statistical thinking behind effective visualisation.
+:::
+
+# Why Visualise Data?
+
+## Always Plot Your Data
+
+::: callout-important
+### The Golden Rule
+
+Summary statistics alone can be misleading. **Always visualise your data** before drawing conclusions.
+:::
+
+> "A world turning to a saner and richer civilisation will be a world turning to charts."
+> — Karsten (1923)
+
+::: notes
+This quote from over 100 years ago highlights how long we've understood the importance of visualisation. Yet even today, many analysts skip this crucial step.
+:::
+
+## The Datasaurus Dozen
+
+Consider these four datasets with nearly **identical** summary statistics:
+
+```{r}
+#| echo: false
+datasaurus_dozen |>
+  filter(dataset %in% c("dino", "star", "away", "bullseye")) |>
+  summarise(across(c(x, y), list(mean = mean, sd = sd)),
+            .by = dataset) |>
+  knitr::kable(col.names = c("Dataset", "x mean", "x sd", "y mean", "y sd"),
+               digits = 1)
+```
+
+. . .
+
+What do they actually look like?
+
+::: notes
+These four datasets all have virtually the same mean and standard deviation for both x and y variables. A naive analyst might conclude they're essentially the same data.
+:::
+
+## The Datasaurus Dozen: Revealed
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 6
+datasaurus_dozen |>
+  filter(dataset %in% c("dino", "star", "away", "bullseye")) |>
+  ggplot(aes(x = x, y = y, colour = dataset)) +
+  geom_point() +
+  theme_minimal() +
+  facet_wrap(vars(dataset), nrow = 2, ncol = 2) +
+  labs(colour = "Dataset") +
+  theme(legend.position = "none")
+```
+
+::: notes
+The visual reveals dramatically different patterns that the summary statistics completely missed! One looks like a dinosaur, another a star, and so on.
+:::
+
+## Anscombe's Quartet
+
+The same lesson from the statistician Frank Anscombe:
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5
+tidy_anscombe <- anscombe |>
+  pivot_longer(
+    everything(),
+    names_to = c(".value", "set"),
+    names_pattern = "(.)(.)"
+  )
+
+tidy_anscombe |>
+  ggplot(aes(x = x, y = y, colour = set)) +
+  geom_point(size = 3) +
+  geom_smooth(method = lm, se = FALSE) +
+  theme_minimal() +
+  facet_wrap(vars(set), nrow = 2, ncol = 2) +
+  labs(colour = "Dataset") +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+Anscombe created these four datasets to demonstrate that statistical summaries alone are insufficient. All four have nearly identical means, variances, correlations, and linear regression lines—yet the patterns are clearly different.
+:::
+
+# All Graphs Are Comparisons
+
+## Graphs Enable Comparison
+
+::: callout-note
+### Key Insight from ROS
+
+Every graph is fundamentally a comparison: to zero, to a reference line, to other data points, or to our expectations.
+:::
+
+When making graphs, we should:
+
+- Line things up so the most important comparisons are clearest
+- Comparisons are clearest when scales are aligned
+- Consider what the reader needs to see
+
+::: notes
+This insight from Gelman, Hill, and Vehtari is fundamental. When we understand that graphs are comparisons, we can design them more effectively.
+:::
+
+## Example: Health Spending and Life Expectancy
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5
+# Simulated data based on ROS example
+health_data <- tibble(
+  country = c("Australia", "Austria", "Canada", "Denmark", "France", 
+              "Japan", "Norway", "Spain", "Switzerland", "UK", "USA"),
+  spending = c(4000, 4200, 4500, 4100, 4300, 3200, 5200, 2800, 5500, 3500, 8000),
+  lifespan = c(82, 81, 81.5, 80, 82, 84, 81.5, 83, 83, 81, 78.5)
+)
+
+health_data |>
+  ggplot(aes(x = spending, y = lifespan, label = country)) +
+  geom_point(size = 3, colour = "steelblue") +
+  geom_text(hjust = -0.1, vjust = 0.5, size = 3) +
+  theme_minimal() +
+  labs(x = "Health care spending (PPP US$)", 
+       y = "Life expectancy (years)",
+       title = "Health Spending and Life Expectancy") +
+  xlim(2500, 9000)
+```
+
+::: notes
+This scatterplot reveals two things: a generally positive correlation between spending and lifespan among most countries, AND the extreme position of the United States, which spends far more without seeing apparent benefits.
+:::
+
+## Display More Information
+
+A scatterplot can display up to **five variables** easily:
+
+1. x position
+2. y position  
+3. Symbol shape
+4. Symbol size
+5. Symbol colour
+
+. . .
+
+A grid of plots adds two more dimensions!
+
+::: notes
+Don't be afraid to use multiple visual channels. When used thoughtfully, they can reveal complex relationships in your data.
+:::
+
+# The Grammar of Graphics
+
+## ggplot2: A Layered Approach
+
+`ggplot2` implements the **grammar of graphics**:
+
+```{r}
+#| eval: false
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>)) +
+  <ADDITIONAL_LAYERS>
+```
+
+::: {layout-ncol="2"}
+### Key Components
+
+- **Data**: Your dataset
+- **Aesthetics**: Visual mappings
+- **Geoms**: Geometric objects
+- **Scales**: Axis and colour scales
+- **Facets**: Subplots
+- **Themes**: Overall appearance
+
+### Common Geoms
+
+- `geom_bar()`: Bar charts
+- `geom_point()`: Scatterplots
+- `geom_line()`: Line plots
+- `geom_histogram()`: Histograms
+- `geom_boxplot()`: Boxplots
+:::
+
+::: notes
+The grammar of graphics provides a systematic way to think about and build visualisations layer by layer.
+:::
+
+# Bar Charts
+
+## When to Use Bar Charts
+
+Bar charts are ideal when you have a **categorical variable** that you want to focus on.
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+# Using built-in mpg dataset
+mpg |>
+  ggplot(aes(x = class)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    x = "Vehicle class",
+    y = "Count"
+  )
+```
+
+::: notes
+geom_bar() automatically counts observations in each category. The default statistical transformation is "count".
+:::
+
+## Bar Charts with Colour
+
+Add a second variable using `fill`:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = class, fill = drv)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    x = "Vehicle class",
+    y = "Count",
+    fill = "Drive type"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+The fill aesthetic adds another dimension to our bar chart, showing how drive types are distributed within each vehicle class.
+:::
+
+## Side-by-Side Bars
+
+Use `position = "dodge2"` for side-by-side comparison:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = class, fill = drv)) +
+  geom_bar(position = "dodge2") +
+  theme_minimal() +
+  labs(
+    x = "Vehicle class",
+    y = "Count",
+    fill = "Drive type"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+The dodge position makes it easier to compare the counts within categories, rather than seeing them stacked.
+:::
+
+## geom_bar() vs geom_col()
+
+::: {layout-ncol="2"}
+### geom_bar()
+
+- Counts observations automatically
+- Use when you have raw data
+
+```{r}
+#| eval: false
+mpg |>
+  ggplot(aes(x = class)) +
+  geom_bar()
+```
+
+### geom_col()
+
+- Uses values you provide
+- Use when you have pre-computed counts
+
+```{r}
+#| eval: false
+mpg |>
+  count(class) |>
+  ggplot(aes(x = class, y = n)) +
+  geom_col()
+```
+:::
+
+::: notes
+Understanding when to use geom_bar() versus geom_col() is important. If you've already calculated your summary statistics, use geom_col().
+:::
+
+# Scatterplots
+
+## When to Use Scatterplots
+
+Scatterplots show the relationship between **two continuous variables**.
+
+::: callout-tip
+### Expert Advice
+
+"A scatterplot may not always be the best choice, but it is rarely a bad one." — Weissgerber et al. (2015)
+
+Some consider it the most versatile and useful graph option.
+:::
+
+::: notes
+Scatterplots are incredibly versatile. When in doubt about how to visualise two continuous variables, a scatterplot is a safe starting point.
+:::
+
+## Basic Scatterplot
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+This scatterplot reveals a clear negative relationship between engine size and fuel efficiency.
+:::
+
+## Adding Colour and Shape
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = displ, y = hwy, 
+             colour = class)) +
+  geom_point(size = 3) +
+  theme_minimal() +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway MPG",
+    colour = "Vehicle class"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+Adding colour reveals that the relationship varies by vehicle class. SUVs and pickups cluster at the high displacement, low efficiency end.
+:::
+
+## Handling Overlapping Points
+
+Two strategies for overlapping points:
+
+::: {layout-ncol="2"}
+### Transparency (alpha)
+
+```{r}
+#| fig-height: 5
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal()
+```
+
+### Jitter
+
+```{r}
+#| fig-height: 5
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_jitter(width = 0.2, height = 0.5) +
+  theme_minimal()
+```
+:::
+
+::: notes
+Alpha makes points transparent so you can see density. Jitter adds random noise to reveal overlapping points. Choose based on whether exact positions matter.
+:::
+
+## Adding a Trend Line
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+#| message: false
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", 
+              colour = "red",
+              se = TRUE) +
+  theme_minimal() +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+geom_smooth() adds a fitted line. Setting method = "lm" gives a linear regression line. The shaded area shows the confidence interval.
+:::
+
+# Line Plots
+
+## When to Use Line Plots
+
+Line plots are ideal when data points should be **connected**, typically for:
+
+- Time series data
+- Sequential measurements
+- Continuous processes
+
+::: notes
+The key distinction: line plots imply a connection between points. Only use them when that connection makes sense.
+:::
+
+## Basic Line Plot
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+economics |>
+  ggplot(aes(x = date, y = unemploy)) +
+  geom_line() +
+  theme_minimal() +
+  labs(
+    x = "Date",
+    y = "Unemployment (thousands)",
+    caption = "Data source: US Bureau of Labor Statistics"
+  )
+```
+
+::: notes
+This shows US unemployment over several decades. The line clearly shows the cyclical nature and major events like the 2008 financial crisis.
+:::
+
+## Multiple Lines
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+economics_long |>
+  filter(variable %in% c("psavert", "uempmed")) |>
+  ggplot(aes(x = date, y = value, 
+             colour = variable)) +
+  geom_line() +
+  theme_minimal() +
+  labs(
+    x = "Date",
+    y = "Value",
+    colour = "Variable"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+Multiple lines allow comparison of trends over time. Label lines directly when possible, rather than relying only on legends.
+:::
+
+## Step Plots
+
+Use `geom_step()` to emphasise discrete changes:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+economics |>
+  filter(date >= "2005-01-01", 
+         date <= "2010-01-01") |>
+  ggplot(aes(x = date, y = unemploy)) +
+  geom_step() +
+  theme_minimal() +
+  labs(
+    x = "Date",
+    y = "Unemployment (thousands)"
+  )
+```
+
+::: notes
+Step plots are useful when you want to emphasise that values remain constant between measurements, then change abruptly.
+:::
+
+# Histograms
+
+## When to Use Histograms
+
+Histograms show the **distribution** of a continuous variable by:
+
+1. Splitting the range into "bins"
+2. Counting observations in each bin
+3. Displaying as bars
+
+::: notes
+Histograms help us understand the shape, centre, and spread of our data—key aspects for statistical analysis.
+:::
+
+## Basic Histogram
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+#| message: false
+mpg |>
+  ggplot(aes(x = hwy)) +
+  geom_histogram() +
+  theme_minimal() +
+  labs(
+    x = "Highway MPG",
+    y = "Count"
+  )
+```
+
+::: notes
+ggplot2 uses 30 bins by default and warns you to choose a better value. The choice of bins is important.
+:::
+
+## Choosing Bins
+
+The number of bins affects interpretation:
+
+::: {layout-ncol="2"}
+```{r}
+#| fig-height: 4
+mpg |>
+  ggplot(aes(x = hwy)) +
+  geom_histogram(bins = 10) +
+  theme_minimal() +
+  labs(title = "10 bins")
+```
+
+```{r}
+#| fig-height: 4
+mpg |>
+  ggplot(aes(x = hwy)) +
+  geom_histogram(bins = 30) +
+  theme_minimal() +
+  labs(title = "30 bins")
+```
+:::
+
+::: callout-note
+Too few bins = too much smoothing. Too many bins = too much noise.
+:::
+
+::: notes
+Finding the right number of bins is about balancing bias and variance. There's no single "correct" answer—it depends on your data and purpose.
+:::
+
+## Comparing Distributions
+
+Use `geom_freqpoly()` to compare groups:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = hwy, colour = drv)) +
+  geom_freqpoly(binwidth = 2) +
+  theme_minimal() +
+  labs(
+    x = "Highway MPG",
+    y = "Count",
+    colour = "Drive type"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+Frequency polygons work better than stacked or overlapping histograms when comparing multiple groups.
+:::
+
+## Empirical Cumulative Distribution
+
+An alternative view with `stat_ecdf()`:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = hwy, colour = drv)) +
+  stat_ecdf() +
+  theme_minimal() +
+  labs(
+    x = "Highway MPG",
+    y = "Cumulative proportion",
+    colour = "Drive type"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+ECDFs show less smoothing than histograms and can be easier to compare across groups, though they require a more quantitatively sophisticated audience.
+:::
+
+# Boxplots
+
+## What Boxplots Show
+
+A boxplot displays five key statistics:
+
+1. **Median** (middle line)
+2. **25th percentile** (bottom of box)
+3. **75th percentile** (top of box)
+4. **Whiskers** (1.5 × IQR from box edges)
+5. **Outliers** (points beyond whiskers)
+
+::: notes
+Boxplots were popularised by John Tukey and are excellent for comparing distributions across groups.
+:::
+
+## Basic Boxplot
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    x = "Vehicle class",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+Boxplots make it easy to compare the central tendency and spread across multiple categories at once.
+:::
+
+## Boxplots Hide Distribution Shape!
+
+::: callout-important
+### Warning
+
+The same boxplot can represent very different distributions!
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 4
+set.seed(853)
+n <- 1000
+bimodal <- c(rnorm(n/2, 3, 0.5), rnorm(n/2, 7, 0.5))
+uniform <- runif(n, 0, 10)
+
+df <- tibble(
+  value = c(bimodal, uniform),
+  type = c(rep("Bimodal", n), rep("Uniform", n))
+)
+
+p1 <- df |> ggplot(aes(x = type, y = value)) + geom_boxplot() + theme_minimal() + labs(title = "Boxplots look similar")
+p2 <- df |> ggplot(aes(x = value, fill = type)) + geom_histogram(alpha = 0.7, position = "identity", bins = 30) + theme_minimal() + labs(title = "But distributions differ!") + theme(legend.position = "bottom")
+
+p1 + p2
+```
+
+::: notes
+This is why boxplots alone are rarely the best choice. They hide the actual shape of your distribution.
+:::
+
+## Boxplots + Points
+
+Show the actual data alongside summary statistics:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.3, 
+              width = 0.2) +
+  theme_minimal() +
+  labs(
+    x = "Vehicle class",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+This combination gives you the best of both worlds: summary statistics from the boxplot and the actual distribution from the points.
+:::
+
+# Customising Your Plots
+
+## Themes
+
+ggplot2 includes several built-in themes:
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+base_plot <- mpg |> ggplot(aes(x = displ, y = hwy)) + geom_point() + labs(title = "")
+
+p1 <- base_plot + theme_gray() + labs(title = "theme_gray() [default]")
+p2 <- base_plot + theme_bw() + labs(title = "theme_bw()")
+p3 <- base_plot + theme_minimal() + labs(title = "theme_minimal()")
+p4 <- base_plot + theme_classic() + labs(title = "theme_classic()")
+
+(p1 + p2) / (p3 + p4)
+```
+
+::: notes
+theme_minimal() is often a good choice for presentations and publications as it removes clutter while maintaining readability.
+:::
+
+## Labels and Titles
+
+Use `labs()` to add context:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Fuel Efficiency vs Engine Size",
+    subtitle = "Data from 1999 and 2008",
+    x = "Engine displacement (litres)",
+    y = "Highway fuel economy (mpg)",
+    caption = "Source: EPA fuel economy data"
+  )
+```
+
+::: notes
+Good labels are essential for communicating your findings. Include titles, axis labels, and data sources.
+:::
+
+## Facets: Small Multiples
+
+Split your plot by a categorical variable:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_wrap(vars(drv)) +
+  theme_minimal() +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+Facets create "small multiples"—separate panels for each level of a categorical variable. This is excellent for showing variation across groups.
+:::
+
+## Facet Grid
+
+Create a two-dimensional grid of panels:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(rows = vars(drv),
+             cols = vars(cyl)) +
+  theme_minimal() +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway MPG"
+  )
+```
+
+::: notes
+facet_grid() is useful when you want to examine the relationship between two categorical variables simultaneously.
+:::
+
+## Colour Palettes
+
+::: {layout-ncol="2"}
+### RColorBrewer
+
+```{r}
+#| fig-height: 4
+mpg |>
+  ggplot(aes(x = displ, y = hwy, 
+             colour = class)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Set1") +
+  theme_minimal()
+```
+
+### Viridis (colour-blind friendly)
+
+```{r}
+#| fig-height: 4
+mpg |>
+  ggplot(aes(x = displ, y = hwy, 
+             colour = class)) +
+  geom_point() +
+  scale_colour_viridis_d() +
+  theme_minimal()
+```
+:::
+
+::: notes
+Viridis palettes are designed to be perceptually uniform and accessible to people with colour vision deficiency.
+:::
+
+# Combining Plots
+
+## The patchwork Package
+
+Combine multiple plots with `patchwork`:
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+library(patchwork)
+
+p1 <- mpg |> ggplot(aes(x = class)) + 
+  geom_bar() + theme_minimal()
+
+p2 <- mpg |> ggplot(aes(x = hwy)) + 
+  geom_histogram(bins = 20) + theme_minimal()
+
+p1 + p2
+```
+
+::: notes
+patchwork uses + to place plots side by side and / to stack them vertically. Use parentheses to control grouping.
+:::
+
+## Complex Layouts
+
+```{r}
+#| output-location: column
+#| fig-height: 7
+p1 <- mpg |> ggplot(aes(x = class)) + geom_bar() + theme_minimal()
+p2 <- mpg |> ggplot(aes(x = hwy)) + geom_histogram(bins = 20) + theme_minimal()
+p3 <- mpg |> ggplot(aes(x = displ, y = hwy)) + geom_point() + theme_minimal()
+
+(p1 + p2) / p3
+```
+
+::: notes
+Complex layouts help tell a complete story about your data by showing multiple views simultaneously.
+:::
+
+# Principles of Effective Visualisation
+
+## Key Principles
+
+::: callout-tip
+### Design for Your Audience
+
+The success of a graph depends on how much information is lost in the encoding-decoding process.
+:::
+
+1. **Show the actual data** — not just summaries
+2. **Make comparisons easy** — align scales, use consistent colours
+3. **Avoid unnecessary decoration** — every element should serve a purpose
+4. **Consider your audience** — match complexity to their expertise
+5. **Label clearly** — include titles, axis labels, and sources
+
+::: notes
+These principles come from decades of research in data visualisation. Following them will make your graphics more effective.
+:::
+
+## What to Avoid
+
+::: {layout-ncol="2"}
+### Don't
+
+- Use 3D effects
+- Truncate axes misleadingly
+- Use pie charts for comparison
+- Add unnecessary colour
+- Forget labels and sources
+
+### Do
+
+- Keep it simple
+- Start y-axis at zero (usually)
+- Use bar/dot plots for comparison
+- Use colour meaningfully
+- Document everything
+:::
+
+::: notes
+Many default chart options in software like Excel violate these principles. Be intentional about your choices.
+:::
+
+## Significant Digits
+
+::: callout-note
+### Reporting Numbers
+
+Don't report numbers to too many decimal places. Display precision that respects the uncertainty in your data.
+:::
+
+- `[3.276, 6.410]` → Better written as `[3.3, 6.4]`
+- Three significant digits are usually enough
+- In R: `options(digits = 2)` sets global rounding
+
+::: notes
+Excessive precision suggests false confidence in your numbers. Round to reflect actual uncertainty.
+:::
+
+# Summary
+
+## This Week's Key Points
+
+1. **Always plot your data** — summary statistics can be misleading
+
+2. **All graphs are comparisons** — design to make key comparisons clear
+
+3. **Choose appropriate geoms**:
+   - Bar charts for categorical counts
+   - Scatterplots for two continuous variables
+   - Line plots for connected/sequential data
+   - Histograms for distributions
+   - Boxplots (+ points) for comparing distributions
+
+4. **Customise thoughtfully** — themes, labels, colours, and facets
+
+::: notes
+Visualisation is both a technical skill and an art. Practice with different types of data to develop your intuition.
+:::
+
+## Next Week
+
+**Week 5: Data Cleaning and Probability Simulation**
+
+- Systematic data cleaning workflow
+- Writing tests for data quality
+- Understanding probability distributions
+- Simulating data for validation
+
+### Readings
+
+- TSwD Ch 9: Clean and prepare
+- ROS Ch 3-5: Probability and simulation
+
+## References
+
+::: {#refs}
+:::
