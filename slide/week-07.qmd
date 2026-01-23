@@ -8,7 +8,7 @@ format:
     fig-format: retina
     toc: true
     toc-depth: 1
-    toc-title: "In this lecture"
+    toc-title: "In this workshop"
     theme: [default, "assets/sydney.scss"]
     code-line-numbers: false
     slide-number: c
@@ -25,7 +25,14 @@ execute:
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
 
----
+## Note
+
+These slides are developed based on:
+ 
+- Alexander, R. (2023). *Telling Stories with Data: With Applications in R*. CRC Press.
+- Gelman, A., Hill, J., & Vehtari, A. (2021). *Regression and Other Stories*. Cambridge University Press.
+
+Students are encouraged to refer to the relevant chapters for additional detail and examples.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)

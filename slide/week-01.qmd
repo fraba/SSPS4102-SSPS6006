@@ -8,7 +8,7 @@ format:
     fig-format: retina
     toc: true
     toc-depth: 1
-    toc-title: "In this lecture"
+    toc-title: "In this workshop"
     theme: [default, "assets/sydney.scss"]
     code-line-numbers: false
     slide-number: c
@@ -25,20 +25,29 @@ execute:
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
 
----
+## Note
+
+These slides are developed based on:
+ 
+- Alexander, R. (2023). *Telling Stories with Data: With Applications in R*. CRC Press. *TSwD*
+- Gelman, A., Hill, J., & Vehtari, A. (2021). *Regression and Other Stories*. Cambridge University Press. *ROS*
+
+Students are encouraged to refer to the relevant chapters for additional detail and examples.
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
 library(tidyverse)
+library(knitr)
 ```
+
 
 # What is Data Science?
 
 ## Learning objectives
 
-By the end of this lecture, you will be able to:
+By the end of this seminar, you will be able to:
 
 1. Understand the role of data analysis in social science research
 2. Explain the three fundamental challenges of statistics
@@ -67,7 +76,7 @@ This definition emphasises:
 - Analysis involves explanation *and* prediction
 
 ::: aside
-Definition adapted from Alexander (2023), *Telling Stories with Data*
+Definition adapted from @alexanderTellingStoriesData2023 [p. 13] *TSwD*
 :::
 
 ## Data science in social research
@@ -81,11 +90,13 @@ Data science allows us to:
 
 . . .
 
-> "In any case the key elements are the same... What is the dataset? Who generated it and why? What is missing?"
+> "In any case the key elements are the same... What is the dataset? Who generated it and why? What is missing?"  [@alexanderTellingStoriesData2023 p. 3] *TSwD*
 
 ::: notes
 These four uses of data science map directly onto regression analysis, which we'll cover later in the semester.
 :::
+
+
 
 ## The challenge of measurement
 
@@ -99,7 +110,7 @@ Even seemingly simple things are hard to measure:
 :::
 
 ::: {.column width="50%"}
-![Picasso's single-line dog drawing](https://upload.wikimedia.org/wikipedia/en/9/93/Pablo_Picasso%2C_1907%2C_Les_Demoiselles_d%27Avignon%2C_oil_on_canvas%2C_243.9_x_233.7_cm%2C_Museum_of_Modern_Art.jpg){width="80%" fig-alt="Illustration of simplified representation"}
+![Picasso's single-line dog drawing](../img/Picasso_dog.png){width="80%" fig-alt="Illustration of simplified representation"}
 
 *What is the minimum we need to capture the essence?*
 :::
@@ -124,7 +135,7 @@ The Picasso drawing example from TSwD shows how we can recognise something from 
 These challenges arise in nearly every application of data analysis!
 
 ::: aside
-From Gelman, Hill & Vehtari (2021), *Regression and Other Stories*
+From @gelmanRegressionOtherStories2021 *ROS*
 :::
 
 ## Challenge 1: Sample to population
@@ -203,7 +214,7 @@ Just because two things are associated doesn't mean one causes the other!
 
 . . .
 
-> "Most of the time our data do not record exactly what we would ideally like to study."
+> "Most of the time our data do not record exactly what we would ideally like to study." [@gelmanRegressionOtherStories2021, p. 3] *ROS*
 
 ## Example: The Human Development Index
 
@@ -226,7 +237,7 @@ The lesson: **Always examine where your numbers come from.**
 :::
 
 ::: aside
-Example from Gelman, Hill & Vehtari (2021), Chapter 2
+Example from @gelmanRegressionOtherStories2021 *ROS*
 :::
 
 ::: notes
@@ -313,7 +324,7 @@ When exploring data, remember:
 - Highlight unexpected patterns
 
 ::: notes
-This is a key principle from ROS Chapter 2 that we'll use throughout the course.
+This is a key principle from @gelmanRegressionOtherStories2021 ROS Chapter 2 that we'll use throughout the semester.
 :::
 
 # The Data Science Workflow
@@ -349,7 +360,7 @@ ggplot(workflow_data, aes(x = x, y = y)) +
 This workflow guides everything we do in this course.
 
 ::: aside
-From Alexander (2023), *Telling Stories with Data*
+From @alexanderTellingStoriesData2023 *TSwD*
 :::
 
 ## Step 1: Plan
@@ -395,7 +406,7 @@ Ten minutes with paper and pen is often enough to get started!
 
 . . .
 
-> "Simulation is often cheap—almost free given modern computing resources—and fast."
+> "Simulation is often cheap—almost free given modern computing resources—and fast." [@alexanderTellingStoriesData2023, p. 5] *TSwD*
 
 ## Step 3: Acquire
 
@@ -484,7 +495,7 @@ These five elements underpin everything we'll do in the course.
 :::
 
 ::: aside
-See Appendix A in Gelman, Hill & Vehtari (2021) for more on R setup.
+See Appendix A in @gelmanRegressionOtherStories2021 *ROS* for more on R setup.
 :::
 
 ## Setting up: Posit Cloud
