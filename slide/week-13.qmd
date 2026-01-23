@@ -1,0 +1,962 @@
+---
+title: "Week 13</br>Advanced Applications and Best Practices"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+. . .
+
+- Share and document data properly and ethically
+
+. . .
+
+- Understand the basics of cross-validation for model evaluation
+
+. . .
+
+- Apply best practices in statistical workflow
+
+. . .
+
+- Create fully reproducible research projects
+
+. . .
+
+- Communicate findings effectively to various audiences
+
+::: notes
+This is our final lecture. We're bringing together everything we've learned and focusing on how to share your work, validate your models, and follow best practices that will serve you throughout your career.
+:::
+
+# Storing and Sharing Data
+
+## Why Share Data?
+
+::: callout-important
+### The Case for Data Sharing
+
+- A reluctance to share data is associated with research papers that had **weaker evidence** and **more potential errors** (Wicherts, Bakker, and Molenaar 2011)
+- Sharing data enhances **credibility** by enabling verification
+- Shared data can generate **new knowledge** as others use it to answer different questions
+:::
+
+. . .
+
+> "If we can get our dataset off our own computer, then we are much of the way there."
+>
+> — Alexander (2023), TSwD
+
+::: notes
+Research shows that reluctance to share data correlates with weaker evidence. Just getting your data off your computer and documented puts you ahead of most researchers. We should try to invite scrutiny and make it easy to receive criticism—that's the only way to contribute to lasting knowledge.
+:::
+
+## The FAIR Principles
+
+The FAIR principles guide data sharing and management:
+
+. . .
+
+1. **Findable**: One unchanging identifier (DOI) with high-quality descriptions
+
+. . .
+
+2. **Accessible**: Standardised retrieval approaches that are open and free
+
+. . .
+
+3. **Interoperable**: Broadly-applicable language and vocabulary
+
+. . .
+
+4. **Reusable**: Extensive descriptions with clear usage conditions
+
+::: aside
+Wilkinson et al. (2016) - "The FAIR Guiding Principles for scientific data management and stewardship"
+:::
+
+::: notes
+FAIR stands for Findable, Accessible, Interoperable, and Reusable. These principles help ensure your data can be used by others, including your future self. Note that FAIR doesn't mean the data is unbiased or "fair" in the everyday sense—it just means it's properly available.
+:::
+
+## Sharing via GitHub
+
+The easiest way to start sharing data is through **GitHub**:
+
+```{r, eval = FALSE}
+# Reading data directly from a GitHub repository
+data_location <- paste0(
+  "https://raw.githubusercontent.com/",
+  "username/repository/main/data/dataset.csv"
+)
+
+my_data <- read_csv(file = data_location)
+```
+
+. . .
+
+::: callout-tip
+### Benefits of GitHub for Data
+
+- Already integrated into your workflow
+- Stores raw data, cleaned data, AND transformation scripts
+- Meets the "bronze" standard of reproducibility
+:::
+
+::: notes
+If you've been following the workflow we've taught, you're already sharing your data and code via GitHub. The maximum file size on GitHub is 100MB, but Git Large File Storage can be used for larger files.
+:::
+
+## Creating R Packages for Data
+
+R packages can be used to **share datasets** with documentation:
+
+```{r, eval = FALSE}
+# Install a data package from GitHub
+devtools::install_github("username/favcolordata")
+
+# Load and use the data
+library(favcolordata)
+head(color_data)
+```
+
+. . .
+
+::: callout-note
+### Advantages of Data Packages
+
+- Documentation travels with the data
+- Clear data dictionary built in
+- Easy installation and loading
+- Examples: `babynames`, `troopdata`
+:::
+
+::: notes
+Packaging your data as an R package means the documentation stays with the data. When someone installs your package, they get the data and all the metadata explaining what each variable means. This is more robust than a standalone CSV file.
+:::
+
+## Data Repositories
+
+For more formal sharing, deposit your data in a repository:
+
+| Repository | Features |
+|------------|----------|
+| **Zenodo** | Free, operated by CERN, provides DOI |
+| **OSF** (Open Science Framework) | Free, integrates with GitHub |
+| **Harvard Dataverse** | Common for journal publications |
+| **Australian Data Archive** | Australian-specific repository |
+
+. . .
+
+::: callout-important
+### Why Use Repositories?
+
+- Provides a **persistent DOI** for citation
+- Offloads responsibility for hosting
+- Establishes a **single point of truth**
+- Makes access independent of original researchers
+:::
+
+::: notes
+These repositories are free and provide a DOI that makes your data citable. Using them offloads the responsibility of long-term hosting from you. Zenodo is operated by CERN, so it's likely to be around for a long time.
+:::
+
+## Data Documentation: Datasheets
+
+::: columns
+::: {.column width="50%"}
+**Data Dictionary** = List of ingredients
+
+- Variable names
+- Descriptions
+- Data types
+- Sources
+:::
+
+::: {.column width="50%"}
+**Datasheet** = Nutrition label
+
+- Who created it?
+- Who funded it?
+- How complete is it?
+- What are the limitations?
+:::
+:::
+
+. . .
+
+::: callout-tip
+### Datasheets for Datasets (Gebru et al. 2021)
+
+Just as electronics come with datasheets, datasets should come with documentation that enables users to understand what they're working with.
+:::
+
+::: notes
+Think of a data dictionary as a list of ingredients, telling you what variables are present. A datasheet is more like a nutrition label—it tells you about the quality and potential issues with the data. Gebru and colleagues introduced this idea of datasheets for datasets, which has become increasingly important in machine learning.
+:::
+
+## Protecting Privacy
+
+::: callout-warning
+### Personally Identifying Information (PII)
+
+PII enables linking observations to actual people:
+
+- Email addresses, names, home addresses
+- Combinations of variables (age + location + education)
+- Even seemingly innocuous variables at extremes
+:::
+
+. . .
+
+**Protection methods:**
+
+1. **Hashing**: One-way transformation (e.g., MD5)
+2. **Simulation**: Release synthetic data that preserves statistical properties
+3. **Differential privacy**: Mathematical guarantees of privacy
+
+::: notes
+The fundamental problem of data privacy is that we cannot have completely anonymised data that remains useful. We must trade off utility and privacy. Hashing transforms data irreversibly, simulation creates fake data with similar properties, and differential privacy provides mathematical guarantees.
+:::
+
+## File Formats: CSV vs Parquet
+
+```{r, eval = FALSE}
+library(arrow)
+
+# Write to parquet
+write_parquet(my_data, "data/analysis_data.parquet")
+
+# Read from parquet
+my_data <- read_parquet("data/analysis_data.parquet")
+```
+
+. . .
+
+| Aspect | CSV | Parquet |
+|--------|-----|---------|
+| File size | Larger | **Smaller** (3-4x) |
+| Speed | Slower | **Faster** |
+| Data types | Lost | **Preserved** |
+| Human readable | Yes | No |
+
+::: notes
+For larger datasets, parquet files are significantly smaller and faster to read. The biggest advantage is that data types are preserved—no more dates turning into strings or factors being lost. Use CSV for small files that need to be human-readable, parquet for analysis datasets.
+:::
+
+# Cross-Validation
+
+## Why Cross-Validation?
+
+::: callout-important
+### The Problem with Using Training Data
+
+When we evaluate predictions on the same data used to fit the model, predictions are **optimistically biased** for assessing generalisation.
+:::
+
+. . .
+
+**Cross-validation** addresses this by:
+
+- Using part of the data to fit the model
+- Using the rest (the **hold-out set**) as a proxy for future data
+- Assessing how well the model **generalises**
+
+::: notes
+If you use the same data to fit and evaluate a model, you'll overestimate how well it performs. Cross-validation holds out some data to test the model on "unseen" data. This gives us a more honest assessment of model performance.
+:::
+
+## Leave-One-Out Cross-Validation (LOO)
+
+```{r, eval = FALSE}
+# Fit model to all data
+fit_all <- stan_glm(y ~ x, data = fake)
+
+# Fit model excluding observation 18
+fit_minus_18 <- stan_glm(y ~ x, data = fake[-18,])
+```
+
+. . .
+
+::: callout-note
+### How LOO Works
+
+1. Remove one observation from the data
+2. Fit the model to the remaining data
+3. Predict the held-out observation
+4. Repeat for all observations
+5. Average the prediction errors
+:::
+
+::: notes
+In leave-one-out cross-validation, we remove each observation one at a time, fit the model, and predict that observation. This is computationally intensive, but packages like `loo` in R have efficient approximations that only require fitting the model once.
+:::
+
+## LOO Residuals vs Regular Residuals
+
+::: columns
+::: {.column width="50%"}
+**Regular residuals**
+
+- Observation minus predicted value
+- From model fit to ALL data
+- Tend to be smaller (optimistic)
+:::
+
+::: {.column width="50%"}
+**LOO residuals**
+
+- Observation minus predicted value
+- From model fit WITHOUT that observation
+- More honest assessment
+:::
+:::
+
+. . .
+
+::: callout-tip
+### LOO R²
+
+Just as we have R², we can calculate **LOO R²** using LOO residuals. This gives a more realistic estimate of explained variance for new data.
+:::
+
+::: notes
+Regular residuals are optimistic because the model has "seen" each observation. LOO residuals are more honest because they test prediction on data the model hasn't seen. In the textbook example, regular R² was 0.74 while LOO R² was 0.68—a meaningful difference.
+:::
+
+## Using the `loo` Package
+
+```{r, eval = FALSE}
+library(loo)
+
+# Fit model
+fit <- stan_glm(kid_score ~ mom_hs + mom_iq, data = kidiq)
+
+# Compute LOO cross-validation
+loo_result <- loo(fit)
+print(loo_result)
+```
+
+. . .
+
+Output includes:
+
+- **elpd_loo**: Expected log predictive density (higher = better)
+- **p_loo**: Effective number of parameters
+- **looic**: LOO information criterion (-2 × elpd_loo)
+
+::: notes
+The loo package in R makes this easy. It uses a computational shortcut that approximates LOO while only fitting the model once. The key output is elpd_loo—expected log predictive density—which is higher for better models.
+:::
+
+## Comparing Models with LOO
+
+```{r, eval = FALSE}
+# Fit two models
+fit_1 <- stan_glm(kid_score ~ mom_hs, data = kidiq)
+fit_2 <- stan_glm(kid_score ~ mom_hs + mom_iq, data = kidiq)
+
+# Compare
+loo_compare(loo(fit_1), loo(fit_2))
+```
+
+. . .
+
+::: callout-important
+### Interpreting Model Comparison
+
+- A difference in elpd_loo larger than **4** is meaningful
+- Standard errors help assess uncertainty
+- Consider the trade-off between fit and complexity
+:::
+
+::: notes
+When comparing models, differences in elpd_loo less than 4 are hard to distinguish from noise. In the textbook example, adding mom_iq improved elpd_loo by about 39 points with a standard error of only 8—a clear improvement.
+:::
+
+## K-Fold Cross-Validation
+
+When LOO is unstable (warning messages), use **K-fold**:
+
+```{r, eval = FALSE}
+# 10-fold cross-validation
+kfold_result <- kfold(fit, K = 10)
+print(kfold_result)
+```
+
+. . .
+
+::: callout-note
+### How K-Fold Works
+
+1. Randomly partition data into K subsets (typically K = 10)
+2. For each fold: fit model on K-1 subsets, predict the held-out subset
+3. Average the prediction errors across all folds
+:::
+
+::: notes
+K-fold is more stable than LOO because it holds out chunks of data rather than single observations. The conventional choice is K=10, which balances bias and computational cost. Use K-fold when loo() gives warning messages about unstable estimates.
+:::
+
+## Overfitting and Noise Predictors
+
+```{r, eval = FALSE}
+# Add 5 noise predictors
+kidiqr$noise <- array(rnorm(5*n), c(n, 5))
+fit_noise <- stan_glm(kid_score ~ mom_hs + mom_iq + noise, 
+                       data = kidiqr)
+```
+
+. . .
+
+::: callout-warning
+### What Happens with Noise Predictors?
+
+| Metric | Original | With Noise |
+|--------|----------|------------|
+| R² | 0.21 | 0.22 ↑ |
+| LOO R² | 0.20 | **0.19 ↓** |
+| Log score | -1872 | -1871 ↑ |
+| LOO log score | -1876 | **-1880 ↓** |
+
+Adding noise improves in-sample fit but **hurts** cross-validated performance!
+:::
+
+::: notes
+This is a crucial demonstration of overfitting. Adding pure noise predictors improves in-sample R² but decreases LOO R². This is why we need cross-validation—it detects when we're fitting noise rather than signal.
+:::
+
+# 10 Quick Tips for Regression
+
+## Tip 1: Think About Variation and Replication
+
+::: callout-tip
+### Variation is Central
+
+- Fitting the same model to different datasets reveals **variation across problems**
+- Replication means performing ALL steps from the start, not just increasing sample size
+- A fresh perspective helps avoid "forking paths" in analysis
+:::
+
+. . .
+
+> In observational sciences like economics and political science, replication can be more indirect—for example, analysing local economic activity within different countries.
+
+::: notes
+Don't just think about variation in the error term—coefficients and causal effects vary across datasets too. When you can, fit the same model to different datasets. This gives you a sense of how robust your findings are.
+:::
+
+## Tip 2: Forget About Statistical Significance
+
+::: callout-important
+### Three Reasons to Move Beyond p-values
+
+1. **Discretising** based on significance tests throws away information
+
+2. In real problems, **there are no true zeroes**—everything that could have an effect does have some effect
+
+3. Comparisons and effects **vary by context**, so excluding zero isn't particularly informative
+:::
+
+. . .
+
+Focus instead on:
+
+- Effect sizes and their uncertainty
+- Practical significance
+- Variation across contexts
+
+::: notes
+This is one of the most important tips. Statisticians have been warning about p-value misuse for decades. Focus on the size of effects and their uncertainty, not whether they cross an arbitrary threshold.
+:::
+
+## Tip 3: Graph the Relevant, Not the Irrelevant
+
+::: columns
+::: {.column width="50%"}
+**Do graph:**
+
+- The fitted model itself
+- Regression lines/curves
+- Model predictions
+- Multiple visualisations
+:::
+
+::: {.column width="50%"}
+**Don't obsess over:**
+
+- Q-Q plots (unless you'll act on them)
+- Influence diagrams
+- Every diagnostic from the package
+:::
+:::
+
+. . .
+
+::: callout-tip
+### Rule of Thumb
+
+Any graph you show, be prepared to explain. If you can't explain why it matters, don't include it.
+:::
+
+::: notes
+A table of regression coefficients doesn't give you the same understanding as a graph of the model. Make many graphs from different angles. But don't include graphs just because the software produces them—only include graphs you can explain and will act upon.
+:::
+
+## Tip 4: Interpret Coefficients as Comparisons
+
+::: callout-note
+### Coefficients Are Not "Effects"
+
+A regression coefficient is the modelled average difference in the outcome, comparing two individuals that differ in one predictor while being at the same levels of all other predictors.
+:::
+
+. . .
+
+**Benefits of this framing:**
+
+- Always available as a data description (no causal assumptions needed)
+- Helps understand complex models as built from simpler comparisons
+- Works for causal inference as a special case
+
+::: notes
+Calling coefficients "effects" can be misleading. At its core, a regression coefficient describes a comparison between individuals who differ in one predictor but are otherwise the same. This interpretation doesn't require causal assumptions—it's always available.
+:::
+
+## Tip 5: Use Fake-Data Simulation
+
+```{r, eval = FALSE}
+# Simulate data to understand your methods
+set.seed(853)
+n <- 100
+x <- rnorm(n)
+y <- 2 + 0.5*x + rnorm(n, sd = 1)
+fake <- tibble(x, y)
+
+# Fit model and check if you recover true parameters
+fit <- lm(y ~ x, data = fake)
+summary(fit)
+```
+
+. . .
+
+::: callout-tip
+### Payoffs of Simulation
+
+1. Forces you to think about realistic parameter values
+2. Lets you study properties of methods under repeated sampling
+3. **Helps debug your code**—if you can't recover true parameters, something's wrong
+:::
+
+::: notes
+Simulation is incredibly useful. If you simulate data with known parameters and your model can't recover them, you have either a coding problem or a conceptual problem. This is one of the best debugging tools available.
+:::
+
+## Tip 6: Fit Many Models
+
+::: callout-important
+### Start Simple, Build Complexity
+
+- Begin with too-simple models
+- Build up to more complex models
+- Keep track of what you've tried
+- Report results from ALL relevant models
+:::
+
+. . .
+
+> "It's rarely a good idea to run the computer overnight fitting a single model. At least, wait until you've developed some understanding by fitting many models."
+
+::: notes
+Don't commit to one model before exploring. Start simple to understand what's happening, then add complexity. And document everything—this protects against forking paths bias and helps you understand your data.
+:::
+
+## Tip 7: Set Up a Computational Workflow
+
+**Practical strategies:**
+
+. . .
+
+- **Data subsetting**: Break large datasets into subsets, analyse separately, then combine
+
+. . .
+
+- **Efficient computation**: Use faster approximations while exploring
+
+. . .
+
+- **Fake-data simulation**: Debug code before running on real data
+
+. . .
+
+::: callout-note
+### Advantages of Subsetting
+
+- Faster computation allows more model exploration
+- Can reveal interesting variation (e.g., regional differences)
+- Move to multilevel models later for efficiency
+:::
+
+::: notes
+If computations are slow, you'll fit fewer models and understand less. Simple tricks like subsetting data can speed things up dramatically. Analyse different regions separately, then plot all the estimates together.
+:::
+
+## Tip 8: Use Transformations
+
+Consider transforming variables:
+
+. . .
+
+- **Logarithms** for all-positive variables (creates multiplicative models)
+
+. . .
+
+- **Standardising** based on scale or potential range (for interpretability)
+
+. . .
+
+- **Interactions** and combined predictors
+
+. . .
+
+```{r, eval = FALSE}
+# Log transformation for positively skewed data
+model <- lm(log(income) ~ education + experience, data = survey)
+
+# Standardised coefficients for comparison
+model_std <- lm(scale(outcome) ~ scale(pred1) + scale(pred2), 
+                data = df)
+```
+
+::: notes
+Logarithms are especially useful for variables that must be positive—they lead to multiplicative relationships which often make more sense. Standardising helps when you want to compare the importance of different predictors.
+:::
+
+## Tip 9: Do Causal Inference Carefully
+
+::: callout-warning
+### Don't Assume Causal Interpretation
+
+- A regression coefficient is NOT automatically a causal effect
+- If interested in causality, carefully define your treatment variable
+- Address balance and overlap between treated and control units
+- Consider treatment effect heterogeneity
+:::
+
+. . .
+
+**Don't** set up one large regression to answer multiple causal questions at once—this is rarely appropriate in observational settings.
+
+::: notes
+Causal inference requires careful thought about what you're comparing and whether that comparison is valid. Including post-treatment variables can make coefficients difficult to interpret. Better to do targeted causal inference than to hope a big regression answers all questions.
+:::
+
+## Tip 10: Learn Methods Through Live Examples
+
+::: callout-tip
+### Apply Methods to Problems You Care About
+
+- Gather data on questions that interest you
+- Develop understanding through simulation and graphing
+- Know your data, measurements, and data-collection procedure
+- Understand magnitudes, not just signs
+:::
+
+. . .
+
+> "You will need this understanding to interpret your findings and catch things that go wrong."
+
+::: notes
+The best way to learn is by applying methods to real problems you care about. Understanding the magnitudes of your coefficients—not just their signs—is crucial for catching mistakes and interpreting results meaningfully.
+:::
+
+# Writing Research (Review)
+
+## The Process of Writing
+
+::: callout-important
+### Key Principles (from Week 8)
+
+1. **Write for the reader**, not yourself
+2. **Get to a first draft as quickly as possible**—even if it's horrible
+3. **Rewriting is the essence** of writing
+4. **Brevity matters**—remove unnecessary words
+:::
+
+. . .
+
+> "The process of writing is a process of rewriting. The critical task is to get to a first draft as quickly as possible."
+>
+> — Alexander (2023), TSwD
+
+::: notes
+We covered writing in detail in Week 8. The key points: write quickly, don't delete as you go, then rewrite extensively. The first draft will be bad—that's expected. Excellence comes through revision.
+:::
+
+## Paper Structure Reminder
+
+| Section | Purpose |
+|---------|---------|
+| **Title** | Tell your story in one line |
+| **Abstract** | 3-5 sentences covering context, methods, findings, implications |
+| **Introduction** | Self-contained overview—give away the punchline |
+| **Data** | Create a "sense of place" for your data |
+| **Model** | Specify and justify your approach |
+| **Results** | What you found (not what it means) |
+| **Discussion** | Implications, limitations, future work |
+
+::: notes
+Your paper should work at multiple levels—someone reading just the title should learn something; someone reading just the abstract should understand your contribution; someone reading the introduction should know everything important.
+:::
+
+# Multilevel Regression with Post-Stratification (MRP)
+
+## What is MRP?
+
+::: callout-note
+### MRP in One Sentence
+
+MRP uses a regression model to relate survey responses to characteristics, then rebuilds the sample to better match the population.
+:::
+
+. . .
+
+**Why use MRP?**
+
+- Allows "re-weighting" with proper uncertainty
+- Enables use of non-probability samples
+- Can speak to subgroups that may not be well-represented
+
+::: notes
+MRP—sometimes called "Mister P"—is a sophisticated way to adjust biased surveys. It trains a model on your survey, then applies that model to data that represents the population. This can make biased surveys useful.
+:::
+
+## The MRP Workflow
+
+1. **Gather survey data** thinking about what's needed for post-stratification
+
+. . .
+
+2. **Gather post-stratification data** (census or representative sample)
+
+. . .
+
+3. **Model the outcome** using predictors available in BOTH datasets
+
+. . .
+
+4. **Apply the model** to the post-stratification data and aggregate
+
+::: notes
+The key constraint is that your survey needs to contain variables that are also available in your post-stratification dataset (usually census data). You model the relationship in your survey, then apply that relationship to census data where you know the correct population proportions.
+:::
+
+## Example: Xbox Survey (Wang et al. 2015)
+
+::: callout-tip
+### A Famous MRP Example
+
+- 750,000+ interviews through Xbox gaming platform
+- 93% male, 65% aged 18-29 (vs 47% and 19% in population)
+- Used MRP to adjust this wildly unrepresentative sample
+- **Successfully forecast** the 2012 US Presidential Election
+:::
+
+. . .
+
+MRP is not magic—the laws of statistics still apply—but it can make biased data useful when applied carefully.
+
+::: notes
+This is one of the most famous MRP examples. Xbox users are overwhelmingly young men, yet Wang and colleagues used MRP to produce accurate election forecasts. The key was having variables that predicted vote choice AND were available in census data.
+:::
+
+# Concluding Remarks
+
+## What We've Covered This Semester
+
+::: columns
+::: {.column width="50%"}
+**Weeks 1-5: Foundations**
+
+- R and RStudio setup
+- Reproducible workflows
+- Data acquisition
+- Visualisation
+- Data cleaning
+- Probability simulation
+:::
+
+::: {.column width="50%"}
+**Weeks 6-13: Modelling**
+
+- Linear regression
+- Multiple regression
+- Model diagnostics
+- Logistic regression
+- Count models
+- Surveys and experiments
+- Causal inference
+- **Best practices**
+:::
+:::
+
+::: notes
+We've covered an enormous amount of ground—from basic R syntax to causal inference. The goal was to give you a functional understanding of data analytics that you can build on throughout your career.
+:::
+
+## The Central Thesis
+
+::: callout-important
+### What Makes Good Data Science?
+
+> "We consider data science to be the process of developing and applying a **principled, tested, reproducible, end-to-end workflow** that focuses on quantitative measures in and of themselves, and as a foundation to explore questions."
+>
+> — Alexander (2023), TSwD
+:::
+
+. . .
+
+- Mathematical rigour = theorems with proofs
+- **Data science rigour** = claims with verified, tested, reproducible code and data
+
+::: notes
+The field has matured to the point where we know what rigour looks like. Your claims should be accompanied by code and data that others can verify. This is how we create lasting understanding of the world.
+:::
+
+## Outstanding Issues in Data Science
+
+1. **How do we write effective tests?** Testing in data science is still developing
+
+. . .
+
+2. **What happens at data cleaning?** Hidden decisions have huge effects on results
+
+. . .
+
+3. **How do we create effective names?** Standardised nomenclature is needed
+
+. . .
+
+4. **How do we teach data science?** The field is still learning how to scale education
+
+. . .
+
+5. **What's the relationship between industry and academia?** Innovation happens in both
+
+::: notes
+These aren't questions with definitive answers—they're areas where the field is still developing. You might contribute to answering them as you progress in your careers.
+:::
+
+## Next Steps for Your Learning
+
+::: columns
+::: {.column width="50%"}
+**To Solidify Foundations:**
+
+- *R for Data Science* (Wickham et al.)
+- *Data Science: A First Introduction* (Timbers et al.)
+- SQL and Python basics
+:::
+
+::: {.column width="50%"}
+**To Go Deeper:**
+
+- *Statistical Rethinking* (McElreath)
+- *Regression and Other Stories* (Gelman et al.)
+- *Causal Inference: The Mixtape* (Cunningham)
+:::
+:::
+
+. . .
+
+::: callout-tip
+### The Most Important Advice
+
+**Write code every day.** The only way to get better at data analysis is to do data analysis.
+:::
+
+::: notes
+Learning data science is like learning a language—you need regular practice. Write code every day, even if it's just for 15 minutes. Apply what you've learned to questions you care about.
+:::
+
+## Final Thoughts
+
+::: callout-note
+### "May You Live in Interesting Times"
+
+> "Data science needs to insist on diversity, both in terms of approaches and applications. It is increasingly the most important work in the world, and hegemonic approaches have no place."
+>
+> — Alexander (2023), TSwD
+:::
+
+. . .
+
+- Take courses on **fundamentals**, not just fashionable applications
+- Read **core texts**, not just what's trending
+- Be at the **intersection** of different areas
+
+::: notes
+Data science has gone from barely existing to being central to academia and industry in less than a generation. It's an exciting time to be learning these skills. Focus on fundamentals that will remain useful as technologies change.
+:::
+
+## Thank You!
+
+::: callout-tip
+### Key Takeaways from This Course
+
+1. **Reproducibility** is fundamental—code and data should be shareable
+2. **Workflows matter**—Plan → Simulate → Acquire → Explore → Share
+3. **Models are tools**—understand their assumptions and limitations
+4. **Writing is essential**—you tell stories with data through writing
+5. **Keep learning**—the field is evolving rapidly
+:::
+
+. . .
+
+Good luck with your assessments and future data science endeavours!
+
+::: notes
+You've worked hard this semester and developed real skills in data analysis. The workflow and mindset you've learned will serve you regardless of what specific tools or methods become popular. Thank you for your engagement throughout the course.
+:::
+
+## References
+
+::: {style="font-size: 0.7em;"}
+- Alexander, R. (2023). *Telling Stories with Data*. CRC Press.
+- Gebru, T., et al. (2021). Datasheets for datasets. *Communications of the ACM*, 64(12), 86-92.
+- Gelman, A., Hill, J., & Vehtari, A. (2020). *Regression and Other Stories*. Cambridge University Press.
+- Wang, W., et al. (2015). Forecasting elections with non-representative polls. *International Journal of Forecasting*, 31(3), 980-991.
+- Wicherts, J. M., Bakker, M., & Molenaar, D. (2011). Willingness to share research data is related to the strength of the evidence and the quality of reporting of statistical results. *PloS ONE*, 6(11), e26828.
+- Wilkinson, M. D., et al. (2016). The FAIR Guiding Principles for scientific data management and stewardship. *Scientific Data*, 3, 160018.
+:::

@@ -1,0 +1,868 @@
+---
+title: "Week 08</br>Model Diagnostics and Communication"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(rstanarm)
+library(broom)
+library(knitr)
+library(modelsummary)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+1. Check regression assumptions systematically
+2. Create and interpret residual plots
+3. Transform variables appropriately (log, sqrt)
+4. Create publication-quality tables
+5. Communicate statistical results effectively
+6. Diagnose and address common model problems
+
+::: notes
+This week brings together model diagnostics and effective communication. We'll learn how to check if our models are appropriate and how to present our findings professionally.
+:::
+
+## Readings for This Week
+
+::: {layout-ncol="2"}
+### TSwD (Alexander)
+
+- Ch 4: Writing research
+- Ch 5: Static communication
+  - 5.3 Tables
+  - 5.4 Maps
+
+### ROS (Gelman et al.)
+
+- Ch 2.4: Data and adjustment
+- Ch 11: Assumptions, diagnostics, and model evaluation
+- Ch 12: Transformations and regression
+:::
+
+# Assumptions of Regression Analysis
+
+## The Six Assumptions (in order of importance)
+
+::: callout-important
+### Key Assumptions
+
+1. **Validity** - Data maps to research question
+2. **Representativeness** - Sample represents population
+3. **Additivity and linearity** - Linear relationships
+4. **Independence of errors** - Errors are uncorrelated
+5. **Equal variance of errors** - Homoscedasticity
+6. **Normality of errors** - For prediction intervals
+:::
+
+::: notes
+We list these in decreasing order of importance. Validity is most important but often overlooked. Normality is least important for estimating coefficients.
+:::
+
+## 1. Validity
+
+The data you are analysing should map to the research question you are trying to answer.
+
+. . .
+
+This means:
+
+- The **outcome measure** should accurately reflect the phenomenon of interest
+- The model should include **all relevant predictors**
+- The model should **generalise** to the cases to which it will be applied
+
+. . .
+
+::: callout-warning
+### Common Pitfall
+A model of test scores will not necessarily tell you about child intelligence or cognitive development. A model of incomes will not necessarily tell you about total assets.
+:::
+
+## 2. Representativeness
+
+The key assumption is that the data are representative of the distribution of the outcome $y$ given the predictors $x_1, x_2, \ldots$
+
+. . .
+
+::: callout-tip
+### Important Distinction
+- **Selection on $x$** does not interfere with inferences
+- **Selection on $y$** does interfere with inferences
+
+For example: in a regression of earnings on height and sex, it's acceptable for women and tall people to be overrepresented, but problems arise if too many rich people are in the sample.
+:::
+
+## 3. Additivity and Linearity
+
+The deterministic component is a linear function of the separate predictors:
+
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots$$
+
+. . .
+
+**When violated:**
+
+- Transform the data (e.g., if $y = abc$, then $\log y = \log a + \log b + \log c$)
+- Add interactions
+- Use $1/x$ or $\log(x)$ instead of $x$
+- Use nonlinear functions (splines, etc.)
+
+## 4. Independence of Errors
+
+The simple regression model assumes that the errors from the prediction line are **independent**.
+
+. . .
+
+This assumption is violated in:
+
+- **Time series** data (observations over time)
+- **Spatial** data (observations across geography)
+- **Multilevel** settings (observations nested in groups)
+
+::: notes
+When errors are correlated, standard errors can be underestimated, leading to false confidence in our estimates.
+:::
+
+## 5. Equal Variance of Errors (Homoscedasticity)
+
+**Heteroscedasticity** = unequal error variance
+
+. . .
+
+::: columns
+::: {.column width="50%"}
+### Impact
+- Affects probabilistic prediction
+- Does not affect coefficient estimates
+- May require weighted least squares
+:::
+
+::: {.column width="50%"}
+### Detection
+- Residual plots (funnel shape)
+- Statistical tests
+- Visual inspection
+:::
+:::
+
+## 6. Normality of Errors
+
+::: callout-note
+### Least Important Assumption!
+The normality assumption is typically barely important at all for estimating the regression line.
+
+It is relevant when:
+- Predicting individual data points
+- Constructing prediction intervals
+:::
+
+. . .
+
+We do **not** recommend routine Q-Q plots of residuals. Focus on the more important assumptions first!
+
+# Plotting Data and Fitted Models
+
+## Why Plot?
+
+Graphics are helpful for:
+
+1. **Visualising data** - Understanding patterns
+2. **Understanding models** - Seeing relationships
+3. **Revealing patterns** not explained by fitted models
+
+::: notes
+Plotting is not just for presentation—it's a crucial diagnostic tool throughout the modelling process.
+:::
+
+## Displaying a Regression Line
+
+```{r}
+#| echo: true
+#| output-location: column
+#| fig-height: 6
+
+# Simulated example
+set.seed(853)
+n <- 100
+mom_iq <- rnorm(n, 100, 15)
+kid_score <- 25 + 0.6 * mom_iq + 
+  rnorm(n, 0, 18)
+
+df <- data.frame(mom_iq, kid_score)
+
+# Fit model
+fit <- lm(kid_score ~ mom_iq, data = df)
+
+# Plot
+ggplot(df, aes(x = mom_iq, y = kid_score)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Mother's IQ Score",
+       y = "Child's Test Score") +
+  theme_minimal(base_size = 14)
+```
+
+## Displaying Uncertainty in the Fitted Regression
+
+```{r}
+#| echo: true
+#| output-location: column
+#| fig-height: 6
+
+# Extract coefficients and simulate
+coefs <- coef(fit)
+se <- summary(fit)$coefficients[, 2]
+
+# Create plot with uncertainty bands
+ggplot(df, aes(x = mom_iq, y = kid_score)) +
+  geom_point(alpha = 0.5) +
+  # Add several simulated lines
+  geom_abline(intercept = coefs[1] + rnorm(10, 0, se[1]),
+              slope = coefs[2] + rnorm(10, 0, se[2]),
+              alpha = 0.2, colour = "grey50") +
+  geom_smooth(method = "lm", se = FALSE, 
+              colour = "blue", linewidth = 1) +
+  labs(x = "Mother's IQ Score",
+       y = "Child's Test Score",
+       title = "Regression with uncertainty") +
+  theme_minimal(base_size = 14)
+```
+
+::: notes
+The grey lines show different plausible regression lines from the posterior distribution of parameters.
+:::
+
+# Residual Plots
+
+## What Are Residuals?
+
+The **residuals** are the differences between observed and predicted values:
+
+$$r_i = y_i - \hat{y}_i = y_i - X_i\hat{\beta}$$
+
+. . .
+
+::: callout-tip
+### Why Plot Residuals?
+If the model is correct, residuals should look **randomly scattered** around a horizontal line at zero. This is often easier to assess than comparing data to a fitted line.
+:::
+
+## Creating a Residual Plot
+
+```{r}
+#| echo: true
+#| output-location: column
+#| fig-height: 6
+
+# Calculate residuals and fitted values
+df$fitted <- fitted(fit)
+df$residuals <- residuals(fit)
+
+# Residual plot
+ggplot(df, aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, 
+             linetype = "dashed",
+             colour = "red") +
+  geom_hline(yintercept = c(-summary(fit)$sigma,
+                            summary(fit)$sigma),
+             linetype = "dotted",
+             colour = "grey50") +
+  labs(x = "Fitted Values",
+       y = "Residuals",
+       title = "Residual Plot") +
+  theme_minimal(base_size = 14)
+```
+
+## Interpreting Residual Plots
+
+::: {layout-ncol="2"}
+### Good Signs ✓
+
+- Random scatter around zero
+- Roughly constant spread
+- No obvious patterns
+- No extreme outliers
+
+### Warning Signs ✗
+
+- Funnel shape (heteroscedasticity)
+- Curved pattern (nonlinearity)
+- Clusters (missing predictors)
+- Extreme values (outliers)
+:::
+
+## Residuals vs. Fitted vs. Observed
+
+::: callout-important
+### Key Insight
+Always plot residuals against **fitted values**, not observed values!
+
+Plotting residuals vs. observed values will show misleading patterns even when the model is correct.
+:::
+
+. . .
+
+**Why?** The errors $\epsilon_i$ should be independent of the predictors $x_i$, not the data $y_i$.
+
+::: notes
+This is a common mistake. Fake-data simulation can help understand why residuals vs. fitted is the correct choice.
+:::
+
+## Common Residual Patterns
+
+```{r}
+#| echo: false
+#| fig-height: 5
+
+# Create example patterns
+set.seed(42)
+n <- 100
+x <- runif(n, 0, 10)
+
+# Good residuals
+good_resid <- rnorm(n, 0, 1)
+
+# Heteroscedastic
+hetero_resid <- rnorm(n, 0, 0.5 + 0.3 * x)
+
+# Nonlinear
+nonlin_y <- 2 + 3*x - 0.3*x^2 + rnorm(n, 0, 1)
+nonlin_fit <- lm(nonlin_y ~ x)
+nonlin_resid <- residuals(nonlin_fit)
+
+# Combine
+patterns <- data.frame(
+  fitted = rep(x, 3),
+  residual = c(good_resid, hetero_resid, nonlin_resid),
+  type = factor(rep(c("Good: Random Scatter", 
+                      "Problem: Heteroscedasticity",
+                      "Problem: Nonlinearity"), each = n))
+)
+
+ggplot(patterns, aes(x = fitted, y = residual)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  facet_wrap(~type) +
+  labs(x = "Fitted Values", y = "Residuals") +
+  theme_minimal(base_size = 12)
+```
+
+# Variable Transformations
+
+## Why Transform Variables?
+
+When additivity and linearity are violated, **transformations** can help:
+
+. . .
+
+1. **Logarithmic** - For multiplicative relationships
+2. **Square root** - For moderate compression of high values
+3. **Centering** - For interpretable intercepts
+4. **Standardising** - For comparable coefficients
+
+## Logarithmic Transformations
+
+::: callout-tip
+### When to Use Log Transform
+Use logarithms for outcomes that are **all positive** and where effects are likely **multiplicative** rather than additive.
+:::
+
+. . .
+
+A linear model on the log scale:
+$$\log y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \epsilon_i$$
+
+Corresponds to a multiplicative model on the original scale:
+$$y_i = B_0 \cdot B_1^{x_{i1}} \cdot B_2^{x_{i2}} \cdots E_i$$
+
+where $B_j = e^{\beta_j}$
+
+## Interpreting Log-Scale Coefficients
+
+For **small coefficients** (roughly $|\beta| < 0.25$):
+
+$$e^\beta \approx 1 + \beta$$
+
+. . .
+
+::: callout-note
+### Rule of Thumb
+A coefficient of $\beta = 0.06$ on the log scale means approximately a **6% difference** in $y$ per unit change in $x$.
+:::
+
+```{r}
+#| echo: true
+# Verify the approximation
+c(exp(0.06), 1 + 0.06)
+```
+
+## Example: Earnings and Height
+
+```{r}
+#| echo: true
+#| output-location: column
+#| fig-height: 6
+
+# Simulated earnings data
+set.seed(123)
+n <- 200
+height <- rnorm(n, 170, 10)
+earnings <- exp(6 + 0.02 * height + 
+                rnorm(n, 0, 0.5))
+
+df_earn <- data.frame(height, earnings)
+
+# Compare models
+fit_linear <- lm(earnings ~ height, 
+                 data = df_earn)
+fit_log <- lm(log(earnings) ~ height, 
+              data = df_earn)
+
+# Plot on log scale
+ggplot(df_earn, aes(x = height, y = earnings)) +
+  geom_point(alpha = 0.5) +
+  scale_y_log10() +
+  geom_smooth(method = "lm") +
+  labs(x = "Height (cm)",
+       y = "Earnings (log scale)") +
+  theme_minimal(base_size = 14)
+```
+
+## Natural Log vs. Log Base 10
+
+::: columns
+::: {.column width="50%"}
+### Natural Log (ln)
+- Coefficients directly interpretable as proportional differences
+- $\beta = 0.05$ means ~5% difference
+- **Preferred for modelling**
+:::
+
+::: {.column width="50%"}
+### Log Base 10
+- Predicted values easier to read
+- $\log_{10}(10000) = 4$
+- Coefficients require conversion
+- Better for data exploration
+:::
+:::
+
+## Centering and Standardising
+
+**Centering**: Subtract the mean
+$$x_{\text{centered}} = x - \bar{x}$$
+
+. . .
+
+**Standardising**: Subtract mean, divide by standard deviation
+$$z = \frac{x - \bar{x}}{s_x}$$
+
+. . .
+
+::: callout-tip
+### Why Standardise by 2 SD?
+Dividing by **2 standard deviations** makes continuous variable coefficients comparable to binary (0/1) variable coefficients.
+:::
+
+## Example: Centering for Interpretability
+
+```{r}
+#| echo: true
+# Original model - intercept is meaningless
+fit_orig <- lm(kid_score ~ mom_iq, data = df)
+coef(fit_orig)
+
+# Centered model - intercept is mean kid_score at mean mom_iq
+df$mom_iq_c <- df$mom_iq - mean(df$mom_iq)
+fit_centered <- lm(kid_score ~ mom_iq_c, data = df)
+coef(fit_centered)
+```
+
+. . .
+
+The slope is identical, but the intercept now represents the predicted score at the average mother's IQ.
+
+## Square Root Transformation
+
+Use when log transformation is **too strong**:
+
+- Log: Equal ratios get equal treatment (5→10 same as 50→100)
+- Square root: More moderate compression
+
+. . .
+
+```{r}
+#| echo: true
+# Compare transformations
+x <- c(0, 100, 1000, 10000, 100000)
+data.frame(
+  original = x,
+  log = round(log(x + 1), 2),  # +1 to handle zero
+  sqrt = round(sqrt(x), 2)
+)
+```
+
+# Data Adjustment: A Case Study
+
+## The Mortality Rate Example
+
+::: callout-important
+### The Claim
+In 2015, Case and Deaton published that mortality rates for middle-aged white non-Hispanic Americans increased from 1999 to 2013.
+:::
+
+. . .
+
+**The problem**: Their numbers were "not age-adjusted within the 10-year 45–54 age group."
+
+. . .
+
+**The issue**: The composition of the 45-54 age group changed as the baby boom generation moved through.
+
+::: notes
+This is a famous example of how aggregation bias can lead to misleading conclusions. The changing demographics within an age bracket affected the results.
+:::
+
+## Aggregation Bias Explained
+
+During 1999-2013:
+
+- The **average age** within the 45-54 group increased
+- Baby boomers were moving through this age bracket
+- Older people within this bracket have higher mortality rates
+
+. . .
+
+**Result**: Even if age-specific mortality rates were constant, the group mortality rate would increase due to compositional change.
+
+## What Proper Adjustment Revealed
+
+After adjusting for age composition:
+
+- The steady increase from 1999-2013 **disappeared**
+- Instead: increase from 1999-2005, then **constant** thereafter
+- Breaking down by sex: marked increase only for **women**, not men
+
+. . .
+
+::: callout-tip
+### Lesson Learned
+Data adjustment is not merely academic. It can fundamentally change the interpretation of data and conclusions.
+:::
+
+# Communicating Results: Tables
+
+## Why Tables Matter
+
+Tables can communicate **specific values** with high fidelity:
+
+1. Show an extract of the dataset
+2. Communicate summary statistics
+3. Display regression results
+
+::: notes
+Tables convey less information than graphs but do so with higher precision. Use tables when readers need exact values.
+:::
+
+## Showing Data with `kable()`
+
+```{r}
+#| echo: true
+# Basic table with kable
+df |>
+  head(5) |>
+  select(mom_iq, kid_score, fitted, residuals) |>
+  kable(
+    col.names = c("Mother's IQ", "Child Score", 
+                  "Fitted", "Residuals"),
+    digits = 1,
+    caption = "First 5 observations from the dataset"
+  )
+```
+
+## Summary Statistics with `modelsummary`
+
+```{r}
+#| echo: true
+df |>
+  select(mom_iq, kid_score) |>
+  datasummary_skim(
+    histogram = FALSE,
+    title = "Summary statistics for mother-child data"
+  )
+```
+
+## Regression Tables with `modelsummary`
+
+```{r}
+#| echo: true
+# Fit multiple models
+model1 <- lm(kid_score ~ mom_iq, data = df)
+model2 <- lm(kid_score ~ mom_iq + I(mom_iq^2), data = df)
+
+# Display comparison
+modelsummary(
+  list("Linear" = model1, "Quadratic" = model2),
+  fmt = 2,
+  title = "Comparing linear and quadratic models"
+)
+```
+
+## Table Best Practices
+
+::: callout-tip
+### Keys to Good Tables
+
+1. **Clear column names** - Avoid abbreviations
+2. **Appropriate precision** - Don't over-report digits
+3. **Informative captions** - Self-contained descriptions
+4. **Consistent formatting** - Align numbers properly
+5. **Source notes** - Credit data origins
+:::
+
+# Writing Research
+
+## The Process of Writing
+
+::: callout-note
+### Key Insight
+Writing is a process of **rewriting**. The critical task is to get to a first draft as quickly as possible.
+:::
+
+. . .
+
+1. Write a bad first draft quickly
+2. Revise extensively
+3. Remove unnecessary words
+4. Focus on the reader
+
+## Paper Structure
+
+A quantitative paper typically includes:
+
+::: {layout-ncol="2"}
+### Core Sections
+1. Title
+2. Abstract
+3. Introduction
+4. Data
+5. Model/Methods
+6. Results
+7. Discussion
+
+### Key Principles
+- Be as brief and specific as possible
+- Graphs and tables need informative captions
+- Every variable should appear in at least one figure or table
+:::
+
+## Writing Effective Abstracts
+
+An abstract should cover (in ~4-5 sentences):
+
+1. **Context** - The general area and why it matters
+2. **Objective** - What you're doing
+3. **Approach** - Data and methods
+4. **Findings** - The headline result
+5. **Implications** - Why it matters
+
+## The Data Section
+
+::: callout-important
+### "Sense of Place"
+The data section should give readers such a clear picture of the data that they feel as if they themselves were present.
+:::
+
+. . .
+
+Include:
+
+- Description of all variables used
+- Summary statistics (table)
+- Visualisation of key variables (graphs)
+- Source and limitations
+
+## Rules for Good Writing
+
+1. Focus on the **reader** and their needs
+2. Establish a structure and stick to it
+3. Write a first draft **quickly**
+4. Rewrite **extensively**
+5. Be **concise** - remove unnecessary words
+6. Use words **precisely**
+7. Avoid jargon
+
+::: footer
+Adapted from Zinsser (1976) and Alexander (2023)
+:::
+
+# Model Evaluation Metrics
+
+## Residual Standard Deviation ($\sigma$)
+
+$$\hat{\sigma} = \sqrt{\frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}{n-k}}$$
+
+. . .
+
+**Interpretation**: On average, predictions are off by about $\hat{\sigma}$ units.
+
+```{r}
+#| echo: true
+# Get sigma from our model
+summary(fit)$sigma
+```
+
+## R-squared ($R^2$)
+
+The proportion of variance "explained" by the model:
+
+$$R^2 = 1 - \frac{\hat{\sigma}^2}{s_y^2}$$
+
+. . .
+
+```{r}
+#| echo: true
+summary(fit)$r.squared
+```
+
+::: callout-warning
+### Caution
+$R^2$ always increases when you add more predictors, even if they're just noise!
+:::
+
+## Cross-Validation
+
+**Problem**: Using the same data to fit and evaluate leads to **optimism**.
+
+. . .
+
+**Solution**: **Leave-one-out (LOO) cross-validation**
+
+1. Remove one observation
+2. Fit model to remaining data
+3. Predict the held-out observation
+4. Repeat for all observations
+
+. . .
+
+**LOO $R^2$** gives a more honest assessment of predictive performance.
+
+## Comparing Models
+
+```{r}
+#| echo: true
+# Add a noise predictor
+set.seed(456)
+df$noise <- rnorm(nrow(df))
+
+model_simple <- lm(kid_score ~ mom_iq, data = df)
+model_noise <- lm(kid_score ~ mom_iq + noise, data = df)
+
+# Compare R-squared
+c(simple = summary(model_simple)$r.squared,
+  with_noise = summary(model_noise)$r.squared)
+```
+
+. . .
+
+$R^2$ increased, but is the model actually better? Cross-validation would reveal the truth.
+
+# Practical Workflow
+
+## Diagnostic Workflow Summary
+
+```{r}
+#| echo: false
+#| fig-height: 4
+library(DiagrammeR)
+
+grViz("
+digraph workflow {
+  graph [rankdir = LR]
+  
+  node [shape = box, style = filled, fillcolor = lightblue]
+  A [label = '1. Fit Model']
+  B [label = '2. Check Residuals']
+  C [label = '3. Transform if Needed']
+  D [label = '4. Refit & Check']
+  E [label = '5. Present Results']
+  
+  A -> B -> C -> D -> E
+  C -> A [style = dashed, label = 'iterate']
+}
+")
+```
+
+## Key R Functions
+
+| Task | Function |
+|------|----------|
+| Fit linear model | `lm()` |
+| Get residuals | `residuals()` or `resid()` |
+| Get fitted values | `fitted()` |
+| Model summary | `summary()` |
+| Log transform | `log()` |
+| Square root | `sqrt()` |
+| Create tables | `kable()`, `modelsummary()` |
+
+## Summary
+
+::: callout-note
+### Key Takeaways
+
+1. **Check assumptions** - Validity and representativeness are most important
+2. **Use residual plots** - Plot against fitted values, not observed
+3. **Transform when needed** - Log for multiplicative relationships
+4. **Adjust for confounders** - Beware aggregation bias
+5. **Communicate clearly** - Tables and writing matter
+6. **Validate models** - Use cross-validation for honest assessment
+:::
+
+## Next Week
+
+**Week 9: Logistic Regression**
+
+- Modelling binary outcomes
+- Odds ratios and log-odds
+- Making probabilistic predictions
+
+::: callout-tip
+### Readings
+- TSwD Ch 13.1-13.2
+- ROS Ch 13-14
+:::
+
+## References
+
+::: {#refs}
+:::

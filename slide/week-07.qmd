@@ -1,0 +1,926 @@
+---
+title: "Week 07</br>Multiple Regression"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(rstanarm)
+library(modelsummary)
+library(broom)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Build multiple regression models with several predictors
+- Interpret coefficients in the presence of multiple predictors
+- Handle categorical predictors effectively
+- Understand and implement interaction effects
+- Build and compare models systematically
+- Understand confounding and control variables
+
+::: notes
+This week we move from simple linear regression (one predictor) to multiple regression (multiple predictors). This is where regression becomes truly powerful for social science research.
+:::
+
+## This Week's Readings
+
+::: {layout-ncol="2"}
+### TSwD
+
+- Ch 12: Linear models
+  - 12.3 Multiple linear regression
+  - 12.4 Building models
+
+### ROS
+
+- Ch 9: Prediction and Bayesian inference
+- Ch 10: Linear regression with multiple predictors
+:::
+
+# From Simple to Multiple Regression
+
+## Recap: Simple Linear Regression
+
+Last week we covered simple linear regression with **one predictor**:
+
+$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$$
+
+. . .
+
+This week we extend to **multiple predictors**:
+
+$$y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \cdots + \beta_k x_{ki} + \epsilon_i$$
+
+::: notes
+The key insight is that we can now examine the relationship between an outcome and one predictor while controlling for (or adjusting for) other variables. This is essential for social science research where many factors influence outcomes simultaneously.
+:::
+
+## Why Multiple Predictors?
+
+::: callout-important
+### Key Advantage
+Adding more explanatory variables allows associations between the outcome and predictor of interest to be assessed **while adjusting for** other explanatory variables.
+:::
+
+. . .
+
+The results can be quite different from separate simple regressions, especially when explanatory variables are **correlated with each other**.
+
+::: notes
+This is one of the most important concepts in regression. In social science, variables are almost always correlated with each other. Failing to account for this can lead to misleading conclusions.
+:::
+
+# Adding Predictors to a Model
+
+## Example: Children's IQ Tests
+
+We'll use data predicting children's cognitive test scores from:
+
+- Whether the mother graduated high school (`mom_hs`: 0 or 1)
+- Mother's IQ score (`mom_iq`: continuous)
+
+. . .
+
+Let's build up from simple to multiple regression.
+
+::: footer
+Example from ROS Chapter 10
+:::
+
+## Starting with a Binary Predictor
+
+```{r}
+#| echo: true
+#| eval: false
+fit_1 <- stan_glm(kid_score ~ mom_hs, data = kidiq)
+```
+
+**Fitted model:**
+$$\text{kid\_score} = 78 + 12 \times \text{mom\_hs} + \text{error}$$
+
+. . .
+
+::: {layout-ncol="2"}
+### Interpretation
+
+- **Intercept (78)**: Average score for children whose mothers did NOT complete high school
+- **Coefficient (12)**: Children of high school graduates score 12 points higher on average
+
+### What this tells us
+
+The coefficient represents the **difference in means** between the two groups.
+:::
+
+## A Single Continuous Predictor
+
+```{r}
+#| echo: true
+#| eval: false
+fit_2 <- stan_glm(kid_score ~ mom_iq, data = kidiq)
+```
+
+**Fitted model:**
+$$\text{kid\_score} = 26 + 0.6 \times \text{mom\_iq} + \text{error}$$
+
+. . .
+
+::: callout-note
+### Interpretation
+Comparing children whose mothers differ by 1 point in IQ, we expect the child's test score to differ by 0.6 points on average.
+
+A 10-point difference in mothers' IQs → 6-point difference in children's scores.
+:::
+
+## Including Both Predictors
+
+```{r}
+#| echo: true
+#| eval: false
+fit_3 <- stan_glm(kid_score ~ mom_hs + mom_iq, data = kidiq)
+```
+
+**Output:**
+```
+              Median MAD_SD
+(Intercept)   25.7    5.9
+mom_hs         6.0    2.4
+mom_iq         0.6    0.1
+sigma         18.2    0.6
+```
+
+. . .
+
+**Fitted model:**
+$$\text{kid\_score} = 26 + 6 \times \text{mom\_hs} + 0.6 \times \text{mom\_iq} + \text{error}$$
+
+## Visualising Multiple Regression
+
+![Child's test score vs maternal IQ, with separate groups for maternal education](images/kidiq_two_lines.png){width=70%}
+
+::: notes
+The two parallel lines show how the model predicts different intercepts for each group (high school completion vs not) but the same slope (effect of mother's IQ).
+:::
+
+## Understanding the Coefficients
+
+::: {layout-ncol="2"}
+### Coefficient of mom_hs (6.0)
+
+Comparing children whose mothers have **the same IQ**, but differ in high school completion:
+
+- Expected difference = 6 points
+
+### Coefficient of mom_iq (0.6)
+
+Comparing children with **same maternal education**, but mothers differ by 1 IQ point:
+
+- Expected difference = 0.6 points
+:::
+
+. . .
+
+::: callout-tip
+### Key Insight
+Each coefficient represents the effect of that variable **holding the other variables constant**.
+:::
+
+# Interpreting Regression Coefficients
+
+## The "Holding Constant" Interpretation
+
+::: callout-important
+### Definition
+The coefficient $\beta_k$ is the average or expected difference in outcome $y$, comparing two observations that differ by one unit in predictor $x_k$ **while being equal in all other predictors**.
+:::
+
+. . .
+
+This is sometimes called:
+
+- "Controlling for" other variables
+- "Adjusting for" other variables
+- "Holding constant" other variables
+
+## Predictive vs Counterfactual Interpretations
+
+::: {layout-ncol="2"}
+### Predictive Interpretation
+
+How does the outcome differ, **on average**, when comparing two groups that differ by 1 in the predictor?
+
+*"Children whose mothers have 1 point higher IQ tend to score 0.6 points higher"*
+
+### Counterfactual Interpretation
+
+What would happen if we **changed** the predictor by 1 unit?
+
+*"Increasing maternal IQ by 1 would increase child's score by 0.6"*
+:::
+
+. . .
+
+::: callout-warning
+### Caution
+The counterfactual interpretation requires **causal** assumptions that may not be justified from observational data alone.
+:::
+
+::: notes
+This is a crucial distinction. From regression alone, we can only make predictive statements. Causal statements require additional assumptions about the data-generating process.
+:::
+
+## A Careful Interpretation
+
+The most careful way to interpret regression coefficients:
+
+> "When comparing two children whose mothers have the same level of education, the child whose mother is *x* IQ points higher is predicted to have a test score that is $0.6x$ higher, **on average**."
+
+. . .
+
+This is awkward but accurate! It avoids implying causation when we only have correlation.
+
+# Categorical Predictors (Indicator Variables)
+
+## Binary Predictors
+
+When a predictor has only **two categories**, we create an **indicator** (or **dummy**) variable:
+
+- Coded as 0 or 1
+- Also called a "binary variable"
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+# Example: Predicting weight from height and sex
+fit <- stan_glm(weight ~ c_height + male, data = earnings)
+```
+
+::: notes
+The coding of 0 and 1 is arbitrary but conventional. The group coded as 0 becomes the "baseline" or "reference" group.
+:::
+
+## Interpreting Binary Predictors
+
+```
+              Median MAD_SD
+(Intercept)   149.6    1.0
+c_height        3.9    0.3
+male           12.0    2.0
+sigma          28.8    0.5
+```
+
+. . .
+
+::: callout-note
+### Interpretation of `male` coefficient
+Comparing a man to a woman **of the same height**, the man is predicted to be 12 pounds heavier.
+:::
+
+## Multiple Categories: Factor Variables
+
+When a predictor has **more than two categories**, R automatically creates indicator variables:
+
+```{r}
+#| echo: true
+#| eval: false
+fit <- stan_glm(weight ~ c_height + male + factor(ethnicity), 
+                data = earnings)
+```
+
+. . .
+
+**Output:**
+```
+                          Median MAD_SD
+(Intercept)               154.1    2.2
+c_height                    3.8    0.3
+male                       12.2    2.0
+factor(ethnicity)Hispanic  -5.9    3.6
+factor(ethnicity)Other    -12.6    5.2
+factor(ethnicity)White     -5.0    2.3
+```
+
+## The Baseline Category
+
+::: callout-important
+### What happened to "Black"?
+R uses one category as the **baseline** (reference group). All other coefficients are interpreted **relative to this baseline**.
+:::
+
+. . .
+
+- Coefficient for Hispanic (-5.9): Hispanics are predicted to be 5.9 pounds lighter than Blacks of the same height and sex
+- Coefficient for White (-5.0): Whites are predicted to be 5.0 pounds lighter than Blacks
+
+::: notes
+By default, R orders factors alphabetically, so "Black" comes first and becomes the baseline. You can change this using the `factor()` function with explicit level ordering.
+:::
+
+## Changing the Baseline Category
+
+```{r}
+#| echo: true
+#| eval: false
+# Set "White" as the baseline
+earnings$eth <- factor(earnings$ethnicity,
+                       levels = c("White", "Black", "Hispanic", "Other"))
+
+fit <- stan_glm(weight ~ c_height + male + eth, data = earnings)
+```
+
+. . .
+
+Now all coefficients are interpreted relative to White:
+
+```
+              Median MAD_SD
+(Intercept)   149.1    1.0
+ethBlack        5.0    2.2
+ethHispanic    -0.9    2.9
+ethOther       -7.6    4.6
+```
+
+# Interaction Effects
+
+## Why Interactions Matter
+
+Sometimes the effect of one variable **depends on** the value of another variable.
+
+. . .
+
+**Example**: The relationship between maternal IQ and child's test score might be different for children whose mothers completed high school vs those who didn't.
+
+::: notes
+Interactions are common in social science. The effect of education might differ by gender, the effect of income might differ by region, etc.
+:::
+
+## Adding an Interaction Term
+
+```{r}
+#| echo: true
+#| eval: false
+fit_4 <- stan_glm(kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq, 
+                  data = kidiq)
+```
+
+**Fitted model:**
+$$\text{kid\_score} = -11 + 51 \times \text{mom\_hs} + 1.1 \times \text{mom\_iq} - 0.5 \times \text{mom\_hs} \times \text{mom\_iq}$$
+
+::: notes
+The interaction term `mom_hs:mom_iq` is created by multiplying the two variables together. This allows the slope to differ between groups.
+:::
+
+## Visualising Interactions
+
+![Interaction between maternal education and IQ](images/kidiq_interaction.png){width=70%}
+
+The **slopes are different** for each group!
+
+## Interpreting Interaction Coefficients
+
+::: {layout-ncol="2"}
+### For mom_hs = 0 (no high school)
+
+$$\text{kid\_score} = -11 + 1.1 \times \text{mom\_iq}$$
+
+Slope = **1.1**
+
+### For mom_hs = 1 (completed high school)
+
+$$\text{kid\_score} = 40 + 0.6 \times \text{mom\_iq}$$
+
+Slope = **0.6**
+:::
+
+. . .
+
+The **interaction coefficient** (-0.5) is the **difference in slopes** between the two groups.
+
+## Shorthand for Interactions in R
+
+```{r}
+#| echo: true
+#| eval: false
+# These are equivalent:
+fit <- stan_glm(y ~ x1 + x2 + x1:x2, data = df)
+fit <- stan_glm(y ~ x1 * x2, data = df)
+```
+
+. . .
+
+The `*` operator automatically includes:
+
+- Main effect of `x1`
+- Main effect of `x2`
+- Interaction `x1:x2`
+
+::: callout-tip
+### When to Look for Interactions
+Start with predictors that have large coefficients when not interacted. If a variable has a big effect overall, its effect may also differ across subgroups.
+:::
+
+## Example: Running Times with Rain and Humidity
+
+```{r}
+#| echo: true
+#| eval: false
+# Simulated data
+sim_run_data_rain_and_humidity_model <-
+  lm(
+    marathon_time ~ five_km_time + was_raining * humidity,
+    data = sim_run_data
+  )
+```
+
+. . .
+
+This model includes:
+
+- Main effect of 5km time
+- Main effect of rain
+- Main effect of humidity
+- **Interaction** between rain and humidity
+
+::: footer
+Example from TSwD Chapter 12
+:::
+
+# Prediction and Bayesian Inference
+
+## Three Types of Predictions
+
+After fitting a regression $y = a + bx + \text{error}$, we can make three predictions:
+
+. . .
+
+1. **Point prediction**: $\hat{a} + \hat{b}x_{new}$
+   - Single best estimate (ignores uncertainty)
+
+. . .
+
+2. **Linear predictor with uncertainty**: $a + bx_{new}$
+   - Accounts for uncertainty in coefficients
+
+. . .
+
+3. **Predictive distribution**: $a + bx_{new} + \epsilon$
+   - Accounts for coefficient uncertainty AND residual variation
+
+::: footer
+ROS Chapter 9
+:::
+
+## Point Prediction with `predict()`
+
+```{r}
+#| echo: true
+#| eval: false
+# Create new data point
+new <- data.frame(growth = 2.0)
+
+# Get point prediction
+y_point_pred <- predict(fit, newdata = new)
+```
+
+. . .
+
+This gives a **single number** — our best guess for the outcome.
+
+## Linear Predictor with `posterior_linpred()`
+
+```{r}
+#| echo: true
+#| eval: false
+# Get uncertainty in the fitted regression line
+y_linpred <- posterior_linpred(fit, newdata = new)
+```
+
+. . .
+
+This returns a **vector of simulations** representing:
+
+- The expected value of $y$ for new data points with this $x$
+- Uncertainty comes from uncertainty in the **coefficients**
+
+::: notes
+This is useful when you want to make inferences about average outcomes for a population with a given set of predictors.
+:::
+
+## Predictive Distribution with `posterior_predict()`
+
+```{r}
+#| echo: true
+#| eval: false
+# Get full predictive uncertainty
+y_pred <- posterior_predict(fit, newdata = new)
+
+# Summarise
+median(y_pred)
+mad(y_pred)
+```
+
+. . .
+
+This includes **both**:
+
+- Uncertainty in the coefficients
+- Residual variation ($\sigma$)
+
+::: callout-important
+### Key Difference
+Even with infinite data (perfect coefficient estimates), predictive uncertainty **never goes to zero** because of residual variation $\sigma$.
+:::
+
+## Visualising Prediction Uncertainty
+
+```{r}
+#| echo: true
+#| eval: false
+# Histogram of predictive distribution
+hist(y_pred)
+
+# Calculate probability of an outcome
+win_prob <- mean(y_pred > 50)
+cat("Probability of outcome > 50:", round(win_prob, 2))
+```
+
+. . .
+
+::: callout-tip
+### Advantage of Simulation
+We can compute **any function** of the predictions, including nonlinear summaries like "probability of winning".
+:::
+
+# Building Models: Frequentist vs Bayesian
+
+## Two Cultures of Statistical Modelling
+
+::: {layout-ncol="2"}
+### Frequentist (`lm()`)
+
+- Parameters are fixed (unknown) values
+- Uncertainty from sampling distribution
+- Fast computation
+- Uses `lm()` in R
+
+### Bayesian (`stan_glm()`)
+
+- Parameters are random variables with distributions
+- Prior + Data → Posterior
+- More computational
+- Uses `stan_glm()` in R
+:::
+
+::: footer
+TSwD Chapter 12
+:::
+
+## Running a Bayesian Regression
+
+```{r}
+#| echo: true
+#| eval: false
+library(rstanarm)
+
+model <- stan_glm(
+  formula = marathon_time ~ five_km_time + was_raining,
+  data = sim_run_data,
+  family = gaussian(),
+  prior = normal(location = 0, scale = 2.5),
+  prior_intercept = normal(location = 0, scale = 2.5),
+  prior_aux = exponential(rate = 1),
+  seed = 853
+)
+```
+
+::: notes
+The main difference from `lm()` is that we specify prior distributions for the parameters. This incorporates our prior knowledge or uncertainty about the parameters before seeing the data.
+:::
+
+## Specifying the Model Mathematically
+
+$$y_i | \mu_i, \sigma \sim \text{Normal}(\mu_i, \sigma)$$
+$$\mu_i = \beta_0 + \beta_1 x_i$$
+$$\beta_0 \sim \text{Normal}(0, 2.5)$$
+$$\beta_1 \sim \text{Normal}(0, 2.5)$$
+$$\sigma \sim \text{Exponential}(1)$$
+
+. . .
+
+::: callout-note
+### Priors
+The prior distributions express our beliefs about the parameters **before** seeing the data. The data then updates these to produce **posterior** distributions.
+:::
+
+## Prior Predictive Checks
+
+::: callout-important
+### What do the priors imply?
+Before running the model, simulate from the priors to check if they produce sensible predictions.
+:::
+
+```{r}
+#| echo: true
+#| eval: false
+draws <- 1000
+priors <- tibble(
+  sigma = rexp(n = draws, rate = 1),
+  beta_0 = rnorm(n = draws, mean = 0, sd = 2.5),
+  beta_1 = rnorm(n = draws, mean = 0, sd = 2.5),
+  five_km_time = sample(15:30, draws, replace = TRUE),
+  marathon_time = rnorm(draws, beta_0 + beta_1 * five_km_time, sigma)
+)
+```
+
+## Checking Prior Implications
+
+![Prior predictive check showing implied predictions](images/prior_predictive.png){width=70%}
+
+. . .
+
+If priors imply impossible values (e.g., negative marathon times), **refine your priors**!
+
+## Auto-scaling Priors
+
+```{r}
+#| echo: true
+#| eval: false
+model <- stan_glm(
+  marathon_time ~ five_km_time + was_raining,
+  data = sim_run_data,
+  family = gaussian(),
+  prior = normal(location = 8, scale = 2.5, autoscale = TRUE),
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior_aux = exponential(rate = 1, autoscale = TRUE),
+  seed = 853
+)
+```
+
+. . .
+
+The `autoscale = TRUE` option adjusts priors based on the data scale.
+
+Check what was used with `prior_summary(model)`.
+
+## Posterior Predictive Checks
+
+```{r}
+#| echo: true
+#| eval: false
+# Compare actual data to model predictions
+pp_check(model) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+```
+
+. . .
+
+![Posterior predictive check](images/pp_check.png){width=60%}
+
+If the model fits well, simulated data should look like actual data.
+
+## MCMC Diagnostics
+
+::: {layout-ncol="2"}
+### Trace Plot
+
+```{r}
+#| echo: true
+#| eval: false
+plot(model, "trace")
+```
+
+Look for: horizontal, overlapping chains
+
+### Rhat Plot
+
+```{r}
+#| echo: true
+#| eval: false
+plot(model, "rhat")
+```
+
+Look for: all values close to 1.0 (< 1.1)
+:::
+
+::: notes
+These diagnostics check that the MCMC algorithm has converged and is producing reliable samples from the posterior distribution. If there are problems, simplify the model or adjust priors.
+:::
+
+# Model Comparison and Building
+
+## Using `modelsummary()` for Comparison
+
+```{r}
+#| echo: true
+#| eval: false
+modelsummary(
+  list(
+    "Five km only" = model_1,
+    "Add rain" = model_2,
+    "Add humidity" = model_3
+  ),
+  fmt = 2
+)
+```
+
+. . .
+
+This creates a **publication-quality table** comparing multiple models side by side.
+
+## Model Comparison Metrics
+
+| Metric | Interpretation |
+|--------|----------------|
+| R² | Proportion of variance explained |
+| Adjusted R² | R² penalised for number of predictors |
+| AIC/BIC | Information criteria (lower is better) |
+| RMSE | Root mean squared error |
+| LOOIC | Leave-one-out cross-validation IC |
+
+::: callout-tip
+### Which to use?
+- For prediction: LOOIC, cross-validation
+- For explanation: Adjusted R², theory
+:::
+
+## Threats to Validity
+
+When using an unfamiliar dataset, check for:
+
+1. **Linearity**: Are relationships actually linear?
+2. **Homoscedasticity**: Are errors constant across predictions?
+3. **Independence**: Are errors uncorrelated?
+4. **Outliers**: Are results driven by a few unusual points?
+
+. . .
+
+::: callout-important
+### Most Important
+Is the model **directly relevant** to your research question?
+:::
+
+# Confounding and Control Variables
+
+## What is Confounding?
+
+A **confounder** is a variable that:
+
+1. Is associated with the predictor of interest
+2. Is associated with the outcome
+3. Is NOT on the causal pathway between them
+
+. . .
+
+Including confounders in the model can **change** the estimated effect of your predictor of interest.
+
+## Example: Education and Income
+
+::: {layout-ncol="2"}
+### Simple regression
+```{r}
+#| echo: true
+#| eval: false
+lm(income ~ education)
+# education: +5000
+```
+
+### With confounder
+```{r}
+#| echo: true
+#| eval: false
+lm(income ~ education + parents_income)
+# education: +3000
+```
+:::
+
+. . .
+
+The effect of education **decreases** when we control for parental income — part of the apparent education effect was actually due to family background.
+
+::: notes
+This is why multiple regression is so important for social science research. We can disentangle the effects of correlated predictors.
+:::
+
+## When to Include Control Variables
+
+::: callout-tip
+### Include variables that:
+- Are related to both the predictor and outcome
+- Are measured before the outcome
+- Are theoretically relevant
+:::
+
+. . .
+
+::: callout-warning
+### Don't include:
+- Mediators (variables on the causal pathway)
+- Colliders (variables caused by both predictor and outcome)
+- Post-treatment variables
+:::
+
+# Summary and R Commands
+
+## Key Concepts
+
+::: {layout-ncol="2"}
+### Statistical Concepts
+
+- Multiple regression coefficients
+- Holding constant / controlling for
+- Categorical predictors (dummies)
+- Interactions
+- Confounding
+- Prediction vs inference
+
+### Bayesian Additions
+
+- Prior distributions
+- Posterior distributions
+- Prior predictive checks
+- Posterior predictive checks
+- MCMC diagnostics
+:::
+
+## Essential R Commands
+
+```{r}
+#| echo: true
+#| eval: false
+# Frequentist
+lm(y ~ x1 + x2 + x3, data = df)
+lm(y ~ x1 * x2, data = df)  # With interaction
+
+# Bayesian
+stan_glm(y ~ x1 + x2, data = df, 
+         prior = normal(0, 2.5))
+
+# Predictions
+predict(fit, newdata = new)
+posterior_linpred(fit, newdata = new)
+posterior_predict(fit, newdata = new)
+
+# Diagnostics
+pp_check(fit)
+prior_summary(fit)
+```
+
+## Formula Syntax Reference
+
+| Formula | Meaning |
+|---------|---------|
+| `y ~ x1 + x2` | Main effects only |
+| `y ~ x1:x2` | Interaction only |
+| `y ~ x1 * x2` | Main effects + interaction |
+| `y ~ factor(x)` | Categorical with dummies |
+| `y ~ x1 + I(x1^2)` | Polynomial term |
+
+## Next Week
+
+**Week 8: Model Diagnostics and Communication**
+
+- Checking regression assumptions
+- Creating publication-quality tables
+- Communicating statistical results
+- Variable transformations
+
+. . .
+
+**Readings:**
+
+- TSwD Ch 5.3-5.4, Ch 4
+- ROS Ch 11-12
+
+## References
+
+::: {#refs}
+:::

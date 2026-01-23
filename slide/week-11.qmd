@@ -1,0 +1,955 @@
+---
+title: "Week 11</br>Surveys and Experimental Design"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(knitr)
+set.seed(853)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Understand the principles of randomised controlled trials (RCTs)
+- Design and analyse survey data
+- Apply survey weights appropriately
+- Use poststratification for inference
+- Understand ethical foundations of experimental research
+- Calculate sample sizes for research designs
+
+::: notes
+This week bridges experimental design with survey methodology - two fundamental approaches to data collection in social sciences.
+:::
+
+## This Week's Readings
+
+::: {layout-ncol="2"}
+### TSwD Chapter 8
+
+- 8.2 Field experiments and RCTs
+- 8.3 Surveys
+- 8.4 RCT examples
+
+### ROS Chapters 16-17
+
+- Ch 16: Design and sample size decisions
+- Ch 17: Poststratification and missing-data imputation
+:::
+
+# Randomised Controlled Trials
+
+## Why Experiments Matter
+
+::: callout-important
+### The Credibility Revolution
+
+Economics and social sciences went through a "credibility revolution" in the 2000s, with increased focus on research design and causal inference.
+:::
+
+The key challenge: **establishing the counterfactual**
+
+- What would have happened in the absence of the treatment?
+- Randomisation helps us create valid comparison groups
+
+::: notes
+The credibility revolution refers to the shift toward more rigorous research designs that can support causal claims.
+:::
+
+## The Logic of Randomisation
+
+If we randomly divide a population into two groups:
+
+1. Both groups should have the **same characteristics** as the population
+2. Any difference between groups after treatment can be attributed to the treatment
+3. This addresses both **observed** and **unobserved** confounders
+
+. . .
+
+::: callout-note
+### Key Insight
+
+Randomisation creates groups that are similar on variables we measure AND variables we don't measure.
+:::
+
+## Treatment and Control Groups
+
+::: columns
+::: {.column width="50%"}
+### Internal Validity
+
+- Treatment and control groups are the same in all ways except for the treatment
+- Our control works as a proper counterfactual
+- Results speak to differences *within* the study
+:::
+
+::: {.column width="50%"}
+### External Validity
+
+- The experimental sample represents the broader population
+- Experimental conditions reflect real-world settings
+- Results generalise *outside* the study
+:::
+:::
+
+::: footer
+Randomisation is needed twice: into the study AND between treatment/control
+:::
+
+## Average Treatment Effect (ATE)
+
+For a binary treatment:
+
+$$\text{ATE} = \mathbb{E}[Y | t = 1] - \mathbb{E}[Y | t = 0]$$
+
+Where:
+
+- $Y$ is the outcome of interest
+- $t = 1$ indicates the treatment group
+- $t = 0$ indicates the control group
+
+The ATE is simply the difference between two conditional expectations.
+
+## Simulating a Randomised Experiment
+
+```{r}
+#| output-location: column
+# Simulate treatment effect
+set.seed(853)
+ate_example <- tibble(
+  person = 1:1000,
+  treated = sample(
+    c("Yes", "No"), 
+    size = 1000, 
+    replace = TRUE
+  )
+) |>
+  mutate(outcome = case_when(
+    treated == "No" ~ rnorm(n(), 5, 1),
+    treated == "Yes" ~ rnorm(n(), 6, 1)
+  ))
+
+# View the data
+ate_example |> head()
+```
+
+::: notes
+We simulate data where treatment adds 1 unit to the outcome on average.
+:::
+
+## Visualising the Treatment Effect
+
+```{r}
+#| echo: false
+#| fig-height: 5
+ate_example |>
+  ggplot(aes(x = outcome, fill = treated)) +
+  geom_histogram(position = "dodge2", binwidth = 0.2, alpha = 0.8) +
+  theme_minimal(base_size = 16) +
+  labs(x = "Outcome", y = "Number of people", fill = "Treated?") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+```
+
+## Estimating the ATE
+
+```{r}
+ate_example |>
+  summarise(
+    mean_outcome = mean(outcome),
+    sd_outcome = sd(outcome),
+    n = n(),
+    .by = treated
+  )
+```
+
+. . .
+
+The estimated treatment effect is approximately **1 unit** — matching what we simulated!
+
+## Blinding in Experiments
+
+::: callout-tip
+### Best Practice
+
+- **Single-blind**: Participant doesn't know their group assignment
+- **Double-blind**: Neither participant nor researcher knows
+:::
+
+Why does blinding matter?
+
+- Prevents **placebo effects** from participants
+- Prevents **experimenter bias** from researchers
+- Particularly important for subjective outcomes
+
+::: notes
+Double-blinding is the gold standard but not always possible in social science research.
+:::
+
+# Ethical Foundations of Experimental Research
+
+## The Tuskegee Syphilis Study
+
+::: callout-warning
+### Historical Case Study
+
+From 1932-1972, 400 Black Americans with syphilis were:
+
+- Not given appropriate treatment
+- Not informed they had syphilis
+- Actively prevented from receiving treatment elsewhere
+:::
+
+Consequences extended beyond study participants — associated with decreased life expectancy of up to 1.5 years for Black men in the region due to medical mistrust.
+
+::: footer
+Led to establishment of Institutional Review Boards (IRBs) in the US
+:::
+
+## Key Ethical Principles
+
+1. **Informed Consent**: Participants must understand what they're agreeing to
+
+2. **Equipoise**: Genuine uncertainty about treatment effectiveness must exist
+
+3. **No Unnecessary Harm**: If evidence accumulates, stopping rules should apply
+
+4. **Fair Selection**: Research burdens and benefits should be distributed fairly
+
+::: notes
+These principles now guide all human subjects research through ethics review processes.
+:::
+
+## ECMO Case Study: When Equipoise Breaks Down
+
+The ECMO (Extracorporeal Membrane Oxygenation) experiment raised important questions:
+
+- All 9 treated infants survived vs 6 of 10 controls
+- Should randomisation continue when early results are dramatic?
+- Berry (1989) argued equipoise never existed — prior evidence was already strong
+
+::: callout-important
+### Lesson
+
+Early success can undermine equipoise and make continued randomisation unethical.
+:::
+
+# Survey Design and Analysis
+
+## Types of Survey Administration
+
+::: {layout-ncol="3"}
+### Face-to-Face
+
+- Historically dominant
+- High response rates
+- Interviewer effects
+- Expensive
+
+### Telephone
+
+- Mid-20th century
+- Random digit dialling
+- Declining response rates
+- Moderate cost
+
+### Internet
+
+- Current dominant mode
+- Low participation rates
+- Self-selection issues
+- Low cost
+:::
+
+::: footer
+Internet surveys now dominate but require careful attention to sampling and weighting
+:::
+
+## Key Principles of Survey Design
+
+::: callout-tip
+### Respondent-Centred Design
+
+Every decision should keep the respondent front-of-mind
+:::
+
+Essential elements:
+
+- Questions must be **relevant** and **answerable**
+- Use appropriate **language** for your audience
+- Minimise **cognitive load**
+- Group questions by **topic** with logical flow
+- Always **pilot test** your survey
+
+## Question Types
+
+::: columns
+::: {.column width="50%"}
+### Multiple Choice
+
+- Small number of clear options
+- Mutually exclusive responses
+- Collectively exhaustive categories
+- Signal clearly if multiple selections allowed
+:::
+
+::: {.column width="50%"}
+### Open Text
+
+- Many potential answers
+- Increases respondent time
+- Increases analysis time
+- Better for sensitive topics
+:::
+:::
+
+::: notes
+Choose question types to minimise both measurement error and respondent burden.
+:::
+
+## Survey Introduction Requirements
+
+Every survey needs:
+
+1. **Title** of the survey
+2. **Who** is conducting it
+3. **Contact details** for questions
+4. **Purpose** of the research
+5. **Confidentiality** protections
+6. **Ethics approval** information
+
+::: callout-warning
+### Critical
+
+Never skip ethics review! All university research involving human participants requires approval.
+:::
+
+## Asking About Sensitive Topics
+
+For sexual orientation (recommended approach):
+
+> "Which of the following best represents how you think of yourself?"
+>
+> a) Gay or lesbian
+> b) Straight, that is not gay or lesbian
+> c) Bisexual
+> d) I use a different term [free-text]
+> e) I don't know
+
+::: footer
+Based on White House (2023) best practice recommendations
+:::
+
+## Asking About Gender Identity
+
+Multi-question approach:
+
+> **Question 1**: "What sex were you assigned at birth, on your original birth certificate?"
+> a) Female, b) Male
+
+> **Question 2**: "How do you currently describe yourself (mark all that apply)?"
+> a) Female, b) Male, c) Transgender, d) I use a different term [free-text]
+
+::: notes
+Best practices in this area continue to evolve — stay current with guidelines.
+:::
+
+# Design and Sample Size Decisions
+
+## The Problem with Statistical Power
+
+::: callout-important
+### Common Misconception
+
+"A statistically significant result from a low-power study is especially impressive because it beat the odds."
+:::
+
+**Reality**: In low-power studies, statistically significant results are likely to be:
+
+- **Wrong in direction** (Type S error)
+- **Vastly overestimated** (Type M error)
+- Unlikely to replicate
+
+## The Winner's Curse
+
+```{r}
+#| echo: false
+#| fig-height: 5
+# Illustrate the winner's curse
+x <- seq(-0.3, 0.3, length.out = 1000)
+true_effect <- 0.02
+se <- 0.081
+
+df <- tibble(
+  x = x,
+  density = dnorm(x, mean = true_effect, sd = se)
+)
+
+ggplot(df, aes(x = x, y = density)) +
+  geom_line(linewidth = 1) +
+  geom_vline(xintercept = true_effect, linetype = "dashed", colour = "blue") +
+  geom_vline(xintercept = c(-2*se, 2*se), linetype = "dotted", colour = "red") +
+  geom_area(data = filter(df, x > 2*se), fill = "red", alpha = 0.3) +
+  geom_area(data = filter(df, x < -2*se), fill = "red", alpha = 0.3) +
+  annotate("text", x = true_effect, y = max(df$density)*1.1, 
+           label = "True effect\n(2%)", colour = "blue", size = 4) +
+  theme_minimal(base_size = 14) +
+  labs(x = "Estimated Effect Size", y = "Density",
+       title = "Distribution of estimates when true effect is small",
+       subtitle = "Red shaded areas show 'statistically significant' results")
+```
+
+## Type M and Type S Errors
+
+::: columns
+::: {.column width="50%"}
+### Type M Error
+
+**Magnitude** error
+
+- Estimate is much larger than true effect
+- Common when signal is low, noise is high
+- Statistically significant results are filtered for being large
+:::
+
+::: {.column width="50%"}
+### Type S Error
+
+**Sign** error
+
+- Estimate has the wrong direction
+- More likely in low-power studies
+- Can lead to completely wrong conclusions
+:::
+:::
+
+::: footer
+See Gelman & Carlin (2014) for more on design analysis
+:::
+
+## Sample Size Calculations: The Basics
+
+For estimating a proportion $p$ with standard error no worse than $s.e.$:
+
+$$n \geq \left(\frac{0.5}{s.e.}\right)^2$$
+
+**Example**: To estimate a proportion within ±5 percentage points:
+
+$$n \geq \left(\frac{0.5}{0.05}\right)^2 = 100$$
+
+::: notes
+The 0.5 value is conservative — it gives the maximum standard error regardless of the true proportion.
+:::
+
+## Sample Size for 80% Power
+
+To achieve 80% power, the true effect must be **2.8 standard errors** from zero:
+
+- 1.96 for the 95% confidence interval
+- 0.84 for the 80th percentile of the normal distribution
+- Total: 1.96 + 0.84 = 2.8
+
+. . .
+
+**Required sample size**:
+
+$$n = \left(\frac{2.8 \times 0.5}{p - p_0}\right)^2$$
+
+Where $p$ is the hypothesised proportion and $p_0$ is the null value.
+
+## Sample Size Example: Death Penalty Support
+
+Suppose we want to demonstrate that more than 50% support the death penalty, assuming true support is 60%.
+
+```{r}
+# Calculate required sample size
+effect_size <- 0.60 - 0.50  # 10 percentage points
+se_coefficient <- 2.8  # For 80% power
+max_se <- 0.5  # Conservative standard error
+
+n_required <- (se_coefficient * max_se / effect_size)^2
+cat("Required sample size:", ceiling(n_required))
+```
+
+::: notes
+With n=196, we have 80% power to detect a true proportion of 0.6 as different from 0.5.
+:::
+
+## Comparing Two Groups
+
+For comparing proportions between two groups of equal size $n/2$:
+
+$$s.e. = \frac{1}{\sqrt{n}}$$
+
+**Example**: US vs Canada death penalty support (10% difference):
+
+```{r}
+# Sample size for comparing two proportions
+effect_size <- 0.10
+se_coefficient <- 2.8
+
+n_required <- (se_coefficient / effect_size)^2
+cat("Total sample needed:", ceiling(n_required), 
+    "\nPer country:", ceiling(n_required/2))
+```
+
+## Interactions Require Larger Samples
+
+::: callout-warning
+### Key Rule
+
+You need **4 times** the sample size to estimate an interaction that is the same size as the main effect.
+:::
+
+Why?
+
+- Main effect: Compare treatment vs control across all data
+- Interaction: Compare differences within subgroups
+- Standard error of interaction ≈ 2× standard error of main effect
+
+. . .
+
+If interaction is **half** the size of main effect → need **16 times** the sample!
+
+## Fake-Data Simulation for Design
+
+```{r}
+# Simulate an experiment
+n <- 100
+y_if_control <- rnorm(n, 60, 20)
+y_if_treated <- y_if_control + 5  # True effect = 5 points
+
+# Randomise treatment
+z <- sample(rep(c(0, 1), n/2))
+y <- ifelse(z == 1, y_if_treated, y_if_control)
+
+# Estimate effect
+diff <- mean(y[z == 1]) - mean(y[z == 0])
+se_diff <- sqrt(var(y[z == 0])/sum(z == 0) + var(y[z == 1])/sum(z == 1))
+cat("Estimated effect:", round(diff, 1), "± SE:", round(se_diff, 1))
+```
+
+::: notes
+Run this multiple times to see how estimates vary around the true effect of 5.
+:::
+
+# Poststratification
+
+## What is Poststratification?
+
+::: callout-note
+### Definition
+
+**Poststratification** adjusts survey estimates to match known population characteristics by weighting responses within demographic cells.
+:::
+
+Why do we need it?
+
+- Survey samples are rarely perfectly representative
+- Known discrepancies can be corrected
+- Combines regression modelling with population data
+
+## The Basic Idea
+
+1. **Fit a regression** predicting outcome from demographics
+2. **Make predictions** for all demographic cells
+3. **Weight predictions** by population cell sizes
+4. **Sum** to get population estimate
+
+$$\hat{\theta}_{pop} = \sum_{j=1}^{J} \frac{N_j}{N} \hat{\theta}_j$$
+
+Where $N_j$ is the population in cell $j$ and $\hat{\theta}_j$ is the cell estimate.
+
+## Example: Adjusting for Party ID
+
+Suppose a survey over-samples Democrats:
+
+| Group | Sample % | Population % |
+|-------|----------|--------------|
+| Republican | 33% | 33% |
+| Democrat | 40% | 36% |
+| Other | 27% | 31% |
+
+Raw survey: 45% Trump support
+
+. . .
+
+**Poststratified estimate**:
+$$0.33 \times 0.91 + 0.36 \times 0.05 + 0.31 \times 0.49 = 0.47$$
+
+## Poststratification in R
+
+```{r}
+# Set up poststratification data
+poststrat_data <- data.frame(
+  pid = c("Republican", "Democrat", "Independent"),
+  N = c(0.33, 0.36, 0.31),
+  trump_support = c(0.91, 0.05, 0.49)
+)
+
+# Calculate poststratified estimate
+poststrat_est <- sum(poststrat_data$N * poststrat_data$trump_support) / 
+                 sum(poststrat_data$N)
+cat("Poststratified Trump support:", round(poststrat_est * 100, 1), "%")
+```
+
+## The Xbox Survey Example
+
+::: columns
+::: {.column width="50%"}
+### The Problem
+
+- Xbox gaming platform survey before 2012 US election
+- Sample: young, male, less educated
+- Raw estimate: Obama losing badly!
+:::
+
+::: {.column width="50%"}
+### The Solution
+
+- Regression on demographics
+- Poststratification to voter population
+- Result: Accurate election prediction
+:::
+:::
+
+::: footer
+Demonstrates that even highly non-representative samples can yield accurate estimates with proper adjustment
+:::
+
+## Setting Up Poststratification Cells
+
+```{r}
+# Create poststratification table
+J <- c(2, 4, 4)  # sex, age, ethnicity levels
+poststrat <- expand.grid(
+  sex = 1:J[1],
+  age = 1:J[2],
+  eth = 1:J[3]
+)
+
+# Add population proportions (simplified)
+p_sex <- c(0.52, 0.48)
+p_age <- c(0.2, 0.25, 0.3, 0.25)
+p_eth <- c(0.7, 0.1, 0.1, 0.1)
+
+poststrat$N <- 250e6 * p_sex[poststrat$sex] * 
+               p_age[poststrat$age] * p_eth[poststrat$eth]
+
+head(poststrat)
+```
+
+# Missing Data
+
+## Why Missing Data Matters
+
+Missing data is nearly universal in real research:
+
+- Survey nonresponse
+- Incomplete records
+- Measurement failures
+- Attrition from studies
+
+::: callout-important
+### Key Question
+
+Why are the data missing? The answer determines how we should handle them.
+:::
+
+## Missing Data Mechanisms
+
+::: {layout-ncol="2"}
+### Missing Completely at Random (MCAR)
+
+Probability of missingness is the same for all units
+
+- Safe to exclude missing cases
+- **Rare in practice**
+
+### Missing at Random (MAR)
+
+Missingness depends on **observed** variables
+
+- Can adjust using those variables
+- **Most common assumption**
+:::
+
+## Missing Data Mechanisms (cont.)
+
+::: {layout-ncol="2"}
+### Depends on Unobserved
+
+Missingness depends on unrecorded information
+
+- Must model or accept bias
+- **Common and problematic**
+
+### Depends on Missing Value
+
+Missingness depends on the value itself
+
+- Called "censoring" in extreme case
+- **Requires explicit modelling**
+:::
+
+## Example: Survey Nonresponse
+
+The Social Indicators Survey found:
+
+- 90% of African Americans reported earnings
+- Only 81% of whites reported earnings
+
+::: callout-warning
+### Implication
+
+Earnings data are NOT missing completely at random. Any analysis must account for ethnicity to avoid bias.
+:::
+
+## Simple Approaches (Often Problematic)
+
+| Approach | Problem |
+|----------|---------|
+| Complete-case analysis | Loses data, potential bias |
+| Available-case analysis | Inconsistent subsets |
+| Mean imputation | Distorts distribution, underestimates variance |
+| Last value carried forward | Can be anti-conservative |
+
+::: notes
+These simple approaches are often used but can lead to serious problems.
+:::
+
+## Random Imputation
+
+Better approach: **Impute from a predictive model**
+
+1. Fit regression to observed cases
+2. Generate predictions for missing cases
+3. Add random error to predictions
+4. Use imputed values in analysis
+
+::: callout-tip
+### Key Insight
+
+Deterministic imputation (using just predictions) underestimates variance. **Always add random error**.
+:::
+
+## Imputation in R
+
+```{r}
+#| eval: false
+# Fit model to observed data
+fit_imp <- lm(earnings ~ male + age + education + ethnicity,
+              data = survey, subset = !is.na(earnings))
+
+# Generate predictions with uncertainty
+pred <- predict(fit_imp, newdata = survey, se.fit = TRUE)
+
+# Random imputation
+survey$earnings_imputed <- ifelse(
+  is.na(survey$earnings),
+  rnorm(nrow(survey), pred$fit, pred$se.fit),
+  survey$earnings
+)
+```
+
+## Multiple Imputation
+
+Create **multiple** (e.g., 5) imputed datasets, each with different random values:
+
+1. Analyse each dataset separately
+2. Pool results across datasets
+
+**Combining estimates**:
+
+- Point estimate: average across imputations
+- Standard error: combines within and between imputation variance
+
+$$SE = \sqrt{W + \left(1 + \frac{1}{M}\right)B}$$
+
+## Two-Stage Imputation
+
+For variables that can be zero or positive (like earnings):
+
+**Stage 1**: Logistic regression to impute whether value is positive
+
+**Stage 2**: Linear regression to impute positive values
+
+```{r}
+#| eval: false
+# Stage 1: Is earnings positive?
+fit_positive <- glm((earnings > 0) ~ predictors, 
+                    family = binomial, data = survey)
+
+# Stage 2: What is earnings (if positive)?
+fit_amount <- lm(log(earnings) ~ predictors, 
+                 data = survey, subset = earnings > 0)
+```
+
+# RCT Examples in Practice
+
+## The Oregon Health Insurance Experiment
+
+::: columns
+::: {.column width="60%"}
+**Design**:
+
+- Lottery for 10,000 Medicaid places
+- 89,824 people signed up
+- 35,169 randomly selected
+- 30% eligible and enrolled
+:::
+
+::: {.column width="40%"}
+**Findings**:
+
+- Treatment group used more healthcare
+- Lower out-of-pocket expenses
+- Better reported physical and mental health
+:::
+:::
+
+::: footer
+Finkelstein et al. (2012) - A landmark study in health economics
+:::
+
+## Oregon Health Insurance: The Model
+
+$$y_{ihj} = \beta_0 + \beta_1 \text{Lottery} + X_{ih}\beta_2 + V_{ih}\beta_3 + \epsilon_{ihj}$$
+
+Where:
+
+- $y_{ihj}$ = outcome $j$ for individual $i$ in household $h$
+- $\text{Lottery}$ = indicator for winning the lottery
+- $X_{ih}$ = variables correlated with treatment probability
+- $V_{ih}$ = demographic controls
+
+$\beta_1$ is the **treatment effect** of interest.
+
+## Civic Honesty Around the Globe
+
+::: columns
+::: {.column width="50%"}
+**Design**:
+
+- 17,303 wallets "lost" in 355 cities
+- 40 countries
+- Contained money or not
+- Measured whether returned
+:::
+
+::: {.column width="50%"}
+**Findings**:
+
+- Wallets with money MORE likely to be returned
+- Large variation across countries
+- Higher amounts → even more returns
+:::
+:::
+
+::: footer
+Cohn et al. (2019) - Published in Science
+:::
+
+## Civic Honesty: Results
+
+```{r}
+#| echo: false
+#| fig-height: 5
+# Simulated results inspired by the paper
+countries <- c("Switzerland", "Norway", "Netherlands", "Australia", "UK", "USA", 
+               "Brazil", "China", "Mexico", "Peru")
+no_money <- c(70, 65, 62, 58, 50, 50, 38, 18, 28, 15)
+with_money <- c(85, 82, 78, 72, 58, 57, 48, 22, 35, 18)
+
+honesty_data <- tibble(
+  Country = rep(countries, 2),
+  Money = rep(c("No", "Yes"), each = 10),
+  Rate = c(no_money, with_money)
+)
+
+ggplot(honesty_data, aes(x = Rate, y = reorder(Country, Rate), colour = Money)) +
+  geom_point(size = 3) +
+  theme_minimal(base_size = 14) +
+  labs(x = "Reporting Rate (%)", y = "", colour = "Contained Money?") +
+  scale_colour_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+```
+
+# Summary and Key Takeaways
+
+## Key Concepts Covered
+
+::: {layout-ncol="2"}
+### Experimental Design
+
+- Randomisation creates comparable groups
+- Internal vs external validity
+- Ethical foundations
+- Power and sample size
+
+### Survey Methods
+
+- Survey design principles
+- Poststratification
+- Missing data mechanisms
+- Multiple imputation
+:::
+
+## Practical Guidelines
+
+1. **Always calculate sample size** before collecting data
+2. **Consider power** — low-power studies can mislead
+3. **Plan for missing data** — it will happen
+4. **Use poststratification** when sample differs from population
+5. **Follow ethical guidelines** — protect participants
+
+## R Functions to Know
+
+| Function | Purpose |
+|----------|---------|
+| `sample()` | Random assignment |
+| `lm()`, `glm()` | Regression models |
+| `predict()` | Generate predictions |
+| `posterior_predict()` | Bayesian prediction |
+| `rnorm()`, `rbinom()` | Random imputation |
+
+## Next Week
+
+**Week 12: Causal Inference from Observational Data**
+
+- Directed Acyclic Graphs (DAGs)
+- Difference-in-differences
+- Propensity score matching
+- Regression discontinuity
+- Instrumental variables
+
+## References
+
+::: {#refs}
+:::

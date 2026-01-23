@@ -1,0 +1,1042 @@
+---
+title: "Week 12</br>Causal Inference from Observational Data"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(ggdag)
+library(MatchIt)
+library(modelsummary)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Understand and create Directed Acyclic Graphs (DAGs)
+- Recognise confounders, mediators, and colliders
+- Apply difference-in-differences estimation
+- Use propensity score matching to balance treatment groups
+- Implement regression discontinuity designs
+- Understand the instrumental variables approach
+
+::: footer
+**Readings**: TSwD Ch 14; ROS Ch 18-19
+:::
+
+## This Week's Readings
+
+::: {layout-ncol="2"}
+### TSwD Chapter 14
+
+- 14.2 Directed Acyclic Graphs (DAGs)
+- 14.4 Difference-in-differences
+- 14.5 Propensity score matching
+- 14.6 Regression discontinuity design
+- 14.7 Instrumental variables
+
+### ROS Chapters 18-19
+
+- Ch 18: Causal inference and randomised experiments
+- Ch 19: Causal inference using regression on the treatment variable
+:::
+
+# The Challenge of Causal Inference
+
+## From Experiments to Observational Data
+
+::: callout-important
+### The Fundamental Problem of Causal Inference
+
+We can never observe both potential outcomes for the same unit—what happened AND what would have happened under a different treatment.
+:::
+
+. . .
+
+In randomised experiments, random assignment ensures treatment and control groups are comparable.
+
+. . .
+
+But what if we **cannot** randomise? We need methods to estimate causal effects from **observational data**.
+
+::: notes
+Explain that experiments are the gold standard but often impractical, unethical, or impossible. This week we learn methods that can help us make causal claims from observational data—but each requires strong assumptions.
+:::
+
+## Potential Outcomes Framework
+
+For any unit $i$, we define:
+
+- $y_i^0$ = outcome if unit receives control
+- $y_i^1$ = outcome if unit receives treatment
+- $\tau_i = y_i^1 - y_i^0$ = individual treatment effect
+
+. . .
+
+**The problem**: We only ever observe ONE of these potential outcomes:
+
+$$y_i = y_i^0(1 - z_i) + y_i^1 z_i$$
+
+where $z_i$ indicates treatment assignment.
+
+::: notes
+This notation from ROS Chapter 18 helps us think precisely about what we're trying to estimate. The causal effect is the difference between what happened and what would have happened—but we can never see both.
+:::
+
+## Average Treatment Effects
+
+We typically estimate **average** causal effects:
+
+| Estimand | Definition |
+|----------|------------|
+| **SATE** (Sample Average Treatment Effect) | $\frac{1}{n}\sum_{i=1}^{n}(y_i^1 - y_i^0)$ |
+| **PATE** (Population Average Treatment Effect) | $\frac{1}{N}\sum_{i=1}^{N}(y_i^1 - y_i^0)$ |
+| **CATE** (Conditional Average Treatment Effect) | Average effect for a subgroup |
+
+::: notes
+Different research questions call for different estimands. SATE focuses on the sample we have; PATE requires generalising to a broader population; CATE allows us to examine heterogeneous effects across groups.
+:::
+
+## Why Simple Comparisons Fail
+
+::: callout-warning
+### Self-Selection Bias
+
+When treatment groups differ systematically in ways that also affect the outcome, simple comparisons are misleading.
+:::
+
+**Example**: Comparing outcomes of people who chose to take supplements vs. those who didn't.
+
+- Those who take supplements may be more health-conscious
+- They may have higher incomes, better diets, more exercise
+- Any observed difference conflates treatment effect with pre-existing differences
+
+::: notes
+This is the core problem with observational data. We need methods to account for these pre-existing differences.
+:::
+
+# Directed Acyclic Graphs (DAGs)
+
+## What Are DAGs?
+
+**Directed Acyclic Graphs** are visual representations of causal relationships:
+
+- **Nodes** represent variables
+- **Arrows** represent causal relationships
+- **Acyclic** means no feedback loops
+
+. . .
+
+```{dot}
+//| fig-width: 4
+//| fig-height: 2
+digraph D {
+  rankdir=LR;
+  node [shape=plaintext, fontname="helvetica"];
+  X -> Y;
+}
+```
+
+This DAG says: "X causes Y"
+
+::: footer
+DAGs help us think clearly about causal structures and determine what to control for.
+:::
+
+## Building DAGs in R
+
+```{r}
+#| output-location: column
+#| fig-height: 5
+library(ggdag)
+
+simple_dag <- dagify(
+  Y ~ X,
+  coords = list(
+    x = c(X = 0, Y = 1),
+    y = c(X = 0, Y = 0)
+  )
+)
+
+ggdag(simple_dag) +
+  theme_dag()
+```
+
+::: notes
+The ggdag package makes it easy to create and analyse DAGs in R. You can also use the dagitty package directly.
+:::
+
+## Confounders
+
+A **confounder** is a variable that:
+
+1. Causes the treatment variable
+2. Causes the outcome variable
+
+```{dot}
+//| fig-width: 5
+//| fig-height: 3
+digraph D {
+  node [shape=plaintext, fontname="helvetica"];
+  Education [label="Education"];
+  Income [label="Income"];
+  Happiness [label="Happiness"];
+  
+  {rank=same Income Happiness};
+  
+  Education -> Income;
+  Education -> Happiness;
+  Income -> Happiness;
+}
+```
+
+::: callout-important
+### Confounders must be controlled for!
+
+Failing to adjust for confounders creates a "backdoor path" that biases our causal estimate.
+:::
+
+::: notes
+In this example, if we want to estimate the causal effect of income on happiness, we must control for education because it affects both.
+:::
+
+## Confounder Example in R
+
+```{r}
+#| output-location: column
+#| fig-height: 5
+confounder_dag <- dagify(
+  Happiness ~ Income + Education,
+  Income ~ Education,
+  exposure = "Income",
+  outcome = "Happiness"
+)
+
+ggdag_status(confounder_dag) +
+  theme_dag() +
+  guides(colour = "none")
+```
+
+::: notes
+The exposure is what we're interested in (Income), the outcome is what we're trying to explain (Happiness), and Education is a confounder.
+:::
+
+## Mediators
+
+A **mediator** is a variable that lies on the causal pathway between treatment and outcome:
+
+```{dot}
+//| fig-width: 5
+//| fig-height: 3
+digraph D {
+  node [shape=plaintext, fontname="helvetica"];
+  Income [label="Income"];
+  Children [label="Children"];
+  Happiness [label="Happiness"];
+  
+  {rank=same Income Happiness};
+  
+  Income -> Happiness;
+  Income -> Children;
+  Children -> Happiness;
+}
+```
+
+::: callout-warning
+### Do NOT control for mediators!
+
+Controlling for a mediator blocks part of the causal effect you're trying to estimate.
+:::
+
+::: notes
+If income affects happiness partly through enabling people to have children, controlling for children removes part of income's true effect.
+:::
+
+## Colliders
+
+A **collider** is a variable caused by both the treatment and the outcome:
+
+```{dot}
+//| fig-width: 5
+//| fig-height: 3
+digraph D {
+  node [shape=plaintext, fontname="helvetica"];
+  Income [label="Income"];
+  Exercise [label="Exercise"];
+  Happiness [label="Happiness"];
+  
+  {rank=same Income Happiness};
+  
+  Income -> Happiness;
+  Income -> Exercise;
+  Happiness -> Exercise;
+}
+```
+
+::: callout-warning
+### Do NOT control for colliders!
+
+Controlling for a collider **opens** a spurious path and creates bias where none existed.
+:::
+
+::: notes
+This is Berkson's paradox. If we only look at people who exercise, we might find a negative correlation between income and happiness because among exercisers, if someone exercises despite being unhappy, they probably have high income.
+:::
+
+## DAG Summary: What to Control For?
+
+| Variable Type | Relationship | Control for it? |
+|---------------|--------------|-----------------|
+| **Confounder** | Causes both treatment and outcome | ✓ Yes |
+| **Mediator** | On the causal path from treatment to outcome | ✗ No |
+| **Collider** | Caused by both treatment and outcome | ✗ No |
+
+. . .
+
+::: callout-tip
+### Key Insight
+
+More controls are not always better! You must think carefully about the causal structure.
+:::
+
+::: notes
+This is perhaps the most important lesson from DAGs. Students often think that controlling for more variables is always better, but controlling for mediators and colliders can actually bias your results.
+:::
+
+# Difference-in-Differences
+
+## The Idea Behind DiD
+
+**Difference-in-differences** compares:
+
+1. Changes over time in a **treatment group**
+2. Changes over time in a **control group**
+
+. . .
+
+The treatment effect = (difference in treatment group) − (difference in control group)
+
+. . .
+
+$$\hat{\tau}_{DiD} = (\bar{Y}_{T,after} - \bar{Y}_{T,before}) - (\bar{Y}_{C,after} - \bar{Y}_{C,before})$$
+
+::: notes
+DiD is powerful because we don't need the treatment and control groups to be identical—we just need their trends to be parallel in the absence of treatment.
+:::
+
+## Visual Intuition for DiD
+
+```{r}
+#| echo: false
+#| fig-height: 5
+did_data <- tibble(
+  time = factor(rep(c("Before", "After"), 2), levels = c("Before", "After")),
+  group = rep(c("Control", "Treatment"), each = 2),
+  outcome = c(5, 6, 8, 12)
+)
+
+counterfactual_data <- tibble(
+  time = factor(c("Before", "After"), levels = c("Before", "After")),
+  outcome = c(8, 9)
+)
+
+ggplot(did_data, aes(x = time, y = outcome, colour = group, group = group)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(size = 4) +
+  geom_line(data = counterfactual_data,
+            aes(x = time, y = outcome, group = 1), 
+            colour = "red", linetype = "dashed", linewidth = 1, inherit.aes = FALSE) +
+  geom_segment(aes(x = "After", xend = "After", y = 9, yend = 12), 
+               colour = "darkgreen", linewidth = 1.5, 
+               arrow = arrow(length = unit(0.3, "cm"), ends = "both"),
+               inherit.aes = FALSE) +
+  annotate("text", x = 2.15, y = 10.5, label = "Treatment\nEffect", colour = "darkgreen", size = 4) +
+  annotate("text", x = 1.5, y = 8.8, label = "Counterfactual", colour = "red", size = 3) +
+  scale_colour_manual(values = c("Control" = "blue", "Treatment" = "red")) +
+  labs(x = "Time Period", y = "Outcome", colour = "Group",
+       title = "Difference-in-Differences") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+The red dashed line shows what would have happened to the treatment group without treatment (the counterfactual). The treatment effect is the difference between observed and counterfactual outcomes.
+:::
+
+## The Parallel Trends Assumption
+
+::: callout-important
+### Critical Assumption
+
+In the absence of treatment, the treatment and control groups would have followed **parallel trends** over time.
+:::
+
+. . .
+
+This assumption:
+
+- Cannot be tested directly (it's about a counterfactual)
+- Can be supported by showing parallel pre-treatment trends
+- Is violated if something else changed for only one group
+
+::: notes
+This is the key assumption for DiD. We can examine pre-treatment trends to see if they're parallel, but we can never prove the assumption is true.
+:::
+
+## DiD in R: Simulated Example
+
+```{r}
+set.seed(853)
+n <- 1000
+
+# Simulate DiD data
+did_sim <- tibble(
+  person = rep(1:n, 2),
+  time = rep(c(0, 1), each = n),
+  treated = rep(sample(0:1, n, replace = TRUE), 2)
+) |>
+  mutate(
+    # Outcome depends on time, treatment group, and their interaction
+    outcome = 5 + 
+      2 * time +           # Time trend
+      3 * treated +        # Group difference
+      4 * time * treated + # Treatment effect!
+      rnorm(n * 2)
+  )
+```
+
+::: notes
+In this simulation, the true treatment effect is 4. The time coefficient captures the general trend, and the treated coefficient captures baseline differences between groups.
+:::
+
+## DiD Regression Model
+
+The DiD model is a regression with an **interaction term**:
+
+$$Y_{it} = \beta_0 + \beta_1 \cdot \text{Time}_t + \beta_2 \cdot \text{Treatment}_i + \beta_3 \cdot (\text{Time} \times \text{Treatment})_{it} + \epsilon_{it}$$
+
+. . .
+
+- $\beta_1$: Time trend for control group
+- $\beta_2$: Baseline difference between groups
+- $\beta_3$: **The treatment effect** (difference-in-differences)
+
+::: notes
+The interaction term is what we care about—it captures the additional change in the treatment group beyond what the control group experienced.
+:::
+
+## DiD Results
+
+```{r}
+did_model <- lm(outcome ~ time * treated, data = did_sim)
+modelsummary(did_model, 
+             coef_rename = c("time" = "Time", 
+                            "treated" = "Treatment Group",
+                            "time:treated" = "DiD Effect (Time × Treatment)"),
+             gof_omit = "IC|Log|F|RMSE")
+```
+
+::: notes
+The coefficient on the interaction term (time:treated) is our estimate of the treatment effect. Here it's approximately 4, which matches our simulated true effect.
+:::
+
+## DiD: Key Assumptions and Threats
+
+**Threats to validity:**
+
+1. **Non-parallel trends**: Groups were already diverging
+2. **Compositional changes**: Who's in each group changes over time
+3. **Spillover effects**: Treatment affects control group
+4. **Anticipation effects**: Behaviour changes before treatment
+
+. . .
+
+::: callout-tip
+### Best Practice
+
+Always visualise pre-treatment trends and discuss why parallel trends is plausible.
+:::
+
+::: notes
+These are the main concerns when using DiD. Students should always examine and discuss these issues in their analyses.
+:::
+
+# Propensity Score Matching
+
+## The Matching Idea
+
+**Goal**: Create treatment and control groups that are similar on observed characteristics.
+
+. . .
+
+**Problem**: With many covariates, exact matching is impossible.
+
+. . .
+
+**Solution**: Match on a single number—the **propensity score**.
+
+$$e(X) = P(\text{Treatment} = 1 | X)$$
+
+The probability of receiving treatment given observed covariates.
+
+::: notes
+Propensity score matching is a dimension reduction technique. Instead of matching on many variables, we match on the probability of treatment.
+:::
+
+## How Propensity Score Matching Works
+
+1. **Estimate** the propensity score (usually with logistic regression)
+2. **Match** treated units to control units with similar propensity scores
+3. **Check balance** on covariates between matched groups
+4. **Estimate** the treatment effect using the matched sample
+
+::: notes
+These four steps are the standard workflow for propensity score matching. The balance check is crucial—if covariates remain unbalanced after matching, the method isn't working well.
+:::
+
+## PSM Example: Simulating Data
+
+```{r}
+set.seed(853)
+n <- 1000
+
+psm_data <- tibble(
+  id = 1:n,
+  age = sample(18:65, n, replace = TRUE),
+  income = rnorm(n, 50000, 15000)
+) |>
+  mutate(
+    # Treatment probability depends on age and income
+    prop_score = plogis(-2 + 0.03 * age + 0.00003 * income),
+    treatment = rbinom(n, 1, prop_score),
+    # Outcome depends on treatment AND confounders
+    outcome = 10 + 5 * treatment + 0.1 * age + 0.0001 * income + rnorm(n, 0, 5)
+  )
+```
+
+::: notes
+In this simulation, both age and income affect treatment probability AND the outcome—they're confounders. The true treatment effect is 5.
+:::
+
+## Naive Estimate vs. True Effect
+
+```{r}
+# Naive comparison (biased)
+naive_effect <- mean(psm_data$outcome[psm_data$treatment == 1]) - 
+                mean(psm_data$outcome[psm_data$treatment == 0])
+
+cat("Naive estimate:", round(naive_effect, 2), "\n")
+cat("True effect: 5")
+```
+
+::: callout-warning
+The naive estimate is biased because treated and control groups differ on age and income!
+:::
+
+::: notes
+Without adjustment, we get a biased estimate because older, higher-income people are both more likely to be treated AND have higher outcomes regardless of treatment.
+:::
+
+## Using MatchIt in R
+
+```{r}
+library(MatchIt)
+
+# Perform propensity score matching
+matched <- matchit(
+  treatment ~ age + income,
+  data = psm_data,
+  method = "nearest",     # Nearest neighbour matching
+  distance = "glm"        # Logistic regression for propensity score
+)
+
+matched
+```
+
+::: notes
+MatchIt is the standard R package for propensity score matching. It offers many matching methods; nearest neighbour is the simplest.
+:::
+
+## Checking Balance
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+# Visual balance check
+plot(matched, type = "jitter", 
+     interactive = FALSE)
+```
+
+::: notes
+This plot shows the distribution of propensity scores before and after matching. Good matching produces similar distributions in the treated and control groups.
+:::
+
+## Estimating the Treatment Effect
+
+```{r}
+# Get matched data
+matched_data <- match.data(matched)
+
+# Estimate treatment effect on matched sample
+psm_model <- lm(outcome ~ treatment + age + income, data = matched_data)
+
+modelsummary(psm_model, 
+             coef_rename = c("treatment" = "Treatment Effect"),
+             gof_omit = "IC|Log|F|RMSE")
+```
+
+::: notes
+After matching, the treatment effect estimate should be closer to the true value of 5. We still adjust for age and income to improve precision.
+:::
+
+## PSM Limitations
+
+::: callout-warning
+### Key Limitations
+
+1. **Unobserved confounders**: Can only match on what we observe
+2. **Model dependence**: Results depend on how propensity score is estimated
+3. **Common support**: Need overlap in propensity scores between groups
+:::
+
+. . .
+
+> "Propensity score matching cannot match on unobserved variables... it is difficult to understand why individuals that appear to be so similar would have received different treatments, unless there is something unobserved." — TSwD
+
+::: notes
+These limitations are serious. PSM is not a magic solution—it requires strong assumptions that treatment assignment is "ignorable" given observed covariates.
+:::
+
+# Regression Discontinuity Design
+
+## The RDD Idea
+
+**Regression Discontinuity Design** exploits situations where treatment is assigned based on a **cutoff** in a continuous variable (the "running variable" or "forcing variable").
+
+. . .
+
+**Examples**:
+
+- Students scoring ≥80% get an A
+- Age 21 allows legal drinking
+- Income below threshold qualifies for welfare
+
+. . .
+
+**Key insight**: People just above and just below the cutoff are essentially identical, except for treatment!
+
+::: notes
+RDD is one of the most credible quasi-experimental designs because the assignment mechanism is known and the comparison is very local.
+:::
+
+## Sharp RDD: Visual Intuition
+
+```{r}
+#| echo: false
+#| fig-height: 5
+set.seed(853)
+n <- 500
+
+rdd_data <- tibble(
+  running_var = runif(n, 60, 100),
+  treatment = ifelse(running_var >= 80, 1, 0),
+  outcome = 50 + 0.5 * running_var + 10 * treatment + rnorm(n, 0, 5)
+)
+
+ggplot(rdd_data, aes(x = running_var, y = outcome, colour = factor(treatment))) +
+  geom_point(alpha = 0.5) +
+  geom_vline(xintercept = 80, linetype = "dashed", linewidth = 1) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_colour_manual(values = c("0" = "blue", "1" = "red"),
+                      labels = c("Control", "Treatment")) +
+  labs(x = "Running Variable (e.g., Test Score)", 
+       y = "Outcome",
+       colour = "Group",
+       title = "Regression Discontinuity Design") +
+  annotate("text", x = 80, y = 115, label = "Cutoff", size = 4) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+The jump at the cutoff represents the treatment effect. We're comparing people just to the left and just to the right of the threshold.
+:::
+
+## RDD Model
+
+The basic RDD model:
+
+$$Y_i = \alpha + \tau \cdot \text{Treatment}_i + \beta \cdot \text{RunningVar}_i + \epsilon_i$$
+
+. . .
+
+Or, centring the running variable at the cutoff $c$:
+
+$$Y_i = \alpha + \tau \cdot D_i + \beta \cdot (X_i - c) + \epsilon_i$$
+
+where $D_i = 1$ if $X_i \geq c$.
+
+The coefficient $\tau$ is the **treatment effect at the cutoff**.
+
+::: notes
+Centring at the cutoff makes interpretation easier—the intercept is the expected outcome at the cutoff for the control group, and τ is the jump at the cutoff.
+:::
+
+## RDD in R: Simulated Example
+
+```{r}
+set.seed(853)
+n <- 1000
+
+rdd_sim <- tibble(
+  mark = runif(n, 70, 90),
+  got_scholarship = ifelse(mark >= 80, 1, 0),
+  # True effect of scholarship = 8 points on future performance
+  future_score = 40 + 0.5 * mark + 8 * got_scholarship + rnorm(n, 0, 3)
+)
+```
+
+::: notes
+In this simulation, students with marks ≥80 receive a scholarship. The true effect on future scores is 8 points.
+:::
+
+## Estimating the RDD Effect
+
+```{r}
+# Centre the running variable
+rdd_sim <- rdd_sim |>
+  mutate(mark_centred = mark - 80)
+
+# RDD regression
+rdd_model <- lm(future_score ~ got_scholarship + mark_centred, 
+                data = rdd_sim)
+
+modelsummary(rdd_model,
+             coef_rename = c("got_scholarship" = "Scholarship Effect",
+                            "mark_centred" = "Mark (centred)"),
+             gof_omit = "IC|Log|F|RMSE")
+```
+
+::: notes
+The coefficient on got_scholarship is our estimate of the treatment effect—close to the true value of 8.
+:::
+
+## RDD Assumptions
+
+::: callout-important
+### Key Assumptions
+
+1. **No manipulation**: Units cannot precisely manipulate their running variable to cross the threshold
+2. **Continuity**: The relationship between running variable and outcome is continuous (except for the treatment jump)
+:::
+
+. . .
+
+**Check for manipulation**: Look for bunching just above or below the cutoff.
+
+::: notes
+If people can game the system to get just above the threshold, the design fails. Always check the density of the running variable around the cutoff.
+:::
+
+## RDD: Sharp vs. Fuzzy
+
+| Type | Description |
+|------|-------------|
+| **Sharp RDD** | Treatment perfectly determined by cutoff (everyone above cutoff is treated) |
+| **Fuzzy RDD** | Cutoff changes probability of treatment but doesn't guarantee it |
+
+. . .
+
+Fuzzy RDD requires instrumental variables methods (using the cutoff as an instrument).
+
+::: notes
+Most real-world RDDs are fuzzy. For example, being eligible for a program doesn't mean everyone participates.
+:::
+
+# Instrumental Variables
+
+## The IV Challenge
+
+Sometimes we have:
+
+- Confounders we cannot observe or measure
+- Treatment that is endogenous (correlated with the error term)
+
+. . .
+
+**Solution**: Find an **instrumental variable** that:
+
+1. Is correlated with the treatment (**relevance**)
+2. Affects the outcome ONLY through the treatment (**exclusion restriction**)
+
+::: notes
+IV is perhaps the most challenging method conceptually, but it's powerful when you can find a valid instrument.
+:::
+
+## IV Intuition
+
+```{dot}
+//| fig-width: 6
+//| fig-height: 3
+digraph D {
+  node [shape=plaintext, fontname="helvetica"];
+  
+  Instrument -> Treatment;
+  Treatment -> Outcome;
+  Confounder -> Treatment;
+  Confounder -> Outcome;
+  
+  {rank=same Treatment Outcome};
+}
+```
+
+The instrument provides variation in treatment that is unrelated to the confounder.
+
+::: notes
+The instrument affects the outcome only through its effect on treatment. This allows us to isolate the causal effect of treatment.
+:::
+
+## Classic IV Example: Cigarette Taxes
+
+**Question**: Does smoking cause lung cancer?
+
+. . .
+
+**Problem**: Smokers differ from non-smokers in many ways (confounders).
+
+. . .
+
+**Solution**: Use **cigarette taxes** as an instrument.
+
+- Taxes affect smoking rates (relevance ✓)
+- Taxes don't directly cause cancer (exclusion restriction ✓)
+
+::: notes
+This is the canonical IV example. The key insight is that taxes provide exogenous variation in smoking that's unrelated to the confounders.
+:::
+
+## IV Estimation: Two-Stage Least Squares
+
+**Stage 1**: Regress treatment on instrument
+
+$$\text{Smoking}_i = \alpha_1 + \gamma \cdot \text{Tax}_i + \epsilon_{1i}$$
+
+. . .
+
+**Stage 2**: Regress outcome on predicted treatment
+
+$$\text{Cancer}_i = \alpha_2 + \beta \cdot \widehat{\text{Smoking}}_i + \epsilon_{2i}$$
+
+. . .
+
+The coefficient $\beta$ is the causal effect.
+
+::: notes
+Two-stage least squares (2SLS) is the standard way to implement IV estimation. The predicted values from Stage 1 contain only the "good" variation that comes from the instrument.
+:::
+
+## IV in R: Simulated Example
+
+```{r}
+set.seed(853)
+n <- 2000
+
+iv_sim <- tibble(
+  # Instrument: tax rate (varies by province)
+  tax_rate = sample(c(0.3, 0.4, 0.5), n, replace = TRUE),
+  # Unobserved confounder
+  health_conscious = rnorm(n),
+  # Treatment: affected by tax and confounder
+  smoking = 10 - 5 * tax_rate - 2 * health_conscious + rnorm(n),
+  # Outcome: affected by smoking and confounder
+  # True causal effect of smoking = -3
+  health = 80 - 3 * smoking + 5 * health_conscious + rnorm(n, 0, 5)
+)
+```
+
+::: notes
+In this simulation, health_conscious is an unobserved confounder. People who are more health conscious smoke less AND have better health for other reasons. The true causal effect of smoking on health is -3.
+:::
+
+## Naive vs. IV Estimates
+
+```{r}
+# Naive OLS (biased due to confounding)
+naive_model <- lm(health ~ smoking, data = iv_sim)
+
+# IV estimation using ivreg (or manually)
+library(estimatr)
+iv_model <- iv_robust(health ~ smoking | tax_rate, data = iv_sim)
+
+cat("Naive estimate:", round(coef(naive_model)["smoking"], 2), "\n")
+cat("IV estimate:", round(coef(iv_model)["smoking"], 2), "\n")
+cat("True effect: -3")
+```
+
+::: notes
+The naive estimate is biased away from the true effect because health-conscious people smoke less AND are healthier. The IV estimate using tax as an instrument is closer to the truth.
+:::
+
+## IV Assumptions
+
+::: callout-important
+### Two Critical Assumptions
+
+1. **Relevance**: The instrument must affect the treatment
+   - Can be tested statistically (first stage F-statistic > 10)
+
+2. **Exclusion Restriction**: The instrument affects outcome ONLY through treatment
+   - Cannot be tested—must be argued theoretically
+:::
+
+. . .
+
+Finding valid instruments is **hard**. Many purported instruments fail the exclusion restriction.
+
+::: notes
+The exclusion restriction is the Achilles heel of IV. Weather, for instance, has been used as an instrument for many different things—but this raises concerns about whether all those exclusion restrictions can really hold.
+:::
+
+# Summary and Comparison
+
+## Methods Overview
+
+| Method | Key Assumption | Data Requirement |
+|--------|----------------|------------------|
+| **DiD** | Parallel trends | Before/after data for treatment and control groups |
+| **PSM** | Selection on observables | Rich set of pre-treatment covariates |
+| **RDD** | No manipulation; continuity | Running variable with cutoff |
+| **IV** | Exclusion restriction | Valid instrument |
+
+::: notes
+Each method has strengths and weaknesses. The choice depends on the research question and the data structure available.
+:::
+
+## Decision Framework
+
+```{dot}
+//| fig-width: 7
+//| fig-height: 4
+digraph D {
+  node [shape=box, fontname="helvetica"];
+  
+  Q1 [label="Is there a\nnatural cutoff?"];
+  Q2 [label="Is there a\nvalid instrument?"];
+  Q3 [label="Is there before/after\ndata with control group?"];
+  Q4 [label="Can you measure\nall confounders?"];
+  
+  RDD [label="RDD", shape=ellipse];
+  IV [label="IV", shape=ellipse];
+  DiD [label="DiD", shape=ellipse];
+  PSM [label="PSM", shape=ellipse];
+  Caution [label="Be very\ncautious", shape=ellipse];
+  
+  Q1 -> RDD [label="Yes"];
+  Q1 -> Q2 [label="No"];
+  Q2 -> IV [label="Yes"];
+  Q2 -> Q3 [label="No"];
+  Q3 -> DiD [label="Yes"];
+  Q3 -> Q4 [label="No"];
+  Q4 -> PSM [label="Yes"];
+  Q4 -> Caution [label="No"];
+}
+```
+
+::: notes
+This is a simplified decision tree. In practice, the choice often depends on what's most credible in your specific context.
+:::
+
+## R Packages for Causal Inference
+
+```{r}
+#| eval: false
+# DAGs
+library(ggdag)       # Visualise and analyse DAGs
+library(dagitty)     # DAG algebra
+
+# Difference-in-Differences
+library(did)         # Callaway and Sant'Anna estimator
+library(fixest)      # Fast fixed effects estimation
+
+# Propensity Score Matching
+library(MatchIt)     # Matching methods
+library(cobalt)      # Balance assessment
+
+# Regression Discontinuity
+library(rdrobust)    # Robust RDD estimation
+library(rddensity)   # Manipulation testing
+
+# Instrumental Variables
+library(estimatr)    # iv_robust() function
+library(ivreg)       # 2SLS estimation
+```
+
+::: notes
+These are the key packages for implementing the methods we've covered. Each has extensive documentation and vignettes.
+:::
+
+## Key Takeaways
+
+1. **Causal inference from observational data requires strong assumptions**
+   - No method is a "magic bullet"
+   - Transparency about assumptions is crucial
+
+. . .
+
+2. **DAGs help clarify causal thinking**
+   - Control for confounders, not mediators or colliders
+
+. . .
+
+3. **Choose methods based on your setting**
+   - DiD: Parallel trends plausible
+   - PSM: Selection on observables
+   - RDD: Natural cutoff exists
+   - IV: Valid instrument available
+
+::: notes
+The main message is that all these methods require assumptions that cannot be fully tested. Being transparent and thoughtful about these assumptions is essential for credible causal inference.
+:::
+
+## Next Week
+
+**Week 13: Advanced Applications and Best Practices**
+
+- Data sharing and documentation
+- Cross-validation and model validation
+- Multilevel regression with post-stratification (MRP)
+- Course synthesis and best practices
+
+::: footer
+**Reading**: TSwD Ch 10, 15, 17; ROS Ch 11.8, Appendix B
+:::
+
+## References
+
+::: {#refs}
+:::

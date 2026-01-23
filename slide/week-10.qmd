@@ -1,0 +1,861 @@
+---
+title: "Week 10</br>Count Models and Multilevel Modelling"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(rstanarm)
+library(modelsummary)
+library(MASS)
+library(broom.mixed)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Fit Poisson and negative binomial models for count data
+- Understand and diagnose overdispersion
+- Introduce multilevel/hierarchical models
+- Choose appropriate models for different outcome types
+- Understand link functions in GLMs
+
+::: notes
+Today we extend our regression toolkit to handle count data - things like number of accidents, number of votes, number of occurrences. We'll also introduce the concept of multilevel modelling.
+:::
+
+## This Week's Readings
+
+::: {layout-ncol="2"}
+### TSwD
+
+- Ch 13: Generalized linear models
+  - 13.3 Poisson regression
+  - 13.4 Negative binomial regression
+  - 13.5 Multilevel modelling
+
+### ROS
+
+- Ch 15: Other generalized linear models
+:::
+
+# Count Data
+
+## What is Count Data?
+
+**Count data** are observations that can only take non-negative integer values: 0, 1, 2, 3, ...
+
+. . .
+
+Examples in social science:
+
+- Number of protest events in a country per year
+- Number of children in a household
+- Number of times a voter contacts their representative
+- Number of crimes reported in a neighbourhood
+- Number of A grades awarded in a course
+
+::: notes
+Count data is everywhere in social science research. Unlike continuous data, counts have a natural lower bound of zero and can only be whole numbers.
+:::
+
+## Why Not Use Linear Regression?
+
+Linear regression assumes:
+
+- Continuous outcome variable
+- Normally distributed errors
+- Constant variance (homoscedasticity)
+
+. . .
+
+**Problems with count data:**
+
+- Counts are discrete, not continuous
+- Cannot be negative (but linear regression can predict negative values!)
+- Variance often increases with the mean
+- Distribution is often skewed, especially for low counts
+
+::: callout-important
+### Key Issue
+
+Using linear regression for count data can produce impossible predictions (like -3.5 crimes) and incorrect standard errors.
+:::
+
+## The Poisson Distribution
+
+The **Poisson distribution** is designed for count data. It is governed by a single parameter, λ (lambda), which represents both the mean and variance.
+
+$$P_\lambda(k) = \frac{e^{-\lambda} \lambda^k}{k!}, \text{ for } k = 0, 1, 2, ...$$
+
+. . .
+
+**Key property:** In the Poisson distribution, the mean equals the variance.
+
+$$E(Y) = Var(Y) = \lambda$$
+
+::: notes
+Lambda is the expected count. The Poisson distribution is named after French mathematician Siméon Denis Poisson.
+:::
+
+## Simulating from the Poisson Distribution
+
+```{r}
+#| output-location: column
+# Simulate 20 draws with lambda = 3
+set.seed(853)
+rpois(n = 20, lambda = 3)
+```
+
+. . .
+
+```{r}
+#| echo: false
+#| fig-height: 5
+tibble(
+  lambda = rep(c(1, 3, 5, 10, 15, 25), each = 10000),
+  y = map_dbl(lambda, ~rpois(1, .x))
+) |>
+  ggplot(aes(x = y)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", colour = "white") +
+  facet_wrap(~paste("lambda =", lambda), scales = "free") +
+  labs(x = "Count", y = "Frequency",
+       title = "Poisson distributions with different λ values") +
+  theme_minimal(base_size = 14)
+```
+
+::: notes
+As lambda increases, the distribution becomes more symmetric and bell-shaped. For small lambda, the distribution is right-skewed.
+:::
+
+# Poisson Regression
+
+## The Poisson Regression Model
+
+In Poisson regression, we model the expected count as a function of predictors:
+
+$$y_i \sim \text{Poisson}(e^{X_i\beta})$$
+
+. . .
+
+Or equivalently:
+
+$$\log(\lambda_i) = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + ...$$
+
+::: callout-note
+### The Log Link Function
+
+We use the **logarithm** as the link function because:
+
+1. It ensures predictions are always positive
+2. Coefficients have a multiplicative interpretation
+:::
+
+::: notes
+The exponential transformation of the linear predictor ensures that lambda is always positive, which makes sense for count data.
+:::
+
+## Interpreting Poisson Regression Coefficients
+
+Because we use a log link, coefficients are interpreted as **multiplicative effects** on the expected count.
+
+. . .
+
+For a coefficient β:
+
+- A one-unit increase in x multiplies the expected count by $e^\beta$
+- If β = 0.10, then $e^{0.10} = 1.105$, meaning a 10.5% increase
+- If β = -0.20, then $e^{-0.20} = 0.82$, meaning an 18% decrease
+
+::: callout-tip
+### Quick Approximation
+
+For small coefficients (|β| < 0.1), the coefficient approximately equals the percentage change. For example, β = 0.05 ≈ 5% increase.
+:::
+
+## Example: Simulated Poisson Data
+
+```{r}
+#| output-location: column
+#| fig-height: 6
+set.seed(853)
+n <- 100
+x <- runif(n, -2, 2)
+a <- 1
+b <- 0.5
+linpred <- a + b * x
+y <- rpois(n, exp(linpred))
+sim_data <- tibble(x = x, y = y)
+
+ggplot(sim_data, aes(x = x, y = y)) +
+  geom_point(alpha = 0.6, size = 3) +
+  stat_function(
+    fun = function(x) exp(a + b * x),
+    colour = "red", linewidth = 1
+  ) +
+  labs(x = "Predictor (x)", 
+       y = "Count (y)",
+       title = "Simulated Poisson Data") +
+  theme_minimal(base_size = 16)
+```
+
+::: notes
+Notice how the variance increases as the expected count increases - this is characteristic of Poisson data.
+:::
+
+## Fitting Poisson Regression in R
+
+Using `glm()` with `family = poisson`:
+
+```{r}
+fit_poisson <- glm(y ~ x, family = poisson(link = "log"), data = sim_data)
+summary(fit_poisson)
+```
+
+## Using rstanarm for Bayesian Estimation
+
+```{r}
+#| message: false
+#| results: hide
+fit_poisson_bayes <- stan_glm(
+  y ~ x,
+  family = poisson(link = "log"),
+  data = sim_data,
+  seed = 853
+)
+```
+
+```{r}
+print(fit_poisson_bayes)
+```
+
+::: notes
+The Bayesian approach gives us uncertainty estimates and works well with default priors for most applications.
+:::
+
+## Example: Number of A Grades by Department
+
+Let's simulate data about the number of A grades awarded in university courses across three departments:
+
+```{r}
+set.seed(853)
+class_size <- 26
+
+count_of_A <- tibble(
+  department = c(rep("1", 26), rep("2", 26), rep("3", 26)),
+  course = c(paste0("DEP_1_", letters),
+             paste0("DEP_2_", letters),
+             paste0("DEP_3_", letters)),
+  number_of_As = c(
+    rpois(n = class_size, lambda = 5),
+    rpois(n = class_size, lambda = 10),
+    rpois(n = class_size, lambda = 20)
+  )
+)
+```
+
+## Visualising the A Grade Data
+
+```{r}
+#| echo: false
+#| fig-height: 5
+count_of_A |>
+  ggplot(aes(x = number_of_As, fill = department)) +
+  geom_histogram(position = "dodge", binwidth = 2) +
+  labs(x = "Number of As awarded", y = "Number of classes",
+       fill = "Department") +
+  theme_minimal(base_size = 16) +
+  scale_fill_brewer(palette = "Set1")
+```
+
+::: notes
+We can clearly see the different distributions across departments, with Department 3 awarding the most A grades on average.
+:::
+
+## Fitting the Model
+
+```{r}
+#| message: false
+#| results: hide
+grades_model <- stan_glm(
+  number_of_As ~ department,
+  data = count_of_A,
+  family = poisson(link = "log"),
+  seed = 853
+)
+```
+
+```{r}
+print(grades_model)
+```
+
+## Interpreting the Results
+
+- **Intercept (1.32):** Department 1 has expected count of $e^{1.32} = 3.7$ A grades
+- **department2 (0.88):** Department 2 has $e^{0.88} = 2.4$ times as many A grades as Department 1
+- **department3 (1.71):** Department 3 has $e^{1.71} = 5.5$ times as many A grades as Department 1
+
+. . .
+
+```{r}
+# Expected counts per department
+exp(coef(grades_model)[1])  # Dept 1
+exp(coef(grades_model)[1] + coef(grades_model)[2])  # Dept 2
+exp(coef(grades_model)[1] + coef(grades_model)[3])  # Dept 3
+```
+
+# Overdispersion
+
+## What is Overdispersion?
+
+**Overdispersion** occurs when the observed variance in the data exceeds what the model predicts.
+
+. . .
+
+For Poisson regression:
+
+- The model assumes $Var(Y) = E(Y) = \lambda$
+- If actual $Var(Y) > \lambda$, we have overdispersion
+
+::: callout-important
+### Why Does This Matter?
+
+Overdispersion leads to:
+
+- Underestimated standard errors
+- Inflated test statistics
+- Incorrect p-values
+- Overconfident conclusions
+:::
+
+::: notes
+Overdispersion is extremely common with real-world count data. Almost all real datasets show more variation than the Poisson model predicts.
+:::
+
+## Checking for Overdispersion
+
+Compare the mean and variance of your count variable:
+
+```{r}
+# For a Poisson distribution, mean ≈ variance
+count_of_A |>
+  summarise(
+    mean = mean(number_of_As),
+    variance = var(number_of_As),
+    ratio = variance / mean
+  )
+```
+
+. . .
+
+A ratio much greater than 1 suggests overdispersion.
+
+::: notes
+In practice, we rarely see perfect equality between mean and variance. A ratio of 1.5 or less might be acceptable, but larger ratios require attention.
+:::
+
+## Causes of Overdispersion
+
+1. **Unobserved heterogeneity:** Important variables are missing from the model
+
+2. **Clustering:** Observations within groups are correlated
+
+3. **Excess zeros:** More zeros than the Poisson distribution predicts
+
+4. **Outliers:** A few extreme values
+
+5. **Wrong distributional assumption:** The data-generating process isn't Poisson
+
+::: notes
+Understanding why overdispersion occurs can help you choose the right modelling strategy.
+:::
+
+# Negative Binomial Regression
+
+## The Negative Binomial Distribution
+
+The **negative binomial distribution** adds an extra parameter to allow for overdispersion:
+
+$$Var(Y) = E(Y) + \frac{E(Y)^2}{\phi}$$
+
+where φ (phi) is the "reciprocal dispersion" parameter.
+
+. . .
+
+- Lower φ = more overdispersion
+- As φ → ∞, the negative binomial approaches the Poisson
+
+::: callout-note
+### Flexibility
+
+The negative binomial allows the variance to be larger than the mean, which better fits most real-world count data.
+:::
+
+## Simulating Negative Binomial Data
+
+```{r}
+#| echo: false
+#| fig-height: 5
+set.seed(853)
+n <- 100
+x <- runif(n, -2, 2)
+linpred <- 1 + 0.5 * x
+
+sim_nb <- tibble(
+  x = rep(x, 3),
+  phi = rep(c(0.5, 2, 10), each = n),
+  y = c(
+    rnegbin(n, exp(linpred), 0.5),
+    rnegbin(n, exp(linpred), 2),
+    rnegbin(n, exp(linpred), 10)
+  )
+)
+
+ggplot(sim_nb, aes(x = x, y = y)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~paste("φ =", phi)) +
+  stat_function(fun = function(x) exp(1 + 0.5 * x), colour = "red") +
+  labs(title = "Negative Binomial Data with Different Dispersion",
+       x = "Predictor", y = "Count") +
+  theme_minimal(base_size = 14)
+```
+
+::: notes
+Notice how the scatter around the curve increases as phi decreases. Lower phi means more overdispersion.
+:::
+
+## Fitting Negative Binomial Regression in R
+
+Using `rstanarm`:
+
+```{r}
+#| message: false
+#| results: hide
+# First, let's create some overdispersed data
+set.seed(853)
+overdispersed_data <- tibble(
+  x = runif(100, -2, 2),
+  y = rnegbin(100, exp(1 + 0.5 * x), theta = 2)
+)
+
+fit_nb <- stan_glm(
+  y ~ x,
+  family = neg_binomial_2(link = "log"),
+  data = overdispersed_data,
+  seed = 853
+)
+```
+
+```{r}
+print(fit_nb)
+```
+
+## Comparing Poisson and Negative Binomial
+
+```{r}
+#| message: false
+#| results: hide
+# Fit Poisson to the same overdispersed data
+fit_pois_compare <- stan_glm(
+  y ~ x,
+  family = poisson(link = "log"),
+  data = overdispersed_data,
+  seed = 853
+)
+```
+
+```{r}
+#| echo: false
+# Manual comparison table
+tibble(
+  Term = c("(Intercept)", "x"),
+  Poisson = c(
+    sprintf("%.2f (%.2f)", coef(fit_pois_compare)[1], se(fit_pois_compare)[1]),
+    sprintf("%.2f (%.2f)", coef(fit_pois_compare)[2], se(fit_pois_compare)[2])
+  ),
+  `Negative Binomial` = c(
+    sprintf("%.2f (%.2f)", coef(fit_nb)[1], se(fit_nb)[1]),
+    sprintf("%.2f (%.2f)", coef(fit_nb)[2], se(fit_nb)[2])
+  )
+) |>
+  knitr::kable(col.names = c("Term", "Poisson", "Negative Binomial"))
+```
+
+::: notes
+Notice that the negative binomial model gives larger standard errors, which better reflects the true uncertainty in the data.
+:::
+
+## Example: Cause of Death in Alberta, Canada
+
+Real-world example from the textbook: examining leading causes of death in Alberta.
+
+```{r}
+#| echo: false
+# Create simulated Alberta data similar to the textbook
+set.seed(853)
+alberta_cod <- tibble(
+  cause = rep(c("Heart disease", "Dementia", "Lung cancer", 
+                "Chronic lower respiratory", "Stroke"), each = 21),
+  year = rep(2001:2021, 5),
+  total_deaths = c(
+    rnegbin(21, 1200, 20),
+    rnegbin(21, 1400, 15) + (0:20) * 30,
+    rnegbin(21, 1500, 25),
+    rnegbin(21, 900, 20),
+    rnegbin(21, 600, 30)
+  )
+)
+
+# Summary statistics
+alberta_cod |>
+  summarise(
+    Min = min(total_deaths),
+    Mean = mean(total_deaths),
+    Max = max(total_deaths),
+    SD = sd(total_deaths),
+    Var = var(total_deaths),
+    .by = cause
+  ) |>
+  knitr::kable()
+```
+
+## When to Use Which Model?
+
+::: {layout-ncol="2"}
+### Use Poisson when:
+
+- Mean ≈ Variance
+- Simple count data
+- No strong clustering
+- Quick preliminary analysis
+
+### Use Negative Binomial when:
+
+- Variance > Mean
+- Unexplained heterogeneity
+- Real-world count data
+- You need accurate standard errors
+:::
+
+::: callout-tip
+### Rule of Thumb
+
+When in doubt, start with negative binomial. It's safer and reduces to Poisson when overdispersion is minimal.
+:::
+
+# Exposure and Offset Terms
+
+## What is Exposure?
+
+Sometimes counts occur over different **exposure** periods or populations.
+
+. . .
+
+Examples:
+
+- Number of accidents per intersection (but some intersections have more traffic)
+- Number of deaths per region (but regions have different populations)
+- Number of events per time period (but observation periods differ)
+
+::: notes
+Without accounting for exposure, we might conclude that busier intersections are more dangerous per vehicle, when they might just have more vehicles.
+:::
+
+## Modelling Rates with Offset
+
+To model rates rather than raw counts, we use an **offset**:
+
+$$y_i \sim \text{Poisson}(u_i \cdot \theta_i)$$
+
+where $u_i$ is the exposure and $\theta_i = e^{X_i\beta}$ is the rate.
+
+. . .
+
+Taking logs:
+
+$$\log(\lambda_i) = \log(u_i) + X_i\beta$$
+
+The log of the exposure, $\log(u_i)$, is called the **offset**.
+
+## Example: Roach Infestation Study
+
+From ROS Chapter 15: A study of pest management in apartments.
+
+- Outcome: Number of roaches trapped ($y_i$)
+- Exposure: Number of trap-days ($u_i$)
+- Predictors: Pre-treatment roach level, treatment indicator, building type
+
+```{r}
+#| eval: false
+fit_roaches <- stan_glm(
+  y ~ roach100 + treatment + senior,
+  family = neg_binomial_2(link = "log"),
+  offset = log(exposure),
+  data = roaches
+)
+```
+
+::: notes
+The offset allows us to model the rate of roaches caught per trap-day, rather than the total count, which would be misleading when trap-days vary.
+:::
+
+# Introduction to Multilevel Modelling
+
+## The Problem with Complete Pooling
+
+So far, we've treated all observations as independent (complete pooling).
+
+. . .
+
+But data often has **hierarchical structure**:
+
+- Students within schools
+- Patients within hospitals
+- Voters within electorates
+- Time points within individuals
+
+::: callout-important
+### Why Does This Matter?
+
+Ignoring grouping structure can lead to:
+
+- Underestimated standard errors
+- Incorrect inferences
+- Missed important patterns
+:::
+
+## Three Approaches
+
+::: {layout-ncol="3"}
+### Complete Pooling
+
+Treat all observations as one group.
+
+*Problem:* Ignores group differences.
+
+### No Pooling
+
+Fit separate models for each group.
+
+*Problem:* Ignores information shared across groups.
+
+### Partial Pooling
+
+Allow groups to differ while "borrowing strength" from other groups.
+
+*Multilevel modelling!*
+:::
+
+::: notes
+Partial pooling gives us the best of both worlds - it acknowledges group differences while using all available information.
+:::
+
+## What is Multilevel Modelling?
+
+**Multilevel models** (also called hierarchical models, random effects models) allow:
+
+- Intercepts to vary by group (varying intercepts)
+- Slopes to vary by group (varying slopes)
+- Groups to "borrow strength" from each other
+
+. . .
+
+Basic model with varying intercepts:
+
+$$y_{ij} = \beta_0 + \alpha_j + \beta_1 x_{ij} + \epsilon_{ij}$$
+
+where $\alpha_j \sim N(0, \sigma^2_\alpha)$ is the random effect for group $j$.
+
+## Example: Political Support by State
+
+```{r}
+#| message: false
+#| results: hide
+set.seed(853)
+political_support <- tibble(
+  state = sample(1:10, size = 500, replace = TRUE),
+  gender = sample(c(0, 1), size = 500, replace = TRUE),
+  noise = rnorm(n = 500, mean = 0, sd = 10),
+  supports = as.numeric((state * 2 + gender * 5 + noise) > 20)
+)
+```
+
+```{r}
+#| message: false
+#| results: hide
+voter_model <- stan_glmer(
+  supports ~ gender + (1 | state),
+  data = political_support,
+  family = binomial(link = "logit"),
+  seed = 853
+)
+```
+
+The `(1 | state)` term specifies varying intercepts by state.
+
+::: notes
+This model allows each state to have its own baseline level of support, while still estimating a common effect of gender.
+:::
+
+## Understanding the Output
+
+```{r}
+print(voter_model)
+```
+
+::: notes
+The "Error terms" section shows the variance of the random effects. Larger variance means more variation between groups.
+:::
+
+## Visualising Random Effects
+
+```{r}
+#| echo: false
+#| fig-height: 5
+ranef_df <- ranef(voter_model)$state |>
+  rownames_to_column("state") |>
+  rename(intercept = `(Intercept)`)
+
+ggplot(ranef_df, aes(x = reorder(state, intercept), y = intercept)) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  coord_flip() +
+  labs(x = "State", y = "Random Intercept",
+       title = "State-level random effects") +
+  theme_minimal(base_size = 16)
+```
+
+## When to Use Multilevel Models
+
+Consider multilevel modelling when:
+
+- Data has natural grouping structure
+- You want to make inferences about groups
+- Sample sizes vary across groups
+- Groups are a sample from a larger population
+
+::: callout-tip
+### Practical Advice
+
+If you have groups with at least 5-10 observations each and want to account for group-level variation, consider multilevel modelling.
+:::
+
+# Summary: Generalised Linear Models
+
+## The GLM Framework
+
+All the models we've covered fit within the **Generalised Linear Model** framework:
+
+1. **Outcome distribution** (data distribution)
+2. **Linear predictor** ($X\beta$)
+3. **Link function** (connects linear predictor to expected value)
+
+## Common Link Functions
+
+| Distribution | Link | Inverse Link | Use Case |
+|--------------|------|--------------|----------|
+| Normal | Identity | $\mu = X\beta$ | Continuous data |
+| Binomial | Logit | $\mu = \text{logit}^{-1}(X\beta)$ | Binary outcomes |
+| Poisson | Log | $\mu = e^{X\beta}$ | Count data |
+| Neg. Binomial | Log | $\mu = e^{X\beta}$ | Overdispersed counts |
+
+## Choosing the Right Model
+
+```{r}
+#| echo: false
+tibble(
+  `Outcome Type` = c("Continuous", "Binary (0/1)", "Count (no upper limit)", 
+                     "Count (overdispersed)", "Count (with exposure)"),
+  Model = c("Linear regression", "Logistic regression", "Poisson regression",
+            "Negative binomial", "Poisson/NB with offset"),
+  `R Function` = c("lm() or stan_glm()", 
+                   "glm(family=binomial) or stan_glm()",
+                   "glm(family=poisson) or stan_glm()",
+                   "MASS::glm.nb() or stan_glm(family=neg_binomial_2)",
+                   "Add offset=log(exposure)")
+) |>
+  knitr::kable()
+```
+
+## Key Takeaways
+
+1. **Count data** requires special models (Poisson or negative binomial)
+
+2. **Overdispersion** is common - the negative binomial handles it well
+
+3. **Offset terms** allow modelling rates when exposure varies
+
+4. **Coefficients** are multiplicative (exponentiate to interpret)
+
+5. **Multilevel models** account for hierarchical data structure
+
+::: callout-important
+### Remember
+
+Always check model assumptions and use posterior predictive checks to validate your model choice!
+:::
+
+## R Functions Summary
+
+```{r}
+#| eval: false
+# Poisson regression
+glm(y ~ x, family = poisson(link = "log"), data = df)
+stan_glm(y ~ x, family = poisson(link = "log"), data = df)
+
+# Negative binomial regression
+MASS::glm.nb(y ~ x, data = df)
+stan_glm(y ~ x, family = neg_binomial_2(link = "log"), data = df)
+
+# With offset for rates
+stan_glm(y ~ x, family = poisson, offset = log(exposure), data = df)
+
+# Multilevel model with varying intercepts
+stan_glmer(y ~ x + (1 | group), family = poisson, data = df)
+```
+
+## Next Week
+
+**Week 11: Surveys and Experimental Design**
+
+- Principles of randomised controlled trials
+- Designing and analysing survey data
+- Survey weights and poststratification
+- Ethical foundations of experimental research
+
+. . .
+
+**Readings:**
+
+- TSwD Ch 8: Hunt data (8.2-8.4)
+- ROS Ch 16-17: Design and poststratification
+
+## References
+
+::: {#refs}
+:::

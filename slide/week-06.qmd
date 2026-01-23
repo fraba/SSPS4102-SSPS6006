@@ -1,0 +1,971 @@
+---
+title: "Week 06</br>Simple Linear Regression"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(broom)
+library(modelsummary)
+library(knitr)
+```
+
+## Learning Objectives
+
+By the end of this lecture, you will be able to:
+
+- Fit and interpret simple linear regression models
+- Understand the least squares criterion
+- Assess model fit with R-squared
+- Make predictions from fitted models
+- Use simulation to understand regression
+
+::: callout-tip
+### Key Readings
+
+**TSwD:** Ch 12.1-12.2 | **ROS:** Ch 6-7
+:::
+
+::: notes
+This week we introduce simple linear regression - the foundation for much of statistical modelling in social sciences. We'll focus on understanding what regression does, how to interpret results, and importantly, how to think about coefficients as comparisons rather than causal effects.
+:::
+
+# Introduction to Linear Models
+
+## Why Linear Models?
+
+Linear models have been used for centuries to understand relationships in data.
+
+::: columns
+::: {.column width="50%"}
+**Historical origins:**
+
+- 1700s: Astronomers tracking celestial motion
+- Early statisticians were comfortable combining observations
+- Social scientists were slower to adopt (worried about grouping unlike data)
+:::
+
+::: {.column width="50%"}
+**Modern uses:**
+
+- Prediction and forecasting
+- Understanding relationships
+- Comparing groups
+- Estimating effects (with caution!)
+:::
+:::
+
+::: notes
+Linear models date back to foundational problems in astronomy. The key insight was that multiple observations could be combined - errors would tend to cancel out. This was revolutionary for science.
+:::
+
+## What Regression Does
+
+At a fundamental level, regression has two purposes:
+
+1. **Prediction**: Predict an outcome variable given some inputs
+2. **Comparison**: Compare predictions for different values of inputs
+
+. . .
+
+::: callout-important
+### Key Insight
+Regression is fundamentally a technology for **prediction** and **comparison** - not necessarily for identifying causal effects.
+:::
+
+::: notes
+This distinction between prediction/comparison and causal inference is crucial. We'll return to causality in later weeks, but for now, focus on understanding regression as a tool for making comparisons.
+:::
+
+## The Basic Regression Model
+
+The simplest regression model is linear with a single predictor:
+
+$$y = a + bx + \epsilon$$
+
+Where:
+
+- $y$ is the **outcome** (dependent variable)
+- $x$ is the **predictor** (independent variable)
+- $a$ is the **intercept** (value of $y$ when $x = 0$)
+- $b$ is the **slope** (change in $y$ for one unit change in $x$)
+- $\epsilon$ is the **error** (what the model doesn't explain)
+
+::: notes
+The parameters a and b are what we estimate from the data. The error term captures everything our simple model doesn't account for - measurement error, omitted variables, random noise.
+:::
+
+## Visualising the Model
+
+```{r}
+#| echo: false
+#| fig-height: 5
+#| fig-width: 8
+set.seed(853)
+n <- 50
+x <- runif(n, 0, 10)
+y <- 2 + 1.5 * x + rnorm(n, 0, 2)
+df <- tibble(x = x, y = y)
+
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "steelblue", linewidth = 1.2) +
+  annotate("text", x = 8, y = 6, label = "y = a + bx", size = 6, colour = "steelblue") +
+  labs(x = "Predictor (x)", y = "Outcome (y)",
+       title = "Simple Linear Regression: Finding the Best-Fit Line") +
+  theme_classic(base_size = 16)
+```
+
+::: notes
+The regression line represents our best prediction of y given x. The vertical distances from points to the line are the residuals - what our model got wrong.
+:::
+
+# Least Squares Estimation
+
+## Finding the Best Line
+
+How do we find the "best" line through the data?
+
+Many lines could be drawn, but we want the one that fits best.
+
+. . .
+
+**Criterion:** Minimise the **Residual Sum of Squares (RSS)**
+
+$$RSS = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2 = \sum_{i=1}^{n}e_i^2$$
+
+Where:
+
+- $\hat{y}_i$ is the predicted value for observation $i$
+- $e_i = y_i - \hat{y}_i$ is the **residual** (prediction error)
+
+::: notes
+We square the residuals for two reasons: it treats positive and negative errors equally, and it penalises large errors more than small ones. The line that minimises this sum is our least squares estimate.
+:::
+
+## What Are Residuals?
+
+```{r}
+#| echo: false
+#| fig-height: 5.5
+#| fig-width: 9
+fit <- lm(y ~ x, data = df)
+df$fitted <- fitted(fit)
+df$resid <- residuals(fit)
+
+# Select a few points to highlight
+highlight_idx <- c(5, 15, 25, 35, 45)
+
+ggplot(df, aes(x = x, y = y)) +
+  geom_segment(data = df[highlight_idx, ],
+               aes(x = x, xend = x, y = y, yend = fitted),
+               colour = "red", linewidth = 1, linetype = "dashed") +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "steelblue", linewidth = 1.2) +
+  labs(x = "Predictor (x)", y = "Outcome (y)",
+       title = "Residuals: The Vertical Distance from Points to Line") +
+  theme_classic(base_size = 16)
+```
+
+::: aside
+Red dashed lines show residuals for selected points
+:::
+
+::: notes
+Each residual is the vertical distance between an observed point and the regression line. Positive residuals mean the model under-predicted; negative residuals mean it over-predicted.
+:::
+
+## The Least Squares Solution
+
+For simple linear regression, the least squares estimates are:
+
+$$\hat{b} = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
+
+$$\hat{a} = \bar{y} - \hat{b}\bar{x}$$
+
+. . .
+
+::: callout-note
+### Good News!
+You don't need to calculate these by hand - R does it for you with `lm()`
+:::
+
+::: notes
+These formulas come from calculus - taking derivatives of the RSS and setting them to zero. The important thing to understand is the concept, not the calculation.
+:::
+
+# Fitting Regression in R
+
+## The `lm()` Function
+
+In R, we use `lm()` (linear model) to fit regressions:
+
+```{r}
+#| eval: false
+model <- lm(outcome ~ predictor, data = dataset)
+```
+
+**Key components:**
+
+- `outcome ~ predictor`: The **formula** (outcome on left, predictor on right)
+- `data = dataset`: The data frame containing your variables
+- Returns a model object you can examine
+
+::: notes
+The tilde ~ means "is modelled as a function of". This formula notation is used throughout R for specifying statistical models.
+:::
+
+## Example: Running Times
+
+Let's simulate data about the relationship between 5km run time and marathon time:
+
+```{r}
+set.seed(853)
+num_observations <- 200
+expected_relationship <- 8.4  # Marathon is ~8.4x longer than 5km
+
+sim_run_data <- tibble(
+  five_km_time = runif(n = num_observations, min = 15, max = 30),
+  noise = rnorm(n = num_observations, mean = 0, sd = 20),
+  marathon_time = five_km_time * expected_relationship + noise
+) |>
+  mutate(
+    five_km_time = round(five_km_time, 1),
+    marathon_time = round(marathon_time, 1)
+  ) |>
+  select(-noise)
+```
+
+::: notes
+We're simulating data where we KNOW the true relationship (8.4). This is a powerful way to understand regression - we can check if our estimates recover the truth. A marathon (42.2km) is roughly 8.4 times the length of a 5km run.
+:::
+
+## Visualising the Data
+
+```{r}
+#| output-location: column
+#| fig-height: 7
+ggplot(sim_run_data, 
+       aes(x = five_km_time, 
+           y = marathon_time)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    x = "5km time (minutes)",
+    y = "Marathon time (minutes)"
+  ) +
+  theme_classic(base_size = 18)
+```
+
+::: notes
+There's a clear positive relationship - faster 5km runners tend to have faster marathon times. But there's also substantial variation. Let's fit a line to summarise this relationship.
+:::
+
+## Fitting the Model
+
+```{r}
+run_model <- lm(marathon_time ~ five_km_time, data = sim_run_data)
+summary(run_model)
+```
+
+::: notes
+The summary output gives us a lot of information. Let's break it down piece by piece.
+:::
+
+## Understanding the Output
+
+::: columns
+::: {.column width="50%"}
+**Coefficients:**
+
+- **Intercept (4.47)**: Expected marathon time if 5km time were 0 (not meaningful!)
+- **Slope (8.20)**: For each additional minute in 5km time, marathon time increases by ~8.2 minutes
+:::
+
+::: {.column width="50%"}
+**Model fit:**
+
+- **Residual SE (17.42)**: Typical prediction error
+- **R-squared (0.79)**: 79% of variance explained
+- **p-value (<2e-16)**: Strong evidence of a relationship
+:::
+:::
+
+. . .
+
+::: callout-tip
+### We recovered the truth!
+True slope was 8.4, estimate is 8.2 ± 0.3 (standard error)
+:::
+
+::: notes
+The estimate is close to the true value of 8.4 that we used in the simulation. The standard error tells us about uncertainty - roughly 68% of the time, the true value will be within ±1 standard error of our estimate.
+:::
+
+## Adding the Regression Line
+
+```{r}
+#| output-location: column
+#| fig-height: 7
+ggplot(sim_run_data, 
+       aes(x = five_km_time, 
+           y = marathon_time)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", 
+              se = TRUE,
+              colour = "steelblue") +
+  labs(
+    x = "5km time (minutes)",
+    y = "Marathon time (minutes)"
+  ) +
+  theme_classic(base_size = 18)
+```
+
+::: aside
+Shaded area shows 95% confidence interval for the line
+:::
+
+## Extracting Coefficients
+
+```{r}
+# Get coefficients
+coef(run_model)
+
+# Get just the slope
+coef(run_model)["five_km_time"]
+```
+
+. . .
+
+The regression equation is:
+
+$$\text{Marathon time} = 4.47 + 8.20 \times \text{5km time}$$
+
+::: notes
+You can extract specific parts of the model using functions like coef(), fitted(), residuals(). This is useful for further calculations or visualisations.
+:::
+
+# Interpreting Coefficients
+
+## Coefficients as Comparisons
+
+::: callout-important
+### Critical Insight
+Regression coefficients are commonly called "effects," but this can be misleading. We should think of them as **comparisons**, not causal effects.
+:::
+
+. . .
+
+**What the slope really means:**
+
+> "Comparing runners whose 5km times differ by one minute, we find their marathon times differ, on average, by about 8.2 minutes."
+
+This is a **between-person comparison**, not a within-person effect!
+
+::: notes
+This is perhaps the most important conceptual point in this lecture. The coefficient tells us about differences between people in our sample, not what would happen if we changed one person's 5km time.
+:::
+
+## Example: Height and Earnings
+
+Consider a regression predicting earnings from height and sex:
+
+$$\text{earnings} = -26.0 + 0.6 \times \text{height} + 10.6 \times \text{male}$$
+
+. . .
+
+**Tempting but wrong interpretations:**
+
+- ❌ "The effect of height on earnings is $600 per inch"
+- ❌ "Being male causes $10,600 higher earnings"
+
+. . .
+
+**Better interpretations:**
+
+- ✓ "Comparing people of the same sex, those who differ by one inch in height differ on average by $600 in earnings"
+- ✓ "Comparing people of the same height, men earn on average $10,600 more than women"
+
+::: notes
+This example from Gelman et al. illustrates the key point. We're observing patterns in data, not manipulating variables. To speak of "effects" requires additional assumptions about causality that the regression alone cannot justify.
+:::
+
+## Why This Matters
+
+**The height-earnings regression shows:**
+
+- Taller people earn more (observational pattern)
+- This does NOT mean making someone taller would increase their earnings
+
+. . .
+
+**Possible explanations (all consistent with the data):**
+
+- Discrimination against shorter people
+- Height correlated with confidence
+- Height correlated with nutrition/health in childhood
+- Height correlated with social class
+- Some combination of all the above
+
+::: callout-note
+### Bottom Line
+Regression tells us about **associations**, not **causes**. Causal interpretation requires additional assumptions and designs (Week 12).
+:::
+
+::: notes
+The regression cannot distinguish between these explanations. That requires additional research designs, theory, and causal thinking - which we'll cover later in the course.
+:::
+
+# Model Assessment
+
+## Residual Standard Deviation (σ)
+
+The residual standard deviation tells us about prediction accuracy:
+
+```{r}
+sigma(run_model)
+```
+
+**Interpretation:**
+
+- About 68% of predictions are within ±`r round(sigma(run_model), 1)` minutes of actual marathon time
+- About 95% are within ±`r round(2*sigma(run_model), 1)` minutes
+
+. . .
+
+This comes from the normal distribution properties we learned in earlier weeks.
+
+::: notes
+The residual standard deviation is like the typical prediction error. It helps us understand how precise our predictions are likely to be.
+:::
+
+## R-squared: Proportion of Variance Explained
+
+$$R^2 = 1 - \frac{\text{Variance of residuals}}{\text{Variance of outcome}}$$
+
+```{r}
+# Calculate R-squared
+summary(run_model)$r.squared
+
+# Or equivalently:
+1 - var(residuals(run_model)) / var(sim_run_data$marathon_time)
+```
+
+. . .
+
+**Interpretation:** 79% of the variation in marathon times is explained by 5km times.
+
+::: notes
+R-squared is useful for getting a sense of how well the model explains the data. But be cautious - a high R-squared doesn't mean the model is correct or useful for causal inference.
+:::
+
+## Interpreting R-squared
+
+::: columns
+::: {.column width="50%"}
+**What R² tells us:**
+
+- How much variance is "explained"
+- Relative fit compared to a model with no predictors
+
+**Useful for:**
+
+- Comparing models
+- Assessing predictive power
+:::
+
+::: {.column width="50%"}
+**What R² doesn't tell us:**
+
+- Whether model is correct
+- Whether relationship is causal
+- Whether predictions are accurate enough
+
+**Be cautious:**
+
+- Can be inflated by adding predictors
+- Not a measure of model "validity"
+:::
+:::
+
+::: notes
+R-squared is a descriptive statistic, not a test. A model can have high R-squared but still be wrong, and vice versa. Focus on understanding the coefficients and their interpretation.
+:::
+
+## Examining Residuals
+
+```{r}
+#| echo: false
+#| fig-height: 5
+#| fig-width: 10
+library(patchwork)
+
+# Add fitted values and residuals
+sim_run_data <- augment(run_model, data = sim_run_data)
+
+p1 <- ggplot(sim_run_data, aes(x = .resid)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", colour = "white") +
+  labs(x = "Residuals", y = "Count", title = "Distribution of Residuals") +
+  theme_classic(base_size = 14)
+
+p2 <- ggplot(sim_run_data, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residuals vs Fitted") +
+  theme_classic(base_size = 14)
+
+p1 + p2
+```
+
+. . .
+
+**What we want:** Residuals centred around zero, roughly symmetric, no patterns
+
+::: notes
+Examining residuals helps us check if our model assumptions are reasonable. We want residuals that look like random noise - no patterns, no systematic deviations.
+:::
+
+# Making Predictions
+
+## Using `predict()`
+
+Once we have a fitted model, we can make predictions:
+
+```{r}
+# Predict marathon time for someone with a 20-minute 5km
+new_runner <- tibble(five_km_time = 20)
+predict(run_model, newdata = new_runner)
+
+# Prediction with confidence interval
+predict(run_model, newdata = new_runner, interval = "confidence")
+```
+
+::: notes
+The predict function takes your model and new data, and returns predicted values. The confidence interval tells you about uncertainty in the line itself.
+:::
+
+## Prediction vs Confidence Intervals
+
+```{r}
+# Confidence interval: uncertainty about the LINE
+predict(run_model, newdata = new_runner, interval = "confidence")
+
+# Prediction interval: uncertainty about INDIVIDUAL predictions
+predict(run_model, newdata = new_runner, interval = "prediction")
+```
+
+. . .
+
+**Key difference:**
+
+- **Confidence interval**: Where is the average marathon time for all 20-minute 5km runners?
+- **Prediction interval**: What marathon time might this specific runner achieve?
+
+::: notes
+Prediction intervals are always wider than confidence intervals because they account for individual variation around the line, not just uncertainty in the line's position.
+:::
+
+## Visualising Prediction Intervals
+
+```{r}
+#| echo: false
+#| fig-height: 5.5
+#| fig-width: 9
+# Get predictions for all data
+pred_ci <- predict(run_model, interval = "confidence")
+pred_pi <- predict(run_model, interval = "prediction")
+
+sim_run_data$ci_lower <- pred_ci[, "lwr"]
+sim_run_data$ci_upper <- pred_ci[, "upr"]
+sim_run_data$pi_lower <- pred_pi[, "lwr"]
+sim_run_data$pi_upper <- pred_pi[, "upr"]
+
+ggplot(sim_run_data, aes(x = five_km_time, y = marathon_time)) +
+  geom_ribbon(aes(ymin = pi_lower, ymax = pi_upper), 
+              fill = "orange", alpha = 0.2) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), 
+              fill = "steelblue", alpha = 0.3) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, colour = "steelblue") +
+  labs(x = "5km time (minutes)", y = "Marathon time (minutes)",
+       title = "Confidence (blue) vs Prediction (orange) Intervals") +
+  theme_classic(base_size = 16)
+```
+
+::: notes
+Notice how the prediction interval (orange) is much wider and contains most of the data points. The confidence interval (blue) is narrower and captures our uncertainty about the line.
+:::
+
+# The broom Package
+
+## Tidy Model Output
+
+The `broom` package provides three key functions for working with models:
+
+```{r}
+library(broom)
+```
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `tidy()` | Coefficient estimates | One row per term |
+| `glance()` | Model-level statistics | One row per model |
+| `augment()` | Observation-level stats | Original data + fitted values |
+
+::: notes
+The broom package is incredibly useful for working with model results in a tidy way. It converts messy model objects into nice data frames that work well with the tidyverse.
+:::
+
+## `tidy()`: Coefficient Table
+
+```{r}
+tidy(run_model, conf.int = TRUE)
+```
+
+. . .
+
+This is much easier to work with than raw `summary()` output!
+
+::: notes
+The tidy function gives you a nice data frame of coefficients that you can filter, arrange, or use in visualisations. The conf.int argument adds confidence intervals.
+:::
+
+## `glance()`: Model Summary
+
+```{r}
+glance(run_model)
+```
+
+**Key columns:**
+
+- `r.squared`: Proportion of variance explained
+- `sigma`: Residual standard deviation
+- `statistic`, `p.value`: F-test for overall model significance
+
+::: notes
+glance gives you a one-row summary of model fit statistics. Useful for comparing multiple models side by side.
+:::
+
+## `augment()`: Observation-Level Data
+
+```{r}
+augment(run_model) |> 
+  head()
+```
+
+**Key columns:** `.fitted` (predicted values), `.resid` (residuals), `.hat` (leverage), `.cooksd` (influence)
+
+::: notes
+augment adds fitted values, residuals, and diagnostic measures to your original data. This is great for creating residual plots and identifying influential observations.
+:::
+
+# Simulation for Understanding
+
+## Why Simulate?
+
+::: callout-tip
+### Fake-Data Simulation
+Simulating data where we **know the truth** helps us:
+
+1. Check that our methods work correctly
+2. Understand what our estimates mean
+3. Explore properties of regression
+:::
+
+. . .
+
+> "The most valuable benefit of doing fake-data simulation is that it helps you build and then understand your statistical model."
+> — Gelman, Hill & Vehtari (2020)
+
+::: notes
+Simulation is a powerful learning tool. When we generate data from a known model, we can see if our estimation procedure recovers the true values, and understand sampling variability.
+:::
+
+## Simulation Example: Elections
+
+```{r}
+#| code-line-numbers: "|1-4|6-8|10-12"
+# Step 1: Set true parameters
+a <- 46.3  # True intercept
+b <- 3.0   # True slope
+sigma <- 3.9  # True residual SD
+
+# Step 2: Generate fake data
+x <- c(0.1, 3.2, 2.9, 3.8, 1.3, 4.0, 2.2, 1.0, 2.7, 0.7, 3.9, 2.6, 1.9, 1.5, 3.4, 2.0)
+n <- length(x)
+
+# Step 3: Simulate outcomes
+set.seed(123)
+y <- a + b * x + rnorm(n, 0, sigma)
+```
+
+. . .
+
+Now we have data where we **know** the true relationship is $y = 46.3 + 3.0x + \epsilon$
+
+::: notes
+This example is based on Hibbs's "bread and peace" model predicting US election outcomes from economic growth. We set true values and generate fake data to test our procedure.
+:::
+
+## Fit Model to Fake Data
+
+```{r}
+fake_data <- tibble(growth = x, vote = y)
+fake_model <- lm(vote ~ growth, data = fake_data)
+tidy(fake_model)
+```
+
+. . .
+
+| Parameter | True Value | Estimate | Within 2 SE? |
+|-----------|------------|----------|--------------|
+| Intercept | 46.3 | `r round(coef(fake_model)[1], 1)` | ✓ |
+| Slope | 3.0 | `r round(coef(fake_model)[2], 1)` | ✓ |
+
+::: notes
+Our estimates are close to the true values, though not exactly equal. This is expected - with only 16 observations, there's substantial sampling variability. The key is that the true values are within the confidence intervals.
+:::
+
+## Repeated Simulation: Coverage
+
+If we repeat this process many times, we expect:
+
+- 68% of 68% confidence intervals to contain the true value
+- 95% of 95% confidence intervals to contain the true value
+
+. . .
+
+```{r}
+#| eval: false
+# Conceptual code (takes time to run)
+n_sims <- 1000
+cover_95 <- rep(NA, n_sims)
+
+for (s in 1:n_sims) {
+  y_sim <- a + b * x + rnorm(n, 0, sigma)
+  fit <- lm(y_sim ~ x)
+  ci <- confint(fit)["x", ]
+  cover_95[s] <- (ci[1] <= b) & (b <= ci[2])
+}
+mean(cover_95)  # Should be approximately 0.95
+```
+
+::: notes
+This is the definition of confidence intervals - in repeated sampling, they should contain the true value the advertised percentage of the time. This is a frequentist interpretation of uncertainty.
+:::
+
+# Regression to the Mean
+
+## A Historical Puzzle
+
+Francis Galton noticed something curious about height:
+
+- Children of tall parents tend to be taller than average...
+- ...but **shorter** than their parents
+
+- Children of short parents tend to be shorter than average...
+- ...but **taller** than their parents
+
+. . .
+
+This is **regression to the mean** - where the term "regression" comes from!
+
+::: notes
+This is a fascinating historical fact. Galton expected tall parents to have equally tall children, but the data showed otherwise. This led him to develop the concept of regression.
+:::
+
+## Why Does This Happen?
+
+```{r}
+#| echo: false
+#| fig-height: 5
+#| fig-width: 9
+set.seed(456)
+n <- 500
+mother_height <- rnorm(n, 63, 2.5)
+daughter_height <- 30 + 0.54 * mother_height + rnorm(n, 0, 2.3)
+
+height_data <- tibble(mother = mother_height, daughter = daughter_height)
+
+ggplot(height_data, aes(x = mother, y = daughter)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "steelblue") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", colour = "red") +
+  labs(x = "Mother's height (inches)", y = "Daughter's height (inches)",
+       title = "Regression to the Mean in Heights",
+       subtitle = "Blue: regression line (slope ≈ 0.54) | Red: line of equality (slope = 1)") +
+  coord_fixed() +
+  theme_classic(base_size = 16)
+```
+
+::: aside
+A slope less than 1 means daughters are "regressing" toward the average
+:::
+
+::: notes
+The regression line has a slope of about 0.54, meaning daughters move about halfway back toward the average compared to their mothers' deviation from average.
+:::
+
+## The Resolution
+
+**Apparent paradox:** If heights regress to the mean, won't variation disappear?
+
+. . .
+
+**Resolution:**
+
+- The **point prediction** regresses toward the mean (slope < 1)
+- But the **error** adds variation back
+- Net result: variance stays approximately constant across generations
+
+. . .
+
+::: callout-important
+### Key Insight
+Regression to the mean occurs whenever predictions are imperfect. It's a mathematical fact, not a causal process.
+:::
+
+::: notes
+This is subtle but important. The slope less than 1 reduces variation in predictions, but the random error adds variation back in. The two effects balance out.
+:::
+
+## The Regression Fallacy
+
+Consider students taking midterm and final exams:
+
+- Students who do well on the midterm tend to do worse on the final
+- Students who do poorly on the midterm tend to do better on the final
+
+. . .
+
+**Wrong interpretation:** High performers get lazy, low performers work harder
+
+**Correct interpretation:** This is regression to the mean - both exams measure ability imperfectly, and extreme scores tend to be partly due to luck
+
+. . .
+
+::: callout-note
+### Real Example
+Flight instructors found pilots improved after criticism and got worse after praise. Actually, this was just regression to the mean - no causal effect of feedback!
+:::
+
+::: notes
+This is a famous example from Kahneman and Tversky. The instructors had learned to believe punishment works better than reward, but this was an illusion caused by regression to the mean.
+:::
+
+# Practical Tips
+
+## Common Mistakes to Avoid
+
+::: columns
+::: {.column width="50%"}
+**Interpretation errors:**
+
+- Calling coefficients "effects"
+- Ignoring uncertainty (SE)
+- Over-interpreting R²
+- Extrapolating beyond data
+:::
+
+::: {.column width="50%"}
+**Technical issues:**
+
+- Not checking residuals
+- Ignoring non-linearity
+- Forgetting about outliers
+- Confusing correlation with causation
+:::
+:::
+
+::: notes
+These are common pitfalls that even experienced analysts sometimes fall into. Being aware of them helps you produce more careful, defensible analyses.
+:::
+
+## Good Practice Summary
+
+1. **Always visualise** your data before and after fitting
+
+2. **Interpret cautiously** - use comparison language, not causal language
+
+3. **Report uncertainty** - coefficients without standard errors are incomplete
+
+4. **Check assumptions** - examine residuals for patterns
+
+5. **Simulate** - if unsure how something works, simulate it!
+
+::: notes
+These practices will serve you well throughout the course and beyond. Statistical analysis is as much about careful thinking as it is about running commands in R.
+:::
+
+## Summary
+
+::: columns
+::: {.column width="50%"}
+**What we learned:**
+
+- Regression finds the best-fit line
+- Minimises sum of squared residuals
+- Coefficients are **comparisons**
+- R² measures variance explained
+- Prediction has uncertainty
+:::
+
+::: {.column width="50%"}
+**Key R functions:**
+
+- `lm()` - fit models
+- `summary()`, `coef()` - examine results
+- `predict()` - make predictions
+- `broom::tidy()`, `glance()`, `augment()` - tidy output
+- `residuals()`, `fitted()` - diagnostics
+:::
+:::
+
+::: notes
+Next week we'll extend these ideas to multiple linear regression, where we include more than one predictor. The core concepts remain the same, but interpretation becomes more nuanced.
+:::
+
+## Next Week
+
+**Week 7: Multiple Regression**
+
+- Adding multiple predictors
+- Interpreting coefficients "controlling for" other variables
+- Categorical predictors (dummy variables)
+- Building and comparing models
+
+::: callout-tip
+### Preparation
+Read TSwD Ch 12.3-12.4 and ROS Ch 9-10
+:::
+
+## References
+
+::: {#refs}
+:::

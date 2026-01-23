@@ -1,0 +1,948 @@
+---
+title: "Week 09</br>Logistic Regression"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research<br><br><br>Semester 1, 2026<br>Last updated: `r Sys.Date()`"
+author: "Francesco Bailo"
+format:
+  revealjs:
+    self-contained: true
+    fig-format: retina
+    toc: true
+    toc-depth: 1
+    toc-title: "In this lecture"
+    theme: [default, "assets/sydney.scss"]
+    code-line-numbers: false
+    slide-number: c
+    scrollable: false
+    pdf-max-pages-per-slide: 1
+    history: false
+bibliography: assets/pres_bib.bib
+csl: assets/apa-old-doi-prefix.csl
+execute:
+  echo: true
+---
+
+## Acknowledgement of Country
+
+I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
+
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(rstanarm)
+library(broom)
+library(marginaleffects)
+```
+
+## Learning Objectives
+
+By the end of this week, you will be able to:
+
+-   Fit and interpret logistic regression models
+-   Understand and interpret odds ratios and log-odds
+-   Make probabilistic predictions for binary outcomes
+-   Evaluate classification model performance
+-   Use bootstrap for uncertainty estimation
+
+::: notes
+This week we move from linear regression to logistic regression - our first generalised linear model. This is essential for modelling binary outcomes common in social science research.
+:::
+
+## Readings for This Week
+
+::: {layout-ncol="2"}
+### TSwD
+
+-   Ch 13.1: Introduction to GLMs
+-   Ch 13.2: Logistic regression
+
+### ROS
+
+-   Ch 13: Logistic regression
+-   Ch 14: Working with logistic regression
+-   Ch 5.4: Bootstrapping
+:::
+
+# Why Logistic Regression?
+
+## The Problem with Linear Regression for Binary Outcomes
+
+Linear regression assumes a continuous outcome variable that can take any value on the real line.
+
+. . .
+
+But what if our outcome is **binary**?
+
+-   Did they vote? (yes/no)
+-   Did the bill pass? (yes/no)
+-   Did the respondent support the policy? (support/oppose)
+
+. . .
+
+::: callout-warning
+### The Problem
+
+Linear regression can predict probabilities **outside the range [0, 1]**!
+:::
+
+::: notes
+Binary outcomes are extremely common in social science. Voting behaviour, policy support, event occurrence - all binary. Linear regression would give us impossible predictions.
+:::
+
+## Visualising the Problem
+
+```{r}
+#| echo: false
+#| fig-height: 4
+set.seed(123)
+n <- 100
+x <- rnorm(n, 50, 15)
+prob <- plogis(-5 + 0.1 * x)
+y <- rbinom(n, 1, prob)
+df <- tibble(x = x, y = y)
+
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(alpha = 0.5, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "red", linetype = "dashed") +
+  geom_hline(yintercept = c(0, 1), linetype = "dotted", colour = "grey50") +
+  labs(x = "Predictor (x)", y = "Binary Outcome (y)",
+       title = "Linear regression on binary data",
+       subtitle = "The red line can extend beyond 0 and 1") +
+  theme_minimal(base_size = 16) +
+  ylim(-0.3, 1.3)
+```
+
+::: notes
+See how the linear regression line extends beyond the boundaries? This makes no sense when predicting probabilities.
+:::
+
+## The Bernoulli Distribution
+
+Binary outcomes follow the **Bernoulli distribution**:
+
+-   Outcome $y$ is either 0 or 1
+-   Probability $p$ of outcome "1"
+-   Probability $1-p$ of outcome "0"
+
+. . .
+
+```{r}
+# Simulating from a Bernoulli distribution
+set.seed(853)
+bernoulli_draws <- rbinom(n = 20, size = 1, prob = 0.3)
+bernoulli_draws
+```
+
+::: notes
+The Bernoulli distribution is the foundation of logistic regression. We model the probability parameter p as a function of predictors.
+:::
+
+# The Logit Function
+
+## From Probabilities to the Real Line
+
+The **logit function** transforms probabilities (bounded between 0 and 1) to values on the entire real line:
+
+$$\text{logit}(p) = \log\left(\frac{p}{1-p}\right)$$
+
+. . .
+
+::: columns
+::: {.column width="50%"}
+**Examples:**
+
+-   $\text{logit}(0.1) = -2.2$
+-   $\text{logit}(0.5) = 0$
+-   $\text{logit}(0.9) = 2.2$
+:::
+
+::: {.column width="50%"}
+The ratio $\frac{p}{1-p}$ is called the **odds**.
+:::
+:::
+
+::: notes
+The logit function is the "link function" in logistic regression. It allows us to use the linear regression machinery on a transformed scale.
+:::
+
+## The Logit Function Visualised
+
+```{r}
+#| echo: false
+#| fig-height: 4.5
+tibble(p = seq(0.001, 0.999, by = 0.001)) |>
+  mutate(logit_p = qlogis(p)) |>
+  ggplot(aes(x = p, y = logit_p)) +
+  geom_line(linewidth = 1.2, colour = "#1791e8") +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_vline(xintercept = 0.5, linetype = "dashed", colour = "grey50") +
+  labs(x = "Probability (p)", y = "logit(p)",
+       title = "The logit function") +
+  theme_minimal(base_size = 16)
+```
+
+::: notes
+Notice how the logit function stretches probabilities near 0 and 1 toward negative and positive infinity, while probabilities near 0.5 map to values near 0.
+:::
+
+## The Inverse Logit Function
+
+The **inverse logit** (or logistic) function converts values on the real line back to probabilities:
+
+$$\text{logit}^{-1}(x) = \frac{e^x}{1 + e^x}$$
+
+. . .
+
+In R, we can use:
+
+```{r}
+# logit function
+qlogis(0.5)
+
+# inverse logit function  
+plogis(0)
+```
+
+::: notes
+plogis and qlogis are the R functions for the inverse logit and logit functions respectively. Remember: plogis gives probabilities, qlogis gives log-odds.
+:::
+
+## The Inverse Logit Function Visualised
+
+```{r}
+#| echo: false
+#| fig-height: 4.5
+tibble(x = seq(-6, 6, by = 0.01)) |>
+  mutate(prob = plogis(x)) |>
+  ggplot(aes(x = x, y = prob)) +
+  geom_line(linewidth = 1.2, colour = "#1791e8") +
+  geom_hline(yintercept = c(0, 0.5, 1), linetype = "dashed", colour = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  labs(x = "Linear predictor (x)", y = "Probability",
+       title = "The inverse logit (logistic) function") +
+  annotate("text", x = 2, y = 0.25, label = "slope = 1/4\nat x = 0", size = 5) +
+  theme_minimal(base_size = 16)
+```
+
+::: notes
+This S-shaped curve is fundamental to logistic regression. Notice the slope is steepest at x=0 (probability = 0.5), and the maximum slope is 1/4.
+:::
+
+# The Logistic Regression Model
+
+## Model Specification
+
+The logistic regression model predicts the **probability** that $y = 1$:
+
+$$\Pr(y_i = 1) = \text{logit}^{-1}(\beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \ldots)$$
+
+. . .
+
+Equivalently:
+
+$$\text{logit}(\Pr(y_i = 1)) = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \ldots$$
+
+. . .
+
+::: callout-note
+### Key Insight
+
+The coefficients $\beta$ describe relationships on the **log-odds scale**, not the probability scale.
+:::
+
+::: notes
+This is the fundamental model. We're predicting probabilities, but the coefficients relate to changes in log-odds. This takes some getting used to for interpretation.
+:::
+
+## Fitting Logistic Regression in R
+
+We use `glm()` with `family = binomial`:
+
+```{r}
+#| eval: false
+# Basic syntax
+model <- glm(outcome ~ predictor1 + predictor2, 
+             data = my_data,
+             family = binomial(link = "logit"))
+```
+
+. . .
+
+Or with `rstanarm` for Bayesian estimation:
+
+```{r}
+#| eval: false
+# Bayesian logistic regression
+model <- stan_glm(outcome ~ predictor1 + predictor2,
+                  data = my_data,
+                  family = binomial(link = "logit"))
+```
+
+::: notes
+glm is the base R function for generalised linear models. The family argument specifies the distribution and link function. For binary outcomes, we use binomial with logit link.
+:::
+
+# Example: Weekday or Weekend?
+
+## Simulated Example
+
+Let's simulate data on whether it's a weekday based on the number of cars on the road:
+
+```{r}
+set.seed(853)
+traffic_data <- tibble(
+  num_cars = sample.int(n = 100, size = 500, replace = TRUE),
+  noise = rnorm(n = 500, mean = 0, sd = 10),
+  is_weekday = if_else(num_cars + noise > 50, 1, 0)
+) |>
+  select(-noise)
+
+head(traffic_data)
+```
+
+::: notes
+This is a simulation where more cars means it's more likely to be a weekday. We'll use this simple example to demonstrate fitting and interpreting logistic regression.
+:::
+
+## Fitting the Model
+
+```{r}
+traffic_model <- glm(
+  is_weekday ~ num_cars,
+  data = traffic_data,
+  family = binomial(link = "logit")
+)
+
+summary(traffic_model)
+```
+
+::: notes
+The coefficient on num_cars is positive, meaning more cars increases the log-odds of it being a weekday. But how do we interpret the magnitude?
+:::
+
+## Visualising the Fit
+
+```{r}
+#| fig-height: 4
+traffic_data |>
+  mutate(predicted_prob = predict(traffic_model, type = "response")) |>
+  ggplot(aes(x = num_cars)) +
+  geom_point(aes(y = is_weekday), alpha = 0.3) +
+  geom_line(aes(y = predicted_prob), colour = "#1791e8", linewidth = 1.2) +
+  labs(x = "Number of cars", y = "Probability (weekday)",
+       title = "Logistic regression fit") +
+  theme_minimal(base_size = 16)
+```
+
+# Interpreting Coefficients
+
+## The Challenge of Interpretation
+
+::: callout-important
+### Non-linearity
+
+Logistic regression coefficients are on the **log-odds scale**. A unit change in $x$ does not correspond to a constant change in probability.
+:::
+
+. . .
+
+The same coefficient produces different probability changes depending on where you are on the curve:
+
+-   Near $p = 0.5$: largest effect
+-   Near $p = 0$ or $p = 1$: smallest effect
+
+::: notes
+This is the key challenge with logistic regression. Unlike linear regression where a unit change in x always means the same change in y, logistic regression effects vary across the probability scale.
+:::
+
+## The Divide-by-4 Rule
+
+::: callout-tip
+### Quick Interpretation
+
+Divide the logistic regression coefficient by 4 to get the **maximum** possible effect on probability.
+:::
+
+. . .
+
+The logistic curve is steepest at its centre (where $p = 0.5$), with maximum slope = $\beta/4$.
+
+. . .
+
+**Example:** If $\beta = 0.19$, then:
+
+$$\frac{0.19}{4} = 0.0475 \approx 5\%$$
+
+A one-unit increase in $x$ corresponds to **at most** a 5% increase in probability.
+
+::: notes
+The divide-by-4 rule is incredibly useful for quick interpretation. It gives you an upper bound on the effect size on the probability scale. The actual effect will be smaller if you're not near p=0.5.
+:::
+
+## Interpretation at Specific Values
+
+For more precise interpretation, evaluate the effect at a specific point:
+
+```{r}
+coefs <- coef(traffic_model)
+coefs
+
+# Probability at 30 cars
+plogis(coefs[1] + coefs[2] * 30)
+
+# Probability at 50 cars  
+plogis(coefs[1] + coefs[2] * 50)
+
+# Probability at 70 cars
+plogis(coefs[1] + coefs[2] * 70)
+```
+
+::: notes
+By evaluating at specific values of our predictor, we can see how the probability changes. Notice the jump from 30 to 50 cars is larger than from 50 to 70.
+:::
+
+## Odds Ratios
+
+An alternative interpretation uses **odds ratios**. Exponentiating the coefficient gives the multiplicative change in odds:
+
+```{r}
+# Coefficient on log-odds scale
+coefs[2]
+
+# Odds ratio
+exp(coefs[2])
+```
+
+. . .
+
+**Interpretation:** For each additional car, the **odds** of it being a weekday are multiplied by `r round(exp(coefs[2]), 2)`.
+
+::: notes
+Odds ratios are commonly reported in epidemiology and medical research. An odds ratio greater than 1 means increased odds of the outcome; less than 1 means decreased odds.
+:::
+
+## Summary of Coefficient Interpretation
+
+| Method | Result | Interpretation |
+|--------|--------|----------------|
+| Raw coefficient | $\beta$ | Change in log-odds per unit $x$ |
+| Divide by 4 | $\beta/4$ | Maximum probability change |
+| Odds ratio | $e^\beta$ | Multiplicative change in odds |
+| Evaluate at $\bar{x}$ | $\text{logit}^{-1}(\ldots)$ | Probability at specific values |
+
+::: notes
+Different contexts call for different interpretations. Log-odds for statistical modelling, odds ratios for epidemiology, probability changes for general communication.
+:::
+
+# Example: Voting Behaviour
+
+## Political Preference and Income
+
+Let's examine a classic social science question: Does income predict voting for conservative parties?
+
+```{r}
+# Simulate voting data (mimicking NES data structure)
+set.seed(42)
+n <- 1000
+voting_data <- tibble(
+  income = sample(1:5, n, replace = TRUE),  # 1=poor, 5=rich
+  vote_conservative = rbinom(n, 1, prob = plogis(-1.4 + 0.33 * income))
+)
+```
+
+::: notes
+This simulates data similar to the National Election Study example in the textbook. Income is on a 1-5 scale, and we're predicting conservative vote.
+:::
+
+## Fitting the Voting Model
+
+```{r}
+vote_model <- glm(vote_conservative ~ income,
+                  data = voting_data,
+                  family = binomial(link = "logit"))
+
+summary(vote_model)
+```
+
+::: notes
+The positive coefficient on income indicates that higher income is associated with higher probability of voting conservative.
+:::
+
+## Visualising Voting Probabilities
+
+```{r}
+#| echo: false
+#| fig-height: 4.5
+voting_data |>
+  mutate(
+    predicted = predict(vote_model, type = "response"),
+    y_jitter = vote_conservative + runif(n(), -0.05, 0.05)
+  ) |>
+  ggplot(aes(x = income)) +
+  geom_point(aes(y = y_jitter), alpha = 0.2) +
+  geom_line(aes(y = predicted), colour = "#1791e8", linewidth = 1.5) +
+  scale_x_continuous(breaks = 1:5, labels = c("Poor", "2", "3", "4", "Rich")) +
+  labs(x = "Income level", y = "Pr(Vote Conservative)",
+       title = "Probability of conservative vote by income") +
+  theme_minimal(base_size = 16)
+```
+
+::: notes
+The curve shows increasing probability of conservative vote as income increases. The data points are jittered vertically to show density.
+:::
+
+## Interpreting the Voting Model
+
+```{r}
+coefs_vote <- coef(vote_model)
+
+# Divide by 4 rule
+coefs_vote[2] / 4
+
+# Probability at each income level
+tibble(income = 1:5) |>
+  mutate(probability = plogis(coefs_vote[1] + coefs_vote[2] * income))
+```
+
+. . .
+
+Each unit increase in income corresponds to **at most** an ~8% increase in probability of voting conservative.
+
+# Making Predictions
+
+## Point Predictions
+
+Use `predict()` with `type = "response"` for probabilities:
+
+```{r}
+# Predict for new observations
+new_data <- tibble(income = c(1, 3, 5))
+
+predict(vote_model, newdata = new_data, type = "response")
+```
+
+. . .
+
+Without `type = "response"`, you get predictions on the log-odds scale:
+
+```{r}
+predict(vote_model, newdata = new_data, type = "link")
+```
+
+::: notes
+Always remember to specify type="response" when you want probabilities. The default gives log-odds, which can be confusing.
+:::
+
+## Predictions with Uncertainty
+
+Using `marginaleffects::predictions()`:
+
+```{r}
+library(marginaleffects)
+
+predictions(vote_model, newdata = new_data) |>
+  as_tibble() |>
+  select(income, estimate, conf.low, conf.high)
+```
+
+::: notes
+The marginaleffects package provides convenient functions for predictions with confidence intervals. This is essential for communicating uncertainty.
+:::
+
+## Marginal Effects
+
+The **marginal effect** tells us how the probability changes for a small change in $x$:
+
+```{r}
+# Marginal effect at each income level
+slopes(vote_model, newdata = new_data, variables = "income") |>
+  select(income, estimate, std.error)
+```
+
+::: callout-note
+Notice the marginal effect varies across income levels due to the non-linearity of the logistic function.
+:::
+
+::: notes
+Marginal effects are instantaneous rates of change. They're larger near the middle of the probability range and smaller at the extremes.
+:::
+
+# Model Evaluation
+
+## Residuals for Logistic Regression
+
+Residuals for logistic regression are defined as:
+
+$$\text{residual}_i = y_i - \hat{p}_i$$
+
+. . .
+
+Because $y$ is 0 or 1 and $\hat{p}$ is between 0 and 1, residuals are **discrete**:
+
+-   If $\hat{p} = 0.7$ and $y = 1$: residual = $0.3$
+-   If $\hat{p} = 0.7$ and $y = 0$: residual = $-0.7$
+
+::: notes
+Raw residuals from logistic regression are harder to interpret than linear regression residuals because they're discrete.
+:::
+
+## Binned Residuals
+
+::: callout-tip
+### Solution: Binned Residuals
+
+Divide observations into bins based on predicted probability, then plot the **average residual** in each bin.
+:::
+
+```{r}
+#| echo: false
+#| fig-height: 3.5
+voting_data |>
+  mutate(
+    predicted = predict(vote_model, type = "response"),
+    residual = vote_conservative - predicted,
+    bin = cut(predicted, breaks = 20)
+  ) |>
+  group_by(bin) |>
+  summarise(
+    avg_predicted = mean(predicted),
+    avg_residual = mean(residual),
+    n = n(),
+    se = sqrt(mean(predicted) * (1 - mean(predicted)) / n)
+  ) |>
+  ggplot(aes(x = avg_predicted, y = avg_residual)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_ribbon(aes(ymin = -2*se, ymax = 2*se), alpha = 0.2) +
+  labs(x = "Average predicted probability", y = "Average residual",
+       title = "Binned residual plot") +
+  theme_minimal(base_size = 14)
+```
+
+::: notes
+If the model fits well, most binned residuals should fall within the shaded bounds (approximately 2 standard errors from zero).
+:::
+
+## Classification Accuracy
+
+We can evaluate predictions by classifying at a threshold (typically 0.5):
+
+```{r}
+voting_data <- voting_data |>
+  mutate(
+    predicted_prob = predict(vote_model, type = "response"),
+    predicted_class = if_else(predicted_prob > 0.5, 1, 0)
+  )
+
+# Confusion matrix
+table(Predicted = voting_data$predicted_class, 
+      Actual = voting_data$vote_conservative)
+```
+
+::: notes
+The confusion matrix shows true positives, true negatives, false positives, and false negatives.
+:::
+
+## Classification Metrics
+
+```{r}
+# Calculate accuracy
+accuracy <- mean(voting_data$predicted_class == voting_data$vote_conservative)
+accuracy
+
+# Null model accuracy (always predict most common class)
+null_accuracy <- max(mean(voting_data$vote_conservative), 
+                     1 - mean(voting_data$vote_conservative))
+null_accuracy
+```
+
+::: callout-important
+### Compare to Null Model
+
+Always compare your model's accuracy to the null model (predicting the most common outcome for everyone).
+:::
+
+::: notes
+A model with 60% accuracy sounds good until you realise the null model gets 58%. The improvement over the baseline is what matters.
+:::
+
+## Log Score
+
+A better evaluation metric is the **log score** (log-likelihood):
+
+```{r}
+# Log score
+log_score <- sum(
+  voting_data$vote_conservative * log(voting_data$predicted_prob) +
+  (1 - voting_data$vote_conservative) * log(1 - voting_data$predicted_prob)
+)
+log_score
+
+# Log score per observation
+log_score / nrow(voting_data)
+```
+
+::: callout-note
+Higher (less negative) log scores indicate better fit. The log score properly accounts for the probability predictions, not just the classifications.
+:::
+
+::: notes
+Log score penalises confident wrong predictions more heavily than uncertain wrong predictions. It's a more complete measure of predictive accuracy than classification accuracy.
+:::
+
+# Bootstrapping for Uncertainty
+
+## What is Bootstrapping?
+
+**Bootstrapping** is a resampling technique to estimate uncertainty:
+
+1.  Resample the data **with replacement**
+2.  Fit the model on the resampled data
+3.  Repeat many times
+4.  The distribution of estimates approximates the sampling distribution
+
+::: notes
+Bootstrapping is a general-purpose tool for estimating uncertainty when analytical formulas are unavailable or when you want a non-parametric approach.
+:::
+
+## Bootstrap Example: Gender Wage Gap
+
+```{r}
+# Simulate earnings data
+set.seed(42)
+earnings_data <- tibble(
+  earn = rlnorm(200, meanlog = 10, sdlog = 0.5),
+  male = rbinom(200, 1, 0.5)
+) |>
+  mutate(earn = if_else(male == 1, earn * 1.2, earn))
+
+# Observed ratio of median earnings
+observed_ratio <- median(earnings_data$earn[earnings_data$male == 0]) /
+                  median(earnings_data$earn[earnings_data$male == 1])
+observed_ratio
+```
+
+::: notes
+We want to estimate the ratio of women's to men's median earnings and get a confidence interval for this estimate.
+:::
+
+## Implementing the Bootstrap
+
+```{r}
+# Bootstrap function
+boot_ratio <- function(data) {
+  n <- nrow(data)
+  boot_indices <- sample(n, replace = TRUE)
+  boot_data <- data[boot_indices, ]
+  median(boot_data$earn[boot_data$male == 0]) /
+    median(boot_data$earn[boot_data$male == 1])
+}
+
+# Run bootstrap
+n_sims <- 1000
+boot_results <- replicate(n_sims, boot_ratio(earnings_data))
+
+# Bootstrap standard error
+sd(boot_results)
+```
+
+::: notes
+We resample 1000 times, calculate the ratio each time, and the standard deviation of these ratios is our bootstrap standard error.
+:::
+
+## Bootstrap Distribution
+
+```{r}
+#| echo: false
+#| fig-height: 4
+tibble(ratio = boot_results) |>
+  ggplot(aes(x = ratio)) +
+  geom_histogram(bins = 30, fill = "#1791e8", alpha = 0.7) +
+  geom_vline(xintercept = observed_ratio, colour = "red", linewidth = 1) +
+  geom_vline(xintercept = quantile(boot_results, c(0.025, 0.975)), 
+             linetype = "dashed") +
+  labs(x = "Ratio of female/male median earnings",
+       y = "Count",
+       title = "Bootstrap distribution",
+       subtitle = "Red line = observed ratio; dashed lines = 95% CI") +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+# 95% bootstrap confidence interval
+quantile(boot_results, c(0.025, 0.975))
+```
+
+::: notes
+The bootstrap distribution gives us both a point estimate and a measure of uncertainty. The 95% CI tells us the plausible range for the population parameter.
+:::
+
+# Logistic Regression with Multiple Predictors
+
+## Adding Predictors
+
+Extending the voting model with gender:
+
+```{r}
+# Add gender to our data
+set.seed(42)
+voting_data <- voting_data |>
+  mutate(
+    female = rbinom(n(), 1, 0.5),
+    vote_conservative = rbinom(n(), 1, 
+      prob = plogis(-1.4 + 0.33 * income - 0.4 * female))
+  )
+
+vote_model2 <- glm(vote_conservative ~ income + female,
+                   data = voting_data,
+                   family = binomial(link = "logit"))
+summary(vote_model2)
+```
+
+::: notes
+We've added gender as a predictor. Each coefficient now represents the effect of that variable holding other variables constant.
+:::
+
+## Interpreting Multiple Predictors
+
+```{r}
+coefs2 <- coef(vote_model2)
+
+# Divide by 4 for quick interpretation
+coefs2 / 4
+
+# Probability for poor female vs rich male
+prob_poor_female <- plogis(coefs2[1] + coefs2[2] * 1 + coefs2[3] * 1)
+prob_rich_male <- plogis(coefs2[1] + coefs2[2] * 5 + coefs2[3] * 0)
+
+c(poor_female = prob_poor_female, rich_male = prob_rich_male)
+```
+
+::: notes
+With multiple predictors, we interpret each coefficient as the effect holding other variables constant. The divide-by-4 rule still applies to each coefficient individually.
+:::
+
+## Visualising Multiple Predictors
+
+```{r}
+#| echo: false
+#| fig-height: 4.5
+expand_grid(income = 1:5, female = c(0, 1)) |>
+  mutate(
+    probability = plogis(coefs2[1] + coefs2[2] * income + coefs2[3] * female),
+    Gender = if_else(female == 1, "Female", "Male")
+  ) |>
+  ggplot(aes(x = income, y = probability, colour = Gender)) +
+  geom_line(linewidth = 1.5) +
+  scale_x_continuous(breaks = 1:5, labels = c("Poor", "2", "3", "4", "Rich")) +
+  scale_colour_brewer(palette = "Set1") +
+  labs(x = "Income level", y = "Pr(Vote Conservative)",
+       title = "Predicted probability by income and gender") +
+  theme_minimal(base_size = 16) +
+  theme(legend.position = "bottom")
+```
+
+::: notes
+Plotting separate curves for each group clearly shows how both predictors affect the outcome. The gap between curves represents the gender effect.
+:::
+
+# Interactions in Logistic Regression
+
+## Why Interactions?
+
+An **interaction** allows the effect of one predictor to depend on the value of another:
+
+```{r}
+vote_model3 <- glm(
+  vote_conservative ~ income * female,
+  data = voting_data,
+  family = binomial(link = "logit")
+)
+
+summary(vote_model3)
+```
+
+::: notes
+The interaction term income:female captures whether the income effect differs for males and females.
+:::
+
+## Centering for Interpretability
+
+::: callout-tip
+### Best Practice
+
+Centre continuous predictors before including interactions to make coefficients more interpretable.
+:::
+
+```{r}
+voting_data <- voting_data |>
+  mutate(income_c = income - mean(income))
+
+vote_model3c <- glm(
+  vote_conservative ~ income_c * female,
+  data = voting_data,
+  family = binomial(link = "logit")
+)
+
+coef(vote_model3c)
+```
+
+Now coefficients represent effects at the **mean** of the other variable.
+
+::: notes
+Without centering, the income coefficient represents the effect when female=0, and the female coefficient represents the effect when income=0 (which doesn't exist on our scale).
+:::
+
+# Summary
+
+## Key Takeaways
+
+::: {layout-ncol="2"}
+### Logistic Regression
+
+-   For binary outcomes
+-   Predicts probabilities bounded [0,1]
+-   Coefficients on log-odds scale
+-   Use `glm()` with `family = binomial`
+
+### Interpretation
+
+-   Divide by 4 for max probability effect
+-   Exponentiate for odds ratios
+-   Evaluate at specific values
+-   Marginal effects vary across $x$
+:::
+
+## Key Takeaways (continued)
+
+::: {layout-ncol="2"}
+### Model Evaluation
+
+-   Binned residual plots
+-   Compare accuracy to null model
+-   Log score for probabilistic predictions
+-   Cross-validation (LOO, k-fold)
+
+### Uncertainty
+
+-   Standard errors for coefficients
+-   Confidence intervals for predictions
+-   Bootstrap for complex quantities
+:::
+
+## Next Week
+
+**Week 10: Count Models and Multilevel Modelling**
+
+-   Poisson and negative binomial regression
+-   Overdispersion
+-   Introduction to multilevel models
+
+### Readings
+
+-   TSwD Ch 13.3-13.5
+-   ROS Ch 15
+
+## References
