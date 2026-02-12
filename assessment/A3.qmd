@@ -11,6 +11,12 @@ format:
     toc-title: "Contents"
 ---
 
+::: {.callout-warning appearance="simple"}
+### Draft
+
+This assessment description is still in **draft form** and may be slightly revised before Week 01.
+:::
+
 ## Overview
 
 In this assessment, you will demonstrate your ability to import, clean, and prepare survey data using R, and to communicate your findings effectively through descriptive statistics, tables, and visualisations. You will work with data from **Round 9 (2021–2023) of the Afrobarometer**, a continent-wide survey conducted across 39 African countries.

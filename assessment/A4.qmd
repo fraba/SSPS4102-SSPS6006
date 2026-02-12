@@ -11,6 +11,12 @@ format:
     toc-title: "Contents"
 ---
 
+::: {.callout-warning appearance="simple"}
+### Draft
+
+This assessment description is still in **draft form** and may be slightly revised before Week 01.
+:::
+
 ## Overview
 
 In this assessment, you will conduct a complete data analysis project — from identifying a dataset and formulating a research question to statistical modelling and communication of findings. This is a capstone project that draws on all of the skills developed throughout the semester: data acquisition, cleaning, visualisation, descriptive analysis, and regression modelling.
