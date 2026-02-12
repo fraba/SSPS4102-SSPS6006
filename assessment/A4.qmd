@@ -1,0 +1,233 @@
+---
+title: "Assessment 4: Data Analysis Project"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research"
+date: last-modified
+format:
+  html:
+    self-contained: true
+    theme: [default, "../slide/assets/sydney.scss"]
+    toc: true
+    toc-depth: 2
+    toc-title: "Contents"
+---
+
+## Overview
+
+In this assessment, you will conduct a complete data analysis project — from identifying a dataset and formulating a research question to statistical modelling and communication of findings. This is a capstone project that draws on all of the skills developed throughout the semester: data acquisition, cleaning, visualisation, descriptive analysis, and regression modelling.
+
+**Weight:** 40% of final grade
+
+**Length:** 1,500 words (as measured in the Quarto source document, excluding code)
+
+## Task
+
+You will **find your own dataset** on a topic that interests you, formulate a research question, and answer it using one or more regression models. Your analysis should go beyond description and investigate the **relationship** between an outcome of interest and one or more predictor variables.
+
+### Requirements
+
+1. **Choose a dataset.** Find a publicly available dataset relevant to social science research. The dataset must:
+    - Contain at least **200 observations**.
+    - Include at least **one plausible outcome variable** (continuous or binary) and **two or more potential predictor variables**.
+    - Be available in a format you can import into R (e.g., `.csv`, `.sav`, `.xlsx`, `.dta`, `.rds`).
+
+2. **Formulate a research question.** Your research question should be clear, specific, and answerable with the data you have chosen. It should concern the relationship between variables — not simply describe a single variable.
+
+3. **Prepare the data.** Import, inspect, clean, and recode your variables as necessary. Handle missing values appropriately and justify your decisions.
+
+4. **Fit at least one regression model.** Depending on your outcome variable, fit an appropriate model:
+    - If your outcome is continuous, use **linear regression** (`lm()`).
+    - If your outcome is binary, use **logistic regression** (`glm()` with `family = binomial`).
+
+5. **Present and interpret your results.** Report coefficients, standard errors, and measures of model fit. Interpret your findings in substantive terms.
+
+::: callout-important
+### Choosing a good dataset
+
+Pick a dataset and a question that genuinely interest you — your engagement with the topic will show in the quality of your analysis. Avoid datasets that are already heavily cleaned and packaged as textbook exercises (e.g., `mtcars`, `iris`). The goal is to demonstrate your ability to work with real-world data.
+:::
+
+## Data resources
+
+Below is a selection of repositories where you can find publicly available datasets suitable for this project. You are not limited to these sources — any publicly available dataset that meets the requirements above is acceptable.
+
+### Survey and public opinion data
+
+- [**Australian Data Archive (ADA)**](https://dataverse.ada.edu.au/) — Australian social science survey data
+- [**European Social Survey (ESS)**](https://www.europeansocialsurvey.org/data/) — Attitudes, beliefs and behaviour in Europe
+- [**World Values Survey (WVS)**](https://www.worldvaluessurvey.org/wvs.jsp) — Global survey on values and beliefs
+- [**Latinobarómetro**](https://www.latinobarometro.org/lat.jsp) — Public opinion in Latin America
+- [**Asian Barometer**](https://www.asianbarometer.org/) — Public opinion in Asia
+- [**Australian Election Study (AES)**](https://australianelectionstudy.org/) — Voter attitudes and behaviour in Australia
+- [**ICPSR**](https://www.icpsr.umich.edu/web/pages/) — Large archive of social science data
+
+### Government and official statistics
+
+- [**Australian Bureau of Statistics (ABS)**](https://www.abs.gov.au/) — Official Australian statistics
+- [**data.gov.au**](https://data.gov.au/) — Australian Government open data portal
+- [**World Bank Open Data**](https://data.worldbank.org/) — Development indicators for countries worldwide
+- [**OECD Data**](https://data.oecd.org/) — Economic and social indicators across OECD countries
+- [**UN Data**](https://data.un.org/) — United Nations statistical databases
+- [**Our World in Data**](https://ourworldindata.org/) — Research and data on global challenges (with GitHub repositories)
+
+### Health and wellbeing
+
+- [**WHO Global Health Observatory**](https://www.who.int/data/gho) — Global health statistics
+- [**HILDA Survey**](https://melbourneinstitute.unimelb.edu.au/hilda) — Household, Income and Labour Dynamics in Australia
+
+### Crime and justice
+
+- [**Australian Institute of Criminology**](https://www.aic.gov.au/statistics) — Australian crime statistics
+- [**FBI Uniform Crime Reporting**](https://cde.ucr.cjis.gov/) — US crime data
+
+### General-purpose repositories
+
+- [**Harvard Dataverse**](https://dataverse.harvard.edu/) — Research data across disciplines
+- [**Kaggle Datasets**](https://www.kaggle.com/datasets) — Community-contributed datasets (choose carefully; prefer original-source data)
+- [**Google Dataset Search**](https://datasetsearch.research.google.com/) — Search engine for datasets
+- [**TidyTuesday**](https://github.com/rfordatascience/tidytuesday) — Weekly curated datasets for R practice
+- [**PolData**](https://github.com/erikgahner/PolData) - A dataset with political datasets curated by Erik Gahner Larsen
+
+::: callout-tip
+### Tip
+
+If you are unsure whether a dataset is suitable, check with Francesco before the submission date.
+:::
+
+## Report structure
+
+Your report should include the following sections.
+
+### 1. Introduction
+
+Introduce your research question and explain why it is interesting or relevant. Briefly describe the dataset: its source, what it covers, the unit of observation, and the number of observations.
+
+### 2. Data and variables
+
+For each variable (outcome and predictors):
+
+- Describe what the variable measures.
+- Report descriptive statistics (e.g., mean, standard deviation, frequency distributions as appropriate).
+- Discuss any recoding or transformations applied, and explain why these were necessary.
+- Include at least one visualisation that helps the reader understand the data (e.g., distributions, cross-tabulations, or bivariate relationships).
+
+### 3. Model and results
+
+- Specify the regression model(s) you estimated and justify your modelling choices.
+- Present the regression output in a well-formatted table (e.g., using the `modelsummary` package or `knitr::kable()`).
+- Interpret the key coefficients in substantive terms. For example: *"A one-unit increase in X is associated with a Y-unit change in the outcome, holding other variables constant."*
+- Discuss the overall model fit (e.g., R-squared for linear regression; pseudo R-squared for logistic regression).
+
+### 4. Discussion and conclusion
+
+- Summarise your main findings in relation to your research question.
+- Discuss the limitations of your analysis (e.g., potential confounders, measurement issues, generalisability).
+- Suggest possible directions for further research.
+
+::: callout-note
+### Important
+
+All code must be visible in your final PDF (`echo: true`). Your report must be fully reproducible — that is, it must render without errors from the `.qmd` source file and the data included in your project folder.
+:::
+
+::: callout-tip
+### Tip: Interpreting coefficients
+
+Remember that regression coefficients from observational data should be interpreted as **associations**, not as causal effects. When discussing your results, use language such as *"is associated with"* or *"predicts"* rather than *"causes"* or *"leads to"*.
+:::
+
+## R programming tips
+
+### Importing data
+
+Depending on your file format, you may need one of the following:
+
+```r
+# CSV files
+my_data <- read.csv("my_data.csv")
+
+# SPSS files (.sav)
+library(haven)
+my_data <- read_sav("my_data.sav")
+
+# Stata files (.dta)
+library(haven)
+my_data <- read_dta("my_data.dta")
+
+# Excel files (.xlsx)
+library(readxl)
+my_data <- read_excel("my_data.xlsx")
+```
+
+### Fitting a linear regression model
+
+```r
+model_linear <- lm(outcome ~ var1 + var2 + var3,
+                   data = my_data)
+summary(model_linear)
+```
+
+### Fitting a logistic regression model
+
+If your outcome variable is binary (e.g., 1 = yes, 0 = no):
+
+```r
+model_logistic <- glm(outcome ~ var1 + var2 + var3,
+                      data = my_data,
+                      family = binomial)
+summary(model_logistic)
+```
+
+### Presenting regression results in a table
+
+The `modelsummary` package produces clean, publication-style regression tables:
+
+```r
+library(modelsummary)
+
+modelsummary(model_linear,
+             stars = TRUE,
+             title = "Predictors of outcome variable")
+```
+
+You can also compare multiple models side by side:
+
+```r
+modelsummary(list("Model 1" = model1, "Model 2" = model2),
+             stars = TRUE)
+```
+
+::: callout-tip
+### Tip
+
+Remember to load all required packages at the top of your `.qmd` document. You will likely need `dplyr`, `ggplot2`, and `modelsummary`, plus whichever package you need to import your data (e.g., `haven`, `readxl`, `readr`).
+:::
+
+## Submission
+
+You are expected to submit the following items on Canvas:
+
+1. **Your report** — Render your report into a **PDF** from the source `.qmd` document. Ensure that all code chunks have `echo: true` so that your R code is visible in the final PDF.
+
+2. **Your R project folder** — Compress your project folder into a `.zip` file. The folder must include:
+    - Your `.qmd` source document
+    - The data file
+    - Your `.Rproj` file
+
+::: callout-note
+### Important
+
+Late submissions beyond the deadline will not be accepted without justification. If you require an extension, you must provide a justification via email and add a comment to the Canvas submission page.
+:::
+
+## Marking criteria
+
+Your submission will be assessed on the following criteria.
+
+| Criterion | Weight | Description |
+|---|---|---|
+| **Research question and dataset choice** | 15% | Clear, well-motivated research question; appropriate and interesting dataset |
+| **Data preparation** | 15% | Correct importing, inspection, and recoding of variables; appropriate handling of missing values |
+| **Descriptive analysis and visualisation** | 15% | Informative summary statistics and well-labelled graphs that support the analysis |
+| **Regression modelling** | 25% | Appropriate model specification; correct implementation; well-formatted output |
+| **Interpretation and communication** | 20% | Accurate interpretation of coefficients; clear discussion of findings, limitations, and implications |
+| **Reproducibility** | 10% | Code runs without errors; project folder is well-organised; document renders correctly |
