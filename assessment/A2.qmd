@@ -20,7 +20,7 @@ This assessment comprises 10 brief weekly interactive coding exercises that deve
 ## Format
 
 - **Number of quizzes:** 13 weeks of offering; you must complete **10 of 13** to achieve 100% for this assessment
-- **Structure:** Most weeks consist of 2–3 component parts within a single interactive tutorial
+- **Structure:** The interactive tutorial consists of a single part
 - **Delivery:** Online interactive tutorial completed via your browser at any time during the week
 - **Time allocation:** Up to 45 minutes per week
 - **Completion:** Completed outside of scheduled class sessions
@@ -29,15 +29,10 @@ This assessment comprises 10 brief weekly interactive coding exercises that deve
 
 Each tutorial part will generate a **completion certificate** (PDF) upon successful submission. To complete the assessment for any given week, you are required to:
 
-1. Complete all tutorial parts for that week online
-2. Download the PDF completion certificate for **each part**
-3. Upload **all certificates** to Canvas by **Sunday 11:59 pm** of the current week
+1. Complete the tutorial for that week online
+2. Download the PDF completion certificate
+3. Upload **the certificate** to Canvas by **Sunday 11:59 pm** of the current week
 
-::: callout-note
-### Important
-
-If a week consists of 2–3 parts, you must submit 2–3 certificates respectively. A week is only marked as complete when all part certificates have been uploaded.
-:::
 
 ### Timing
 
@@ -45,9 +40,9 @@ You have the flexibility to complete these exercises at any time during the week
 
 ## Marking
 
-- Each completed weekly submission (all parts) = **10 points**
+- Each completed weekly submission = **10 points**
 - Maximum grade for this assessment = **100 points** (10 submissions × 10 points)
-- To receive full marks (100%), you must submit all certificates for a minimum of **10 of the 13 weeks**
+- To receive full marks (100%), you must submit the certificates for a minimum of **10 of the 13 weeks**
 - Late submissions beyond the Sunday 11:59 pm deadline will not be accepted without justification. If you require an extension, you must provide a justification via email and add a comment to the Canvas submission page
 
 ## What These Exercises Assess

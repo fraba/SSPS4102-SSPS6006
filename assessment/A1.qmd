@@ -20,7 +20,7 @@ This assessment comprises 10 brief weekly interactive coding exercises that deve
 ## Format
 
 - **Number of quizzes:** 13 weeks of offering; you must complete **10 of 13** to achieve 100% for this assessment
-- **Structure:** Most weeks consist of 2–3 component parts within a single interactive tutorial
+- **Structure:** Most weeks consist of 2 component parts within a single interactive tutorial
 - **Delivery:** Online interactive tutorial completed via your browser during or after class
 - **Time allocation:** Up to 25 minutes per week
 - **Completion:** Usually can be completed during scheduled class sessions
@@ -36,7 +36,7 @@ Each tutorial part will generate a **completion certificate** (PDF) upon success
 ::: callout-note
 ### Important
 
-If a week consists of 2–3 parts, you must submit 2–3 certificates respectively. A week is only marked as complete when all part certificates have been uploaded.
+If a week consists of 2 parts, you must submit 2 certificates respectively. A week is only marked as complete when all part certificates have been uploaded.
 :::
 
 ### Timing
