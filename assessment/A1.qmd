@@ -1,0 +1,60 @@
+---
+title: "Assessment 1: Weekly In-Class Interactive R Programming Exercises"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research"
+date: last-modified
+format:
+  html:
+    self-contained: true
+    theme: [default, "../slide/assets/sydney.scss"]
+    toc: true
+    toc-depth: 2
+    toc-title: "Contents"
+---
+
+## Overview
+
+This assessment comprises 10 brief weekly interactive coding exercises that develop your practical R programming skills and ability to interpret statistical output. Each exercise combines hands-on coding practice with written interpretation of R results, reinforcing the connection between code, output, and statistical meaning.
+
+**Weight:** 10% of final grade
+
+## Format
+
+- **Number of quizzes:** 13 weeks of offering; you must complete **10 of 13** to achieve 100% for this assessment
+- **Structure:** Most weeks consist of 2–3 component parts within a single interactive tutorial
+- **Delivery:** Online interactive tutorial completed via your browser during or after class
+- **Time allocation:** Up to 25 minutes per week
+- **Completion:** Usually can be completed during scheduled class sessions
+
+## Completion and Submission
+
+Each tutorial part will generate a **completion certificate** (PDF) upon successful submission. To complete the assessment for any given week, you are required to:
+
+1. Complete all tutorial parts for that week online
+2. Download the PDF completion certificate for **each part**
+3. Upload **all certificates** to Canvas by **Sunday 11:59 pm** of the current week
+
+::: callout-note
+### Important
+
+If a week consists of 2–3 parts, you must submit 2–3 certificates respectively. A week is only marked as complete when all part certificates have been uploaded.
+:::
+
+### Timing
+
+You will have adequate time to complete most quizzes during scheduled class sessions. However, if you did not attend class or require additional time, you may complete and submit the exercise outside class hours, provided all certificates are uploaded by the end-of-week deadline.
+
+## Marking
+
+- Each completed weekly submission (all parts) = **10 points**
+- Maximum grade for this assessment = **100 points** (10 submissions × 10 points)
+- To receive full marks (100%), you must submit all certificates for a minimum of **10 of the 13 weeks**
+- Late submissions beyond the Sunday 11:59 pm deadline will not be accepted without justification. If you require an extension, you must provide a justification via email and add a comment to the Canvas submission page
+
+## What These Exercises Assess
+
+These exercises are designed to develop your ability to:
+
+- Write functional R code to manipulate and analyse data
+- Interpret R output in the context of statistical concepts
+- Apply weekly learning objectives through practical coding tasks
+- Develop reproducible research practices
