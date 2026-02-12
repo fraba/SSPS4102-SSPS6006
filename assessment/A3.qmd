@@ -1,0 +1,213 @@
+---
+title: "Assessment 3: Data Preparation and Communication"
+subtitle: "SSPS4102 Data Analytics in the Social Sciences<br>SSPS6006 Data Analytics for Social Research"
+date: last-modified
+format:
+  html:
+    self-contained: true
+    theme: [default, "../slide/assets/sydney.scss"]
+    toc: true
+    toc-depth: 2
+    toc-title: "Contents"
+---
+
+## Overview
+
+In this assessment, you will demonstrate your ability to import, clean, and prepare survey data using R, and to communicate your findings effectively through descriptive statistics, tables, and visualisations. You will work with data from **Round 9 (2021–2023) of the Afrobarometer**, a continent-wide survey conducted across 39 African countries.
+
+**Weight:** 30% of final grade
+
+**Length:** 1,000 words (as measured in the Quarto source document, excluding code)
+
+**AI use:** Permitted (see AI use policy on Canvas)
+
+## Data
+
+The dataset and codebook for this assessment are available for download from the links below.
+
+- **Dataset (SPSS format):** [Download .sav file](https://www.afrobarometer.org/wp-content/uploads/2025/06/R9.Merge_39ctry.20Nov23.final_.release_Updated.4Jun25-3.sav)
+- **Codebook (PDF):** [Download codebook](https://www.afrobarometer.org/wp-content/uploads/2025/07/AB_R9.MergeCodebook_25Jun24.final_.pdf)
+
+::: callout-important
+### Before you begin
+
+Download both files and place them in your R project folder. You will need the **codebook** to identify relevant variables, understand their coding, and decide how to recode them for your analysis.
+:::
+
+## Task
+
+Using the Afrobarometer Round 9 merged dataset, you will investigate **trust in institutions** across selected African countries. Your task is to construct a composite index of institutional trust, describe its components, and compare the index across countries.
+
+### Subtasks
+
+1. **Construct a composite index** named `trust_institutions_index` in your code:
+
+    a. Using the codebook, identify and list **at least three survey variables** that measure trust in institutions. The Afrobarometer questionnaire includes a number of questions on trust — these span multiple parts of the survey (e.g., trust in state institutions, trust in political actors, trust in security and judicial bodies). Explore the codebook carefully to find variables that are conceptually related and suitable for combining into a single index.
+
+    b. Inspect each variable using `haven::print_labels()` and discuss the original coding of each variable (value–label mapping).
+
+    c. **Recode** the variables as needed so that they are suitable for quantitative analysis (e.g., set non-substantive responses to `NA`; ensure that higher values consistently indicate greater trust).
+
+    d. **Justify** your choice of variables: explain briefly why you selected these particular variables and why they belong together in an index of institutional trust.
+
+    e. Construct the index by **averaging** your recoded variables for each respondent.
+
+2. **Select three or more countries** from the dataset for comparative analysis.
+
+## Report structure
+
+Your report should include the following sections.
+
+### 1. Introduction
+
+Briefly introduce the Afrobarometer dataset, the round and year of the survey, the countries you selected, and the research question you are addressing.
+
+### 2. Variable description
+
+For each source variable used in your index:
+
+- Describe what the variable measures.
+- Report appropriate descriptive statistics (minimum, maximum, mean, median, standard deviation, number of valid observations).
+- Discuss the variable type (e.g., ordinal, categorical) and any recoding or transformations you applied, explaining *why* these were necessary.
+
+### 3. Index description and cross-country comparison
+
+Using both visualisations and written discussion:
+
+- Describe the distribution of `trust_institutions_index` for each of your selected countries separately (e.g., using histograms, density plots, or boxplots).
+- Compare the distributions across countries. Do they look similar or different? What patterns do you observe?
+
+### 4. Conclusion
+
+Provide a brief general comment on how trust in institutions compares across your selected countries.
+
+::: callout-note
+### Important
+
+All code must be visible in your final PDF (`echo: true`). Your report must be fully reproducible — that is, it must render without errors from the `.qmd` source file and the data included in your project folder.
+:::
+
+## R programming tips
+
+### Reading an SPSS data file
+
+Survey responses are stored in an SPSS data file (`.sav`). To import the file into your R session, use the `haven` package:
+
+```r
+library(haven)
+
+afrobarometer_r9 <- read_sav("afrobarometer_r9.sav")
+```
+
+::: callout-tip
+### Tip
+
+Make sure the `.sav` file is saved inside your R project folder and that the filename in your code matches the actual filename exactly.
+:::
+
+### Inspecting labelled variables
+
+Most variables in the dataset are of type `double` and are labelled. Before using any variable, inspect its value–label mapping using `haven::print_labels()`:
+
+```r
+haven::print_labels(afrobarometer_r9$Q37A)
+```
+
+This will show you output similar to:
+
+```
+Labels:
+ value                           label
+    -1                         Missing
+     0                      Not at all
+     1                   Just a little
+     2                        Somewhat
+     3                           A lot
+     8                         Refused
+     9 Don't know/Haven't heard enough
+```
+
+Note that not all variables use the same coding scheme. Always check the labels before recoding.
+
+### Recoding labelled variables
+
+To convert a labelled variable into a factor (where numeric values are replaced by their character labels), use:
+
+```r
+haven::as_factor(afrobarometer_r9$Q37A)
+```
+
+To use a labelled variable as a quantitative variable (e.g., for computing a mean), you will typically need to set non-substantive responses (such as "Don't know", "Refused", and "Missing") to `NA`. You can do this with `dplyr::if_else()` or `dplyr::case_when()`. For example:
+
+```r
+library(dplyr)
+
+afrobarometer_r9 <- 
+  afrobarometer_r9 |>
+  mutate(
+    Q37A_clean = if_else(Q37A %in% c(-1, 8, 9), NA_real_, Q37A)
+  )
+```
+
+::: callout-important
+### Check every variable
+
+The numeric codes for non-substantive responses may differ across variables. Always use `haven::print_labels()` to check each variable individually before recoding.
+:::
+
+### Filtering by country
+
+To filter the dataset for specific countries, use the `COUNTRY` variable:
+
+```r
+selected_countries <- 
+  afrobarometer_r9 |>
+  filter(haven::as_factor(COUNTRY) %in% c("Nigeria", "Kenya", "South Africa"))
+```
+
+### Creating an index by averaging variables
+
+Once you have created clean versions of your selected variables, you can compute a row-wise average using `rowMeans()`:
+
+```r
+selected_countries <- 
+  selected_countries |>
+  mutate(
+    trust_institutions_index = rowMeans(
+      pick(var1_clean, var2_clean, var3_clean),
+      na.rm = TRUE
+    )
+  )
+```
+
+Replace `var1_clean`, `var2_clean`, `var3_clean` with the names of your own recoded variables.
+
+::: callout-tip
+### Tip
+
+Remember to load all required packages at the top of your `.qmd` document. At a minimum, you will need `haven`, `dplyr`, and `ggplot2`.
+:::
+
+## Submission
+
+You are expected to submit the following items on Canvas:
+
+1. **Your report** — Render your report into a **PDF** from the source `.qmd` document. Ensure that all code chunks have `echo: true` so that your R code is visible in the final PDF.
+
+2. **Your R project folder** — Compress your project folder into a `.zip` file. The folder must include:
+    - Your `.qmd` source document
+    - The data file (`.sav`)
+    - Your `.Rproj` file
+
+
+## Marking criteria
+
+Your submission will be assessed on the following criteria.
+
+| Criterion | Weight | Description |
+|---|---|---|
+| **Data import and preparation** | 25% | Correct importing, inspection, and recoding of variables; appropriate handling of missing values |
+| **Descriptive statistics** | 20% | Accurate and relevant summary statistics for source variables |
+| **Visualisation** | 25% | Effective and well-labelled graphs that support the analysis |
+| **Written communication** | 20% | Clear, concise interpretation of results; appropriate use of statistical language; justified variable selection |
+| **Reproducibility** | 10% | Code runs without errors; project folder is well-organised; document renders correctly |
