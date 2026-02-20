@@ -940,10 +940,10 @@ Focus on the *concepts* first. The technical details will make more sense as we 
 ::: callout-important
 ### Before next week
 
-- Complete and submit the **A1** for *Week 01* in case you haven't done it yet (deadline is always Saturday at 23:59)
-- Complete and submit the **A2** for *Week 01* (deadline is always Saturday at 23:59)
-- Complete the readings for *Week 02*
-- Go through the "Before Class" section of the **Problem Set** for *Week 02* (if we have time we can see an example now...)
+1. Complete and submit the **A1** for *Week 01* in case you haven't done it yet (deadline is always Saturday at 23:59)
+2. Complete and submit the **A2** for *Week 01* (deadline is always Saturday at 23:59)
+3. Complete the readings for *Week 02*
+4. Go through the "Before Class" section of the **Problem Set** for *Week 02* (if we have time we can see an example now...)
 :::
 
 ## Questions?
