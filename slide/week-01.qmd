@@ -410,6 +410,17 @@ countdown(
 )
 ```
 
+## Measuring Democracy: The *NYT* Autocracy Index
+
+The NYT editorial board built an **Autocracy Index** tracking **12 markers of democratic erosion** (e.g. stifling dissent, persecuting opponents, defying courts), each scored **0** (healthy democracy) → **10** (full autocracy). Published in [October 2025](https://www.nytimes.com/interactive/2025/10/31/opinion/trump-autocracy-democracy-report.html), it found the US had regressed on all 12.
+
+In [February 2026](https://www.nytimes.com/interactive/2026/02/06/opinion/ice-minnesota-democracy-america.html), the board updated the scores, raising *Stifling Dissent & Speech* to Level 4 following ICE operations in Minnesota — demonstrating the Index as a **living measurement instrument**.
+
+::: callout-note
+### Why does this matter for data analytics?
+How do we turn an abstract concept like "democracy" into measurable indicators? How do we track change over time? Are these measures objective, subjective or intersubjective? 
+:::
+
 # The Data Science Workflow
 
 ## The five-step workflow
