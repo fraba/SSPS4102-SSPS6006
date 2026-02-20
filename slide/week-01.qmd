@@ -42,6 +42,75 @@ library(tidyverse)
 library(knitr)
 ```
 
+# First, a few words on how to learn R
+
+## How to learn data analysis + coding (1/2)
+
+The challenge in this unit is that on top of learning data analysis concepts, you also need to learn to code with R...
+
+. . .
+
+...but this is actually a **feature, not a bug!**[^1] Data analysis concepts are always and immediately applied to real data using R.
+
+[^1]: Of course, it is!
+
+![](../img/coding-with-fire.gif){fig-align="center" width="55%"}
+
+## How to learn data analysis + coding (2/2)
+
+Focus on:
+
+1. **Understanding** (and communicating) data analysis concepts
+2. **Applying** those concepts to data with R
+3. Developing a **functional** understanding of R — don't try to understand everything R does (or does not) for you!
+```{r}
+#| echo: false
+#| fig-height: 3
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR]
+  node [shape = oval]
+  nod1 [label = 'Deep\\nunderstanding']
+  nod2 [label = 'Functional\\nunderstanding']
+  nod3 [label = 'Communicating\\nand reporting']
+  node [shape = egg]
+  nod4 [label = 'Data analysis\\nconcepts']
+  nod5 [label = 'R']
+  node [shape = diamond]
+  nod6 [label = 'Data']
+  nod1 -> nod4
+  nod2 -> nod5
+  nod4 -> nod6
+  nod5 -> nod6
+  nod6 -> nod3
+  }", width = 800, height = 250)
+```
+
+## Textbooks for this unit
+
+The readings from our two textbooks cover **everything you need** for a *functional* knowledge of R and data analysis:
+
+::: columns
+::: {.column width="50%"}
+![](https://tellingstorieswithdata.com/figures/tellingstorieswithdatapainting.png){width="80"} 
+
+**Telling Stories with Data**  
+Rohan Alexander  
+[tellingstorieswithdata.com](https://tellingstorieswithdata.com)
+:::
+::: {.column width="50%"}
+![](https://assets.cambridge.org/97811076/76510/cover/9781107676510.jpg){width="80"}
+
+**Regression and Other Stories**  
+Gelman, Hill & Vehtari  
+Available via the University Library
+:::
+:::
+
+::: callout-tip
+### Want to go deeper with R?
+[**R for Data Science**](https://r4ds.hadley.nz) (Wickham, Çetinkaya-Rundel & Grolemund) is the go-to reference for a deeper understanding of R and the tidyverse — free online at r4ds.hadley.nz
+:::
+
 # What is Data Science?
 
 ## Learning objectives
