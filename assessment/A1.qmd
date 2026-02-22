@@ -11,12 +11,6 @@ format:
     toc-title: "Contents"
 ---
 
-::: {.callout-warning appearance="simple"}
-### Draft
-
-This assessment description is still in **draft form** and may be slightly revised before Week 01.
-:::
-
 ## Overview
 
 This assessment comprises 10 brief weekly interactive coding exercises that develop your practical R programming skills and ability to interpret statistical output. Each exercise combines hands-on coding practice with written interpretation of R results, reinforcing the connection between code, output, and statistical meaning.

@@ -11,11 +11,6 @@ format:
     toc-title: "Contents"
 ---
 
-::: {.callout-warning appearance="simple"}
-### Draft
-
-This assessment description is still in **draft form** and may be slightly revised before Week 01.
-:::
 
 ## Overview
 
@@ -24,8 +19,6 @@ In this assessment, you will demonstrate your ability to import, clean, and prep
 **Weight:** 30% of final grade
 
 **Length:** 1,000 words (as measured in the Quarto source document, excluding code)
-
-**AI use:** Permitted (see AI use policy on Canvas)
 
 ## Data
 
