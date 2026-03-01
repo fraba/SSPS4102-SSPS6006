@@ -42,6 +42,163 @@ library(tidyverse)
 library(knitr)
 ```
 
+# Worked Example: Australian Elections (Slides from Week 01)
+
+## Putting it all together
+
+Let's walk through the complete workflow with a real example:
+
+**Question**: How many seats did each party win in the 2022 Australian Federal Election?
+
+. . .
+
+::: callout-tip
+### The workflow
+
+1.  **Plan**: Sketch the data and graph we need
+2.  **Simulate**: Create fake data to test our approach
+3.  **Acquire**: Get the real data
+4.  **Explore**: Analyse and visualise
+5.  **Share**: Communicate our findings
+:::
+
+## Step 1: Plan
+
+::::: columns
+::: {.column width="50%"}
+**Data we need**:
+
+| Division | Party   |
+|----------|---------|
+| Adelaide | Labor   |
+| Aston    | Liberal |
+| ...      | ...     |
+:::
+
+::: {.column width="50%"}
+**Graph we want**:
+
+A bar chart showing the number of seats won by each party.
+:::
+:::::
+
+::: notes
+In practice, you'd sketch these by hand on paper.
+:::
+
+## Step 2: Simulate
+
+```{r}
+# Create simulated data
+simulated_data <- tibble(
+  division = 1:151,  # 151 seats in the House
+  party = sample(
+    x = c("Liberal", "Labor", "Nationals", "Greens", "Other"),
+    size = 151,
+    replace = TRUE
+  )
+)
+
+# Check the first few rows
+head(simulated_data)
+```
+
+## Step 3: Acquire
+
+```{r}
+#| eval: false
+# Read data from the Australian Electoral Commission
+raw_elections_data <- read_csv(
+  file = paste0(
+    "https://results.aec.gov.au/27966/website/Downloads/",
+    "HouseMembersElectedDownload-27966.csv"
+  ),
+  skip = 1
+)
+```
+
+```{r}
+#| echo: false
+# For the slides, we'll simulate the cleaned data
+cleaned_elections_data <- tibble(
+  division = c("Adelaide", "Aston", "Ballarat", "Banks", "Barker", "Barton",
+               "Bass", "Bean", "Bendigo", "Bennelong"),
+  elected_party = c("Labor", "Liberal", "Labor", "Liberal", "Liberal", 
+                    "Labor", "Labor", "Labor", "Labor", "Liberal")
+)
+
+# Simulate full dataset for the plot
+set.seed(2022)
+full_data <- tibble(
+  division = paste0("Division_", 1:151),
+  elected_party = sample(
+    c(rep("Labor", 77), rep("Liberal", 48), rep("Nationals", 10),
+      rep("Greens", 4), rep("Other", 12))
+  )
+)
+```
+
+## Step 4: Explore — Counting seats
+
+```{r}
+# Count seats by party
+full_data |>
+  count(elected_party) |>
+  arrange(desc(n))
+```
+
+## Step 4: Explore — Creating a graph
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+full_data |>
+  ggplot(aes(x = elected_party)) +
+  geom_bar(fill = "#00539b") +
+  theme_minimal(base_size = 16) +
+  labs(
+    x = "Party",
+    y = "Number of seats",
+    title = "2022 Australian Federal Election Results"
+  )
+```
+
+## Step 5: Share
+
+> Australia is a parliamentary democracy with 151 seats in the House of Representatives. The 2022 Federal Election saw the Labor Party win 77 seats, followed by the Liberal Party with 48 seats.
+
+**Key findings**:
+
+-   Labor won a majority (77 seats)
+-   The two major parties dominate
+-   Minor parties and independents won 26 seats combined
+
+::: notes
+This is a simplified version of what a full write-up would look like.
+:::
+
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 1/3 (dplyr basics)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 # Why Reproducibility Matters
 
 ## Learning objectives
@@ -410,6 +567,28 @@ This will:
 
 The Quarto document must be self-contained. Objects in your R environment are **not** automatically available—you must load data within the document.
 :::
+
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 2/3 (Quarto)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # R Projects and File Structure
 
@@ -783,7 +962,28 @@ x <= 5  # Less than or equal to
 - `x == 5` asks "is x equal to 5?"
 :::
 
-# Version Control with Git and GitHub
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 3/3 (R Projects and File Management)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+# Version Control with Git and GitHub <br> (This part is advanced we will only skimmed through it)
 
 ## Why version control?
 
@@ -867,6 +1067,11 @@ These appear in your commit history and should match your GitHub account.
 1. Go to [github.com](https://github.com)
 2. Create a free account
 3. Choose a professional username
+
+## Alternatively you can access the enterprise GitHub site of the University of Sydney using your UniKey
+
+1. Go to [github.sydney.edu.au](https://github.sydney.edu.au)
+2. Activate your account using your UniKey and password.
 
 . . .
 
@@ -1135,9 +1340,6 @@ assignment_1/
 
 ::: columns
 ::: {.column width="50%"}
-**Office hours**:
-
-- TBA
 
 **Email**:
 
