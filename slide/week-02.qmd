@@ -875,6 +875,28 @@ example_data$age
 example_data[, "age"]
 ```
 
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 3/3 (R Projects and File Management: Section 1-4)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 # More R Basics
 
 ## Vectors
@@ -964,7 +986,7 @@ x <= 5  # Less than or equal to
 
 ## A1 In-Class Exercise {background-color="#8f9ec9"}
 
-### 📋 Head to Canvas and complete A1 3/3 (R Projects and File Management)
+### 📋 Head to Canvas and complete A1 3/3 (R Projects and File Management: Section 5 on R Basics)
 
 <br>
 
@@ -1272,21 +1294,6 @@ assignment_1/
     └── 02-clean_data.R
 ```
 
-## Checklist for reproducibility
-
-✅ Used an R Project (no `setwd()`)
-
-✅ All data loaded from files (not environment)
-
-✅ All packages loaded at the start
-
-✅ Code runs from top to bottom
-
-✅ Results documented in Quarto
-
-✅ Project tracked with Git/GitHub
-
-✅ README explains how to run the code
 
 # Wrap-up
 
@@ -1327,14 +1334,16 @@ assignment_1/
 - Accessing data through APIs
 - Handling missing data
 
-::: callout-important
-### Before next week
+## QR Code for informal whatsapp 
 
-- Create a GitHub account
-- Set up Git on your computer
-- Create your first R Project with Git
-- Practice creating a Quarto document
-:::
+![](assets/WhatsApp.png)
+
+## Attendance
+
+# Let's now work on Problem Set 2!
+
+(As always you can download it from Canvas)
+
 
 ## Questions?
 
@@ -1349,10 +1358,7 @@ assignment_1/
 ::: {.column width="50%"}
 **Resources**:
 
-- [Happy Git with R](https://happygitwithr.com/)
 - [Quarto documentation](https://quarto.org/)
 - [R for Data Science](https://r4ds.hadley.nz/)
 :::
 :::
-
-## References
