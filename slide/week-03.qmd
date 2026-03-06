@@ -48,8 +48,6 @@ By the end of this lecture, you will be able to:
 This week we move from the foundational concepts of data science workflow to the practical challenges of acquiring and measuring data. We'll cover the theoretical foundations of measurement, then move to practical skills for accessing government data and APIs.
 :::
 
----
-
 ```{r}
 #| echo: false
 #| message: false
@@ -145,7 +143,7 @@ Valid measurements are those where the quantity we are measuring is related to t
 
 . . .
 
-For constructed measures, Flake and Fried (2020) recommend questioning:
+For constructed measures, @doi:10.1177/2515245920952393 recommend questioning:
 
 - The underlying construct of interest
 - The decision process that led to the measure
@@ -207,7 +205,7 @@ Censored data is when we have some partial knowledge of the actual value. Right-
 ## Visualising Censored and Truncated Data
 
 ```{r}
-#| echo: true
+#| echo: false
 #| fig-height: 4
 set.seed(853)
 newborn_weight <- tibble(
@@ -284,7 +282,7 @@ The extent to which we must worry about missing data differs by mechanism. For i
 
 ## Missing Data Mechanisms
 
-::: {layout-ncol="3"}
+::: {layout-ncol="2"}
 ### MCAR
 Missing Completely At Random
 
@@ -304,12 +302,25 @@ Missing Not At Random
 - Most problematic for inference
 :::
 
-. . .
+---
 
 ::: callout-warning
 ### Non-response Matters
-Gelman et al. (2016) argue that much of the changes in public opinion reported before elections are not people changing their mind, but **differential non-response**.
+@10.1561/100.00015031 argue that much of the changes in public opinion reported before elections are not people changing their mind, but **differential non-response**.
 :::
+
+Analysing missing data, specifically "partisan non-response"—teaches us that poll fluctuations are often due to who is talking rather than who is changing their mind.
+
+### Lessons from Missing Data Analysis
+
+*  **Non-Response is Not Random:** Changes in poll numbers often reflect "spurious swings" caused by supporters of a losing candidate becoming less likely to respond to surveys.
+
+
+*  **Demographics Are Insufficient:** Standard weighting (age, race, etc.) cannot fix bias if "missing" respondents differ from "present" respondents in ways those traits don't capture, such as political enthusiasm.
+
+
+*  **The "Unmovable" Electorate:** When you account for missing partisans, the electorate is remarkably stable; most "swings" are artifacts of response rates rather than actual opinion shifts.
+
 
 ---
 
