@@ -253,6 +253,28 @@ Different types of measurement error introduce different biases:
 - **Truncated data** can deflate means (extreme values removed)
 :::
 
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 1/2 (Understanding Measurement + Types of Measurement Error)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 ---
 
 ## Missing Data
@@ -309,20 +331,38 @@ Missing Not At Random
 @10.1561/100.00015031 argue that much of the changes in public opinion reported before elections are not people changing their mind, but **differential non-response**.
 :::
 
-Analysing missing data, specifically "partisan non-response"—teaches us that poll fluctuations are often due to who is talking rather than who is changing their mind.
+Analysing missing data, specifically "partisan non-response" teaches us that poll fluctuations are often due to who is talking rather than who is changing their mind.
 
 ### Lessons from Missing Data Analysis
 
 *  **Non-Response is Not Random:** Changes in poll numbers often reflect "spurious swings" caused by supporters of a losing candidate becoming less likely to respond to surveys.
 
 
-*  **Demographics Are Insufficient:** Standard weighting (age, race, etc.) cannot fix bias if "missing" respondents differ from "present" respondents in ways those traits don't capture, such as political enthusiasm.
+*  **Demographics Are Insufficient:** Standard weighting (age, race, etc.) cannot fix bias if "missing" respondents differ from "present" respondents in ways those traits don't capture, such as *political enthusiasm*.
 
 
 *  **The "Unmovable" Electorate:** When you account for missing partisans, the electorate is remarkably stable; most "swings" are artifacts of response rates rather than actual opinion shifts.
 
+## A1 In-Class Exercise {background-color="#8f9ec9"}
 
----
+### 📋 Head to Canvas and complete A1 1/2 (Missing Data + Working with missing data in R)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Censuses and Government Data
 
@@ -397,8 +437,9 @@ library(readabs)
 # Read ABS time series data
 unemployment <- read_abs(series_id = "A84423050A")
 
-# Search for datasets
-search_abs_tables("population")
+# Read ABS data by catalogue number
+census_migration <- read_abs(cat_no = "3401.0")
+
 ```
 
 . . .
@@ -408,73 +449,32 @@ search_abs_tables("population")
 For detailed census data, the ABS provides **TableBuilder** – a free online tool for creating custom tables from census data.
 :::
 
----
+## A1 In-Class Exercise {background-color="#8f9ec9"}
 
-## IPUMS: International Census Data
+### 📋 Head to Canvas and complete A1 2/2 (Census)
 
-**IPUMS** (Integrated Public Use Microdata Series) provides access to a wide range of datasets, including international census microdata.
-
-. . .
-
-**Workflow for accessing IPUMS data:**
-
-1. Create an account at [ipums.org](https://ipums.org)
-2. Select your sample (e.g., "2019 ACS")
-3. Choose variables of interest
-4. Download in .dta format
-5. Read into R with `haven::read_dta()`
-
-. . .
-
-::: callout-important
-### Citation Required
-It is critical that we cite IPUMS datasets when we use them. See the download page for the appropriate citation.
-:::
-
-::: notes
-The United States is in the enviable situation where there is usually a better approach than using the census. IPUMS provides access to a wide range of datasets. The American Community Survey (ACS) is available on an annual basis, compared with a census which could be quite out-of-date by the time the data are available.
-:::
-
----
-
-## Example: Cleaning IPUMS Data
+<br>
 
 ```{r}
-#| eval: false
-#| echo: true
-library(haven)
-library(tidyverse)
-
-ipums_extract <- read_dta("usa_00015.dta")
-
-cleaned_ipums <- ipums_extract |>
-  select(stateicp, sex, age, educd) |>
-  to_factor() |>
-  mutate(age = as.numeric(age)) |>
-  filter(age >= 18) |>
-  rename(gender = sex) |>
-  mutate(
-    age_group = case_when(
-      age <= 29 ~ "18-29",
-      age <= 44 ~ "30-44",
-      age <= 59 ~ "45-59",
-      age >= 60 ~ "60+",
-      TRUE ~ "Trouble"
-    )
-  )
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
 ```
-
-::: notes
-This code shows how to clean IPUMS data by selecting relevant variables, converting to factors, filtering for adults, and creating age groups. This pattern of cleaning and preparing data is common when working with survey and census data.
-:::
-
----
 
 # Sampling Essentials
 
 ## The Challenge of Sampling
 
-> "Statistics is the science of how to collect and analyse data and draw statements and conclusions about unknown populations." – Wu and Thompson (2020)
+> "Statistics is the science of how to collect and analyse data and draw statements and conclusions about unknown populations." @wu_Sampling_2020 
 
 . . .
 
@@ -722,6 +722,25 @@ Non-probability samples have an important role to play because they are typicall
 
 ---
 
+### 📋 Head to Canvas and complete A1 2/2 (Sampling, all three sections)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # APIs
 
 ## What is an API?
@@ -833,7 +852,7 @@ content(arxiv) |>
 content(arxiv) |>
   read_xml() |>
   xml_child(search = 8) |>   # Navigate to entry
-  xml_child(search = 4) |>   # Navigate to title
+  xml_child(search = 2) |>   # Navigate to title
   xml_text()                  # Extract text
 ```
 
@@ -911,35 +930,6 @@ These are things that we want to keep to ourselves because otherwise anyone with
 
 ---
 
-## Example: Spotify API with spotifyr
-
-```{r}
-#| eval: false
-#| echo: true
-library(spotifyr)
-
-# Get artist audio features (keys are read from .Renviron)
-radiohead <- get_artist_audio_features("radiohead")
-
-# Explore the data
-radiohead |>
-  select(track_name, album_name, duration_ms, valence) |>
-  head()
-```
-
-. . .
-
-**Valence**: Spotify's measure of "musical positiveness" (0 to 1)
-
-- Higher values = more positive sounding
-- What does this actually measure?
-
-::: notes
-One interesting variable provided by Spotify about each song is "valence". The Spotify documentation describes this as a measure between zero and one that signals "the musical positiveness" of the track. Little information is available about how it was created. It is doubtful that one number can completely represent how positive a song is.
-:::
-
----
-
 # Working with Messy Data
 
 ## The Reality of Real Data
@@ -967,34 +957,35 @@ Cleaning data is a critical skill. As Gelman, Hill, and Vehtari describe, much a
 **Always start by examining your data!**
 
 ```{r}
-#| eval: false
+#| eval: true
 #| echo: true
-# Examine a variable
-table(sex)
-#   1    2
-# 749 1282
 
-# Create more descriptive variable
-male <- 2 - sex  # 0 for men, 1 for women
+titanic <- 
+  read.csv("../data/titanic.csv")
+
+# Examine a variable
+table(titanic$Sex)
+
+table(titanic$Survived)
 ```
 
-. . .
+---
 
 ```{r}
-#| eval: false
-#| echo: true
-# Cross-tabulation reveals patterns
-table(height_feet, height_inches)
-#              height_inches
-# height_feet   0  1  2  3  4  5  6  7  8  9 10 11 98 99
-#           4   0  0  0  0  0  0  0  0  0  1  3 17  0  0
-#           5  66 56 144...
-#           9   0  0  0  0  0  0  0  0  0  0  0  0  0 26
+titanic$Survived <- 
+  factor(titanic$Survived, levels = c(0, 1), 
+         labels = c("Not Survived", "Survived"))
+table(titanic$Survived)
 ```
 
-::: notes
-We start with table(sex), which simply yields the counts. No problems. But we prefer to have a more descriptive name, so we define a new variable, male. Next, we look at height with a cross-tabulation, which reveals missing data codes (98, 99) and potential data errors.
-:::
+. . . 
+
+```{r}
+#| eval: true
+#| echo: true
+# Cross-tabulation reveals patterns
+table(titanic$Pclass, titanic$Survived)
+```
 
 ---
 
@@ -1002,25 +993,15 @@ We start with table(sex), which simply yields the counts. No problems. But we pr
 
 ```{r}
 #| echo: true
-# Simulated weight data showing common patterns
-set.seed(853)
-sample_weights <- c(
-  100, 105, 110, 115, 120, 125, 130,  # Round numbers
-  112, 118, 123, 127,                  # In-between
-  200, 210,                            # "Nice" numbers
-  998, 999                             # Missing codes
-)
 
-table(sample_weights)
+table(titanic$Age)
 ```
 
 . . .
 
-**Patterns to notice:**
+**Pattern to notice:**
 
-- People round to nearest 5 or 10
-- "Nice" numbers are overrepresented (e.g., 200 lbs, exactly 6 feet)
-- Missing data codes at extreme values
+- For some people we have the fraction of years but for the majority we don't...
 
 ---
 
@@ -1029,53 +1010,13 @@ table(sample_weights)
 ```{r}
 #| echo: true
 # Example: Recode impossible values as NA
-height_inches <- c(0, 5, 11, 98, 99, 6, 4)
-height_feet <- c(5, 5, 5, 9, 9, 6, 7)
+# Can passengers have paid 0 for their tickets?
+sum(titanic$Fare == 0)
 
-# Recode missing
-height_inches[height_inches > 11] <- NA
-height_feet[height_feet >= 7] <- NA
+# Recode missing if I confidence that this is not possible...
+titanic$Fare[(titanic$Fare == 0)] <- NA
 
-# Combine into single variable
-height <- 12 * height_feet + height_inches
-height
 ```
-
-::: notes
-Most of the data look fine, but there are some people with 9 feet and 98 or 99 inches (missing data codes) and one person who is 7 feet 7 inches tall (probably a data error). We recode as missing and then create a combined height variable.
-:::
-
----
-
-## Step 4: Handle Complex Variables
-
-**Example**: Earnings with multiple response formats
-
-```{r}
-#| eval: false
-#| echo: true
-# Some people gave exact amounts
-table(is.na(earn_exact))
-# FALSE  TRUE
-#  1380   651
-
-# Non-responders were asked categorical question
-# Code 90 = nonresponse, Code 1 = "more than $100,000"
-
-# Handle special codes
-earn_approx[earn2 >= 90] <- NA
-earn_approx[earn2 == 1] <- median(
-  earn_exact[earn_exact > 100000], 
-  na.rm = TRUE
-) / 1000
-
-# Combine
-earn <- ifelse(is.na(earn_exact), 1000 * earn_approx, earn_exact)
-```
-
-::: notes
-Coding the earnings responses is more complicated. The variable earn_exact contains responses in dollars per year for those who answered the question. Nonrespondents were asked a second, discrete, earnings question. We need to carefully combine these.
-:::
 
 ---
 
@@ -1122,6 +1063,27 @@ complete.cases(data)
 - Document your cleaning decisions
 - Save both raw and cleaned data
 - Make your cleaning reproducible (script, not manual)
+
+## A1 In-Class Exercise {background-color="#8f9ec9"}
+
+### 📋 Head to Canvas and complete A1 2/2 (Factor)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 ---
 
@@ -1191,7 +1153,10 @@ install.packages("ggplot2")
 ```
 :::
 
----
+
+# Attendance
+
+# Proble Set
 
 ## References
 
