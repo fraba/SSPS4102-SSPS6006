@@ -70,6 +70,8 @@ This week focuses on the critical skill of data visualisation. We'll learn both 
 The readings complement each other well. TSwD provides the practical ggplot2 skills while ROS provides the statistical thinking behind effective visualisation.
 :::
 
+## Week 04 Student Feedback Survey (Anonymous)
+
 # Why Visualise Data?
 
 ## Always Plot Your Data
@@ -225,6 +227,27 @@ A grid of plots adds two more dimensions!
 Don't be afraid to use multiple visual channels. When used thoughtfully, they can reveal complex relationships in your data.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 1/2 (Section 1: Why Visualise Data?)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 1,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # The Grammar of Graphics
 
 ## ggplot2: A Layered Approach
@@ -260,6 +283,27 @@ ggplot(data = <DATA>) +
 ::: notes
 The grammar of graphics provides a systematic way to think about and build visualisations layer by layer.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 1/2 (Section 2: Grammar of Graphics)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 7,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Bar Charts
 
@@ -363,6 +407,28 @@ mpg |>
 ::: notes
 Understanding when to use geom_bar() versus geom_col() is important. If you've already calculated your summary statistics, use geom_col().
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 1/2 (Section 3: Bar charts)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Scatterplots
 
@@ -476,6 +542,27 @@ mpg |>
 geom_smooth() adds a fitted line. Setting method = "lm" gives a linear regression line. The shaded area shows the confidence interval.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 1/2 (Section 4: Scatterplots)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Line Plots
 
 ## When to Use Line Plots
@@ -556,6 +643,27 @@ economics |>
 Step plots are useful when you want to emphasise that values remain constant between measurements, then change abruptly.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 2/2 (Section 1: Lines Plots)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Histograms
 
 ## When to Use Histograms
@@ -614,6 +722,8 @@ mpg |>
 ```
 :::
 
+---
+
 ::: callout-note
 Too few bins = too much smoothing. Too many bins = too much noise.
 :::
@@ -667,6 +777,27 @@ mpg |>
 ::: notes
 ECDFs show less smoothing than histograms and can be easier to compare across groups, though they require a more quantitatively sophisticated audience.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 2/2 (Section 2: Histograms)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 4,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Boxplots
 
@@ -757,6 +888,27 @@ mpg |>
 ::: notes
 This combination gives you the best of both worlds: summary statistics from the boxplot and the actual distribution from the points.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 2/2 (Section 3: Boxplots)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Customising Your Plots
 
@@ -923,6 +1075,27 @@ p3 <- mpg |> ggplot(aes(x = displ, y = hwy)) + geom_point() + theme_minimal()
 Complex layouts help tell a complete story about your data by showing multiple views simultaneously.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 2/2 (Section 4: Customisation)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Principles of Effective Visualisation
 
 ## Key Principles
@@ -1003,6 +1176,10 @@ Excessive precision suggests false confidence in your numbers. Round to reflect 
 ::: notes
 Visualisation is both a technical skill and an art. Practice with different types of data to develop your intuition.
 :::
+
+## Attendance
+
+## Problem Set
 
 ## Next Week
 
