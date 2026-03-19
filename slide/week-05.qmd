@@ -48,7 +48,6 @@ By the end of this week, you will be able to:
 This week bridges two important skills: systematic data cleaning (essential for any real-world analysis) and probability simulation (which helps us understand uncertainty and validate our methods).
 :::
 
----
 
 ```{r}
 #| echo: false
@@ -290,6 +289,25 @@ Notice how we address issues systematically: first capitalisation, then common O
 
 ---
 
+### 📋 Head to Canvas and complete A1 (Section 1: Data Cleaning Workflow)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Part 2: Checking and Testing
 
 ## Three Tools for Finding Anomalies
@@ -469,6 +487,25 @@ Machine-readable names avoid spaces and special characters, use consistent case,
 
 ---
 
+### 📋 Head to Canvas and complete A1 (Section 2: Data Validation and Testing)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Part 3: Probability Foundations
 
 ## Why Probability?
@@ -493,7 +530,7 @@ Patterns of randomness are notoriously contrary to normal human thinking—our b
 The sum of many small, independent random variables approximately follows a normal distribution.
 :::
 
-. . .
+---
 
 ```{r}
 #| echo: true
@@ -532,30 +569,62 @@ qnorm(c(0.025, 0.975), mean = 162, sd = 7)  # 95% interval
 
 ## Other Important Distributions
 
-::: {layout-ncol="2"}
-
 ### Binomial Distribution
 For counting successes in n independent trials, each with probability p.
-
-```{r}
-#| echo: true
-# Probability of exactly 3 heads in 10 coin flips
-dbinom(3, size = 10, prob = 0.5)
-```
 
 ### Poisson Distribution
 For counting events that occur at a constant average rate.
 
-```{r}
-#| echo: true
-# Probability of exactly 5 emails per hour (avg = 3)
-dpois(5, lambda = 3)
-```
+### Uniform Distribution
+For continuous variables where all outcomes within a range are equally likely. 
 
-:::
 
 ::: notes
 The binomial is useful when you have a fixed number of trials. The Poisson is useful for count data like arrivals, incidents, or occurrences.
+:::
+
+---
+
+## Common Probability Distributions
+```{r}
+#| echo: true
+#| fig-height: 6
+#| fig-width: 10
+library(tidyverse)
+library(patchwork)
+
+set.seed(42)
+n <- 10000
+
+p_norm <- tibble(x = rnorm(n, mean = 0, sd = 1)) |>
+  ggplot(aes(x)) +
+  geom_density(fill = "#E64626", alpha = 0.6) +
+  labs(title = "Normal (μ = 0, σ = 1)") +
+  theme_minimal(base_size = 14)
+
+p_unif <- tibble(x = runif(n, min = 0, max = 1)) |>
+  ggplot(aes(x)) +
+  geom_density(fill = "#0148A4", alpha = 0.6) +
+  labs(title = "Uniform (min = 0, max = 1)") +
+  theme_minimal(base_size = 14)
+
+p_binom <- tibble(x = rbinom(n, size = 20, prob = 0.5)) |>
+  ggplot(aes(x)) +
+  geom_density(fill = "#00828A", alpha = 0.6) +
+  labs(title = "Binomial (n = 20, p = 0.5)") +
+  theme_minimal(base_size = 14)
+
+p_pois <- tibble(x = rpois(n, lambda = 4)) |>
+  ggplot(aes(x)) +
+  geom_density(fill = "#F49E17", alpha = 0.6) +
+  labs(title = "Poisson (λ = 4)") +
+  theme_minimal(base_size = 14)
+
+(p_norm + p_unif) / (p_binom + p_pois)
+```
+
+::: notes
+Each plot shows a kernel density estimate from 10,000 random draws. Note that the normal and uniform are continuous distributions, while the binomial and Poisson are discrete — `geom_density()` smooths the discrete values using kernel density estimation, which is why they appear as smooth curves rather than bars. You could alternatively use `geom_bar()` for the discrete cases.
 :::
 
 ---
@@ -580,6 +649,25 @@ sd(heights)
 ```
 
 ---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Probability Distributions)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Part 4: Simulation in R
 
@@ -734,9 +822,12 @@ simulate_mean <- function(n, mu, sigma) {
 means <- replicate(1000, simulate_mean(n = 30, mu = 100, sigma = 15))
 
 # The sampling distribution
-cat("Mean of means:", round(mean(means), 2), "\n")
-cat("SE of mean:", round(sd(means), 2), "\n")
-cat("Theoretical SE:", round(15/sqrt(30), 2))
+# Mean of means:
+round(mean(means), 2)
+# SE of mean: 
+round(sd(means), 2)
+# Theoretical SE:
+round(15/sqrt(30), 2)
 ```
 
 ::: notes
@@ -744,6 +835,25 @@ The `replicate()` function is cleaner than writing explicit loops for repeated s
 :::
 
 ---
+
+### 📋 Head to Canvas and complete A1 (Section 4: Simulation in R)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 2,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Part 5: Statistical Inference Basics
 
@@ -969,11 +1079,6 @@ The simulation skills you learn this week will be directly applicable when we st
 ---
 
 ## Questions?
-
-::: callout-tip
-### Lab This Week
-Practice data cleaning and simulation with real Australian census data.
-:::
 
 ::: footer
 Materials adapted from Alexander (2023) and Gelman, Hill & Vehtari (2021)
