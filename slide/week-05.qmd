@@ -25,6 +25,8 @@ execute:
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
 
+## Feedback on Student Feedback Survey
+
 ## Note
 
 These slides are developed based on:
@@ -598,25 +600,25 @@ n <- 10000
 
 p_norm <- tibble(x = rnorm(n, mean = 0, sd = 1)) |>
   ggplot(aes(x)) +
-  geom_density(fill = "#E64626", alpha = 0.6) +
+  geom_histogram(fill = "#E64626", alpha = 0.6) +
   labs(title = "Normal (μ = 0, σ = 1)") +
   theme_minimal(base_size = 14)
 
 p_unif <- tibble(x = runif(n, min = 0, max = 1)) |>
   ggplot(aes(x)) +
-  geom_density(fill = "#0148A4", alpha = 0.6) +
+  geom_histogram(fill = "#0148A4", alpha = 0.6) +
   labs(title = "Uniform (min = 0, max = 1)") +
   theme_minimal(base_size = 14)
 
 p_binom <- tibble(x = rbinom(n, size = 20, prob = 0.5)) |>
   ggplot(aes(x)) +
-  geom_density(fill = "#00828A", alpha = 0.6) +
+  geom_histogram(fill = "#00828A", alpha = 0.6) +
   labs(title = "Binomial (n = 20, p = 0.5)") +
   theme_minimal(base_size = 14)
 
 p_pois <- tibble(x = rpois(n, lambda = 4)) |>
   ggplot(aes(x)) +
-  geom_density(fill = "#F49E17", alpha = 0.6) +
+  geom_histogram(fill = "#F49E17", alpha = 0.6) +
   labs(title = "Poisson (λ = 4)") +
   theme_minimal(base_size = 14)
 
@@ -1075,6 +1077,14 @@ Focus on understanding the workflow for data cleaning and the logic of simulatio
 ::: notes
 The simulation skills you learn this week will be directly applicable when we start building regression models.
 :::
+
+---
+
+# Attendance
+
+---
+
+# Problem Set
 
 ---
 
