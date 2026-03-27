@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+    html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
@@ -170,8 +171,8 @@ $$RSS = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2 = \sum_{i=1}^{n}e_i^2$$
 
 Where:
 
-- $\hat{y}_i$ is the predicted value for observation $i$
-- $e_i = y_i - \hat{y}_i$ is the **residual** (prediction error)
+- ${\hat{y}}_{i}$ is the predicted value for observation $i$
+- $e_{i} = y_{i} - \hat{y}_{i}$ is the **residual** (prediction error)
 
 ::: notes
 We square the residuals for two reasons: it treats positive and negative errors equally, and it penalises large errors more than small ones. The line that minimises this sum is our least squares estimate.
@@ -227,6 +228,27 @@ You don't need to calculate these by hand - R does it for you with `lm()`
 ::: notes
 These formulas come from calculus - taking derivatives of the RSS and setting them to zero. The important thing to understand is the concept, not the calculation.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 1: Understanding Best-Fit Lines)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Fitting Regression in R
 
@@ -378,6 +400,27 @@ $$\text{Marathon time} = 4.47 + 8.20 \times \text{5km time}$$
 You can extract specific parts of the model using functions like coef(), fitted(), residuals(). This is useful for further calculations or visualisations.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 (Section 2: Fitting Models with lm())
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Interpreting Coefficients
 
 ## Coefficients as Comparisons
@@ -449,6 +492,27 @@ Regression tells us about **associations**, not **causes**. Causal interpretatio
 The regression cannot distinguish between these explanations. That requires additional research designs, theory, and causal thinking - which we'll cover later in the course.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Coefficients as Comparisons)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Model Assessment
 
 ## Residual Standard Deviation (σ)
@@ -466,7 +530,7 @@ sigma(run_model)
 
 . . .
 
-This comes from the normal distribution properties we learned in earlier weeks.
+This comes from the normal distribution properties we learned last week.
 
 ::: notes
 The residual standard deviation is like the typical prediction error. It helps us understand how precise our predictions are likely to be.
@@ -691,6 +755,28 @@ augment(run_model) |>
 ::: notes
 augment adds fitted values, residuals, and diagnostic measures to your original data. This is great for creating residual plots and identifying influential observations.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 4:  Assessing Model Quality)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Simulation for Understanding
 
@@ -957,6 +1043,10 @@ These practices will serve you well throughout the course and beyond. Statistica
 ::: notes
 Next week we'll extend these ideas to multiple linear regression, where we include more than one predictor. The core concepts remain the same, but interpretation becomes more nuanced.
 :::
+
+# Attendance
+
+# Problem Set
 
 ## Next Week
 
