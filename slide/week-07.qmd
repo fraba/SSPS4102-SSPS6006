@@ -1450,7 +1450,7 @@ plot(fit, which = 1)
 - TSwD Ch 5.3-5.4, Ch 4
 - ROS Ch 11-12
 
-## References
+## Attendance
 
-::: {#refs}
-:::
+## Problem Set
+
