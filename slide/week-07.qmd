@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+    html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
@@ -104,6 +105,7 @@ The results can be quite different from separate simple regressions, especially 
 This is one of the most important concepts in regression. In social science, variables are almost always correlated with each other. Failing to account for this can lead to misleading conclusions.
 :::
 
+
 # Adding Predictors to a Model
 
 ## Example: Children's IQ Tests
@@ -117,6 +119,15 @@ We'll use data predicting children's cognitive test scores from:
 
 Let's build up from simple to multiple regression.
 
+We can download the data use by ROS in Chapter 10 from the GitHub with:
+
+```{r}
+kidiq <- 
+  read.csv("https://raw.githubusercontent.com/avehtari/ROS-Examples/master/KidIQ/data/kidiq.csv")
+```
+
+
+
 ::: footer
 Example from ROS Chapter 10
 :::
@@ -125,14 +136,18 @@ Example from ROS Chapter 10
 
 ```{r}
 #| echo: true
-#| eval: false
-fit_1 <- stan_glm(kid_score ~ mom_hs, data = kidiq)
+#| eval: true
+fit_1 <- lm(kid_score ~ mom_hs, data = kidiq)
 ```
 
 **Fitted model:**
-$$\text{kid\_score} = 78 + 12 \times \text{mom\_hs} + \text{error}$$
+$$\text{kid_score} = 78 + 12 \times \text{mom_hs} + \text{error}$$
 
-. . .
+```{r}
+summary(fit_1)
+```
+
+---
 
 ::: {layout-ncol="2"}
 ### Interpretation
@@ -145,18 +160,44 @@ $$\text{kid\_score} = 78 + 12 \times \text{mom\_hs} + \text{error}$$
 The coefficient represents the **difference in means** between the two groups.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 (Section 1: From Simple to Multiple Regression)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 ## A Single Continuous Predictor
 
 ```{r}
 #| echo: true
-#| eval: false
-fit_2 <- stan_glm(kid_score ~ mom_iq, data = kidiq)
+#| eval: true
+fit_2 <- lm(kid_score ~ mom_iq, data = kidiq)
 ```
 
 **Fitted model:**
-$$\text{kid\_score} = 26 + 0.6 \times \text{mom\_iq} + \text{error}$$
+$$\text{kid_score} = 26 + 0.6 \times \text{mom_iq} + \text{error}$$
 
-. . .
+```{r}
+summary(fit_2)
+```
+
+
+---
 
 ::: callout-note
 ### Interpretation
@@ -169,23 +210,20 @@ A 10-point difference in mothers' IQs → 6-point difference in children's score
 
 ```{r}
 #| echo: true
-#| eval: false
-fit_3 <- stan_glm(kid_score ~ mom_hs + mom_iq, data = kidiq)
-```
+#| eval: true
+fit_3 <- lm(kid_score ~ mom_hs + mom_iq, data = kidiq)
 
-**Output:**
-```
-              Median MAD_SD
-(Intercept)   25.7    5.9
-mom_hs         6.0    2.4
-mom_iq         0.6    0.1
-sigma         18.2    0.6
 ```
 
 . . .
 
 **Fitted model:**
-$$\text{kid\_score} = 26 + 6 \times \text{mom\_hs} + 0.6 \times \text{mom\_iq} + \text{error}$$
+$$\text{kid_score} = 26 + 6 \times \text{mom_hs} + 0.6 \times \text{mom_iq} + \text{error}$$
+```{r}
+
+summary(fit_3)
+```
+
 
 ## Visualising Multiple Regression
 
@@ -268,9 +306,35 @@ The most careful way to interpret regression coefficients:
 
 > "When comparing two children whose mothers have the same level of education, the child whose mother is *x* IQ points higher is predicted to have a test score that is $0.6x$ higher, **on average**."
 
+::: callout-tip
+This is statement can be handy for your A4!
+:::
+
 . . .
 
 This is awkward but accurate! It avoids implying causation when we only have correlation.
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 2: Building Progressive Models)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Categorical Predictors (Indicator Variables)
 
@@ -285,9 +349,15 @@ When a predictor has only **two categories**, we create an **indicator** (or **d
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
+
+# Downloading the data from Github
+earnings <- 
+  read.csv("https://raw.githubusercontent.com/avehtari/ROS-Examples/refs/heads/master/Earnings/data/earnings.csv")
+
 # Example: Predicting weight from height and sex
-fit <- stan_glm(weight ~ c_height + male, data = earnings)
+fit <- 
+  lm(weight ~ height + male, data = earnings)
 ```
 
 ::: notes
@@ -296,13 +366,10 @@ The coding of 0 and 1 is arbitrary but conventional. The group coded as 0 become
 
 ## Interpreting Binary Predictors
 
+```{r}
+summary(fit)
 ```
-              Median MAD_SD
-(Intercept)   149.6    1.0
-c_height        3.9    0.3
-male           12.0    2.0
-sigma          28.8    0.5
-```
+
 
 . . .
 
@@ -317,23 +384,18 @@ When a predictor has **more than two categories**, R automatically creates indic
 
 ```{r}
 #| echo: true
-#| eval: false
-fit <- stan_glm(weight ~ c_height + male + factor(ethnicity), 
+#| eval: true
+fit <- lm(weight ~ height + male + ethnicity, 
                 data = earnings)
 ```
 
 . . .
 
 **Output:**
+```{r}
+summary(fit)
 ```
-                          Median MAD_SD
-(Intercept)               154.1    2.2
-c_height                    3.8    0.3
-male                       12.2    2.0
-factor(ethnicity)Hispanic  -5.9    3.6
-factor(ethnicity)Other    -12.6    5.2
-factor(ethnicity)White     -5.0    2.3
-```
+
 
 ## The Baseline Category
 
@@ -360,20 +422,39 @@ By default, R orders factors alphabetically, so "Black" comes first and becomes 
 earnings$eth <- factor(earnings$ethnicity,
                        levels = c("White", "Black", "Hispanic", "Other"))
 
-fit <- stan_glm(weight ~ c_height + male + eth, data = earnings)
+fit <- lm(weight ~ c_height + male + eth, data = earnings)
 ```
 
 . . .
 
 Now all coefficients are interpreted relative to White:
 
+```{r}
+summary(fit)
 ```
-              Median MAD_SD
-(Intercept)   149.1    1.0
-ethBlack        5.0    2.2
-ethHispanic    -0.9    2.9
-ethOther       -7.6    4.6
+
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Categorical Predictors)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
 ```
+
 
 # Interaction Effects
 
@@ -393,36 +474,70 @@ Interactions are common in social science. The effect of education might differ 
 
 ```{r}
 #| echo: true
-#| eval: false
-fit_4 <- stan_glm(kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq, 
+#| eval: true
+fit_4 <- lm(kid_score ~ mom_hs + mom_iq + mom_hs * mom_iq, 
                   data = kidiq)
 ```
 
 **Fitted model:**
-$$\text{kid\_score} = -11 + 51 \times \text{mom\_hs} + 1.1 \times \text{mom\_iq} - 0.5 \times \text{mom\_hs} \times \text{mom\_iq}$$
+$$\text{kid_score} = -11 + 51 \times \text{mom_hs} + 1.1 \times \text{mom_iq} - 0.5 \times \text{mom_hs} \times \text{mom_iq}$$
+
+```{r}
+summary(fit_4)
+```
+
 
 ::: notes
-The interaction term `mom_hs:mom_iq` is created by multiplying the two variables together. This allows the slope to differ between groups.
+The interaction term `mom_hs * mom_iq` is created by multiplying the two variables together. This allows the slope to differ between groups.
 :::
+
 
 ## Visualising Interactions
 
-![Interaction between maternal education and IQ](images/kidiq_interaction.png){width=70%}
+```{r}
+#| echo: false
+library(tidyverse)
+# Create prediction grid
+pred_grid <- expand.grid(
+  mom_iq = seq(min(kidiq$mom_iq), max(kidiq$mom_iq), length.out = 100),
+  mom_hs = c(0, 1)
+)
+pred_grid$predicted <- predict(fit_4, newdata = pred_grid)
+pred_grid$mom_hs_label <- factor(pred_grid$mom_hs, 
+                                  labels = c("No high school", "High school"))
+
+ggplot() +
+  geom_point(data = kidiq, 
+             aes(x = mom_iq, y = kid_score, 
+                 colour = factor(mom_hs, labels = c("No high school", "High school"))),
+             alpha = 0.4) +
+  geom_line(data = pred_grid, 
+            aes(x = mom_iq, y = predicted, colour = mom_hs_label),
+            linewidth = 1.2) +
+  labs(x = "Mother's IQ", 
+       y = "Child's test score", 
+       colour = "Mother's education") +
+  theme_minimal(base_size = 14)
+```
+
 
 The **slopes are different** for each group!
 
 ## Interpreting Interaction Coefficients
 
+$$\text{kid_score} = -11 + 51 \times \text{mom_hs} + 1.1 \times \text{mom_iq} - 0.5 \times \text{mom_hs} \times \text{mom_iq}$$
+. . .
+
 ::: {layout-ncol="2"}
 ### For mom_hs = 0 (no high school)
 
-$$\text{kid\_score} = -11 + 1.1 \times \text{mom\_iq}$$
+$$\text{kid_score} = -11 + 1.1 \times \text{mom_iq}$$
 
 Slope = **1.1**
 
 ### For mom_hs = 1 (completed high school)
 
-$$\text{kid\_score} = 40 + 0.6 \times \text{mom\_iq}$$
+$$\text{kid_score} = 40 + 0.6 \times \text{mom_iq}$$
 
 Slope = **0.6**
 :::
@@ -437,8 +552,9 @@ The **interaction coefficient** (-0.5) is the **difference in slopes** between t
 #| echo: true
 #| eval: false
 # These are equivalent:
-fit <- stan_glm(y ~ x1 + x2 + x1:x2, data = df)
-fit <- stan_glm(y ~ x1 * x2, data = df)
+fit <- lm(y ~ x1 + x2 + x1 * x2, data = df)
+fit <- lm(y ~ x1 + x2 + x1:x2, data = df)
+fit <- lm(y ~ x1 * x2, data = df)
 ```
 
 . . .
@@ -456,15 +572,107 @@ Start with predictors that have large coefficients when not interacted. If a var
 
 ## Example: Running Times with Rain and Humidity
 
+### Let's bring this simulation back from last week (from TSwD Ch 12)
+
+```{r}
+set.seed(853)
+num_observations <- 200
+expected_relationship <- 8.4  # Marathon is ~8.4x longer than 5km
+
+sim_run_data <- tibble(
+  five_km_time = runif(n = num_observations, min = 15, max = 30),
+  noise = rnorm(n = num_observations, mean = 0, sd = 20),
+  marathon_time = five_km_time * expected_relationship + noise
+) |>
+  mutate(
+    five_km_time = round(five_km_time, 1),
+    marathon_time = round(marathon_time, 1)
+  ) |>
+  select(-noise)
+```
+
+
+
+---
+
+### Let's add rain
+
+```{r}
+set.seed(2026)
+slow_in_rain <- 10
+
+sim_run_data <-
+  sim_run_data |> 
+  mutate(was_raining = 
+           sample(
+    c("Yes", "No"), 
+    size = num_observations, 
+    replace = TRUE, prob = c(0.2, 0.8) )) |> 
+  mutate( 
+    marathon_time = 
+      if_else( 
+        was_raining == "Yes", 
+               marathon_time + 
+          slow_in_rain +
+          rnorm(num_observations,
+                mean = 0,
+                sd = 1)
+          , 
+        marathon_time 
+        ) 
+    ) |> 
+  select(five_km_time, marathon_time, was_raining)
+```
+
+
+
+---
+
+### ... And now let's add humidity
+
+```{r}
+set.seed(2020)
+slow_in_humidity <- 15  
+sim_run_data <- sim_run_data |> 
+  mutate( humidity = sample(c("High", "Low"), 
+                            size = num_observations, 
+                            replace = TRUE, 
+                            prob = c(0.2, 0.8)), 
+          marathon_time = 
+            marathon_time + if_else(humidity == "High", slow_in_humidity + 
+                                      rnorm(num_observations, mean = 0, sd = 1), 
+                                    0),
+          weather_conditions = 
+            case_when( 
+              was_raining == "No" & 
+                humidity == "Low" ~ "No rain, not humid", 
+              was_raining == "Yes" & 
+                humidity == "Low" ~ "Rain, not humid", 
+              was_raining == "No" & 
+                humidity == "High" ~ "No rain, humid", 
+              was_raining == "Yes" & humidity == "High" ~ "Rain, humid" ) )
+```
+
+---
+
+```{r}
+#| echo: false
+require(knitr)
+kable(sim_run_data)
+```
+
+---
+
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 # Simulated data
 sim_run_data_rain_and_humidity_model <-
   lm(
     marathon_time ~ five_km_time + was_raining * humidity,
     data = sim_run_data
   )
+
 ```
 
 . . .
@@ -476,9 +684,38 @@ This model includes:
 - Main effect of humidity
 - **Interaction** between rain and humidity
 
+---
+
+```{r}
+summary(sim_run_data_rain_and_humidity_model)
+```
+
+
 ::: footer
 Example from TSwD Chapter 12
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 4: Interaction Effects)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 8,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Prediction and Bayesian Inference
 
