@@ -141,7 +141,8 @@ fit_1 <- lm(kid_score ~ mom_hs, data = kidiq)
 ```
 
 **Fitted model:**
-$$\text{kid_score} = 78 + 12 \times \text{mom_hs} + \text{error}$$
+
+$$\text{kid\_score} = 78 + 12 \times \text{mom\_hs} + \text{error}$$
 
 ```{r}
 summary(fit_1)
@@ -190,7 +191,8 @@ fit_2 <- lm(kid_score ~ mom_iq, data = kidiq)
 ```
 
 **Fitted model:**
-$$\text{kid_score} = 26 + 0.6 \times \text{mom_iq} + \text{error}$$
+
+$$\text{kid\_score} = 26 + 0.6 \times \text{mom\_iq} + \text{error}$$
 
 ```{r}
 summary(fit_2)
@@ -218,7 +220,9 @@ fit_3 <- lm(kid_score ~ mom_hs + mom_iq, data = kidiq)
 . . .
 
 **Fitted model:**
-$$\text{kid_score} = 26 + 6 \times \text{mom_hs} + 0.6 \times \text{mom_iq} + \text{error}$$
+
+$$\text{kid\_score} = 26 + 6 \times \text{mom\_hs} + 0.6 \times \text{mom\_iq} + \text{error}$$
+
 ```{r}
 
 summary(fit_3)
@@ -417,12 +421,12 @@ By default, R orders factors alphabetically, so "Black" comes first and becomes 
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 # Set "White" as the baseline
 earnings$eth <- factor(earnings$ethnicity,
                        levels = c("White", "Black", "Hispanic", "Other"))
 
-fit <- lm(weight ~ c_height + male + eth, data = earnings)
+fit <- lm(weight ~ height + male + eth, data = earnings)
 ```
 
 . . .
@@ -480,7 +484,8 @@ fit_4 <- lm(kid_score ~ mom_hs + mom_iq + mom_hs * mom_iq,
 ```
 
 **Fitted model:**
-$$\text{kid_score} = -11 + 51 \times \text{mom_hs} + 1.1 \times \text{mom_iq} - 0.5 \times \text{mom_hs} \times \text{mom_iq}$$
+
+$$\text{kid\_score} = -11 + 51 \times \text{mom\_hs} + 1.1 \times \text{mom\_iq} - 0.5 \times \text{mom\_hs} \times \text{mom\_iq}$$
 
 ```{r}
 summary(fit_4)
@@ -525,19 +530,19 @@ The **slopes are different** for each group!
 
 ## Interpreting Interaction Coefficients
 
-$$\text{kid_score} = -11 + 51 \times \text{mom_hs} + 1.1 \times \text{mom_iq} - 0.5 \times \text{mom_hs} \times \text{mom_iq}$$
+$$\text{kid\_score} = -11 + 51 \times \text{mom\_hs} + 1.1 \times \text{mom\_iq} - 0.5 \times \text{mom\_hs} \times \text{mom\_iq}$$
 . . .
 
 ::: {layout-ncol="2"}
 ### For mom_hs = 0 (no high school)
 
-$$\text{kid_score} = -11 + 1.1 \times \text{mom_iq}$$
+$$\text{kid\_score} = -11 + 1.1 \times \text{mom\_iq}$$
 
 Slope = **1.1**
 
 ### For mom_hs = 1 (completed high school)
 
-$$\text{kid_score} = 40 + 0.6 \times \text{mom_iq}$$
+$$\text{kid\_score} = 40 + 0.6 \times \text{mom\_iq}$$
 
 Slope = **0.6**
 :::
@@ -717,130 +722,108 @@ countdown(
 ```
 
 
-# Prediction and Bayesian Inference
+# Building Models: Frequentist vs Bayesian
 
-## Three Types of Predictions
+## Frequentist vs Bayesian: Different Ways of Thinking
 
-After fitting a regression $y = a + bx + \text{error}$, we can make three predictions:
-
-. . .
-
-1. **Point prediction**: $\hat{a} + \hat{b}x_{new}$
-   - Single best estimate (ignores uncertainty)
+**The Core Question:** What does "probability" mean?
 
 . . .
 
-2. **Linear predictor with uncertainty**: $a + bx_{new}$
-   - Accounts for uncertainty in coefficients
+::: columns
+::: {.column width="50%"}
+### Frequentist Approach
 
-. . .
+**Probability = Long-run frequency**
 
-3. **Predictive distribution**: $a + bx_{new} + \epsilon$
-   - Accounts for coefficient uncertainty AND residual variation
+"If we repeated this experiment infinitely many times, what proportion would give this result?"
+
+- Data varies, parameters are **fixed** (but unknown)
+- We can never know the true parameter value with certainty
+- Uncertainty quantified through repeated sampling
+:::
+
+::: {.column width="50%"}
+### Bayesian Approach
+
+**Probability = Degree of belief**
+
+"Given what we've observed, how confident are we about different parameter values?"
+
+- Parameters have **distributions**, data is fixed (observed)
+- We update our beliefs about parameters using data
+- Uncertainty quantified through probability distributions
+:::
+:::
 
 ::: footer
-ROS Chapter 9
+TSwD Chapter 12.4; ROS Chapter 9
 :::
 
-## Point Prediction with `predict()`
+## Pros and Cons of Each Approach
 
-```{r}
-#| echo: true
-#| eval: false
-# Create new data point
-new <- data.frame(growth = 2.0)
+::: columns
+::: {.column width="50%"}
+### Frequentist Approach
 
-# Get point prediction
-y_point_pred <- predict(fit, newdata = new)
-```
+**Pros:**
 
-. . .
+- ✓ Computationally fast
+- ✓ Well-established methods
+- ✓ No need to specify prior beliefs
+- ✓ Objective (data-driven only)
 
-This gives a **single number** — our best guess for the outcome.
+**Cons:**
 
-## Linear Predictor with `posterior_linpred()`
-
-```{r}
-#| echo: true
-#| eval: false
-# Get uncertainty in the fitted regression line
-y_linpred <- posterior_linpred(fit, newdata = new)
-```
-
-. . .
-
-This returns a **vector of simulations** representing:
-
-- The expected value of $y$ for new data points with this $x$
-- Uncertainty comes from uncertainty in the **coefficients**
-
-::: notes
-This is useful when you want to make inferences about average outcomes for a population with a given set of predictors.
+- ✗ Confidence intervals often misinterpreted
+- ✗ Cannot incorporate prior knowledge
+- ✗ Difficult to make probability statements about parameters
+- ✗ "The parameter is either in the interval or not"
 :::
 
-## Predictive Distribution with `posterior_predict()`
+::: {.column width="50%"}
+### Bayesian Approach
 
-```{r}
-#| echo: true
-#| eval: false
-# Get full predictive uncertainty
-y_pred <- posterior_predict(fit, newdata = new)
+**Pros:**
 
-# Summarise
-median(y_pred)
-mad(y_pred)
-```
+- ✓ Intuitive probability statements
+- ✓ Can incorporate prior knowledge
+- ✓ Natural uncertainty quantification
+- ✓ Flexible for complex models
 
-. . .
+**Cons:**
 
-This includes **both**:
-
-- Uncertainty in the coefficients
-- Residual variation ($\sigma$)
-
-::: callout-important
-### Key Difference
-Even with infinite data (perfect coefficient estimates), predictive uncertainty **never goes to zero** because of residual variation $\sigma$.
+- ✗ Computationally intensive
+- ✗ Requires specifying priors
+- ✗ Results depend on prior choice
+- ✗ More complex to learn initially
+:::
 :::
 
-## Visualising Prediction Uncertainty
-
-```{r}
-#| echo: true
-#| eval: false
-# Histogram of predictive distribution
-hist(y_pred)
-
-# Calculate probability of an outcome
-win_prob <- mean(y_pred > 50)
-cat("Probability of outcome > 50:", round(win_prob, 2))
-```
-
-. . .
-
-::: callout-tip
-### Advantage of Simulation
-We can compute **any function** of the predictions, including nonlinear summaries like "probability of winning".
+::: footer
+For this course, we'll use both approaches and highlight when each is most appropriate
 :::
-
-# Building Models: Frequentist vs Bayesian
 
 ## Two Cultures of Statistical Modelling
 
-::: {layout-ncol="2"}
+::: columns
+::: {.column width="50%"}
 ### Frequentist (`lm()`)
 
 - Parameters are fixed (unknown) values
 - Uncertainty from sampling distribution
 - Fast computation
 - Uses `lm()` in R
+:::
 
+::: {.column width="50%"}
 ### Bayesian (`stan_glm()`)
 
 - Parameters are random variables with distributions
 - Prior + Data → Posterior
 - More computational
 - Uses `stan_glm()` in R
+:::
 :::
 
 ::: footer
@@ -851,7 +834,7 @@ TSwD Chapter 12
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 library(rstanarm)
 
 model <- stan_glm(
@@ -872,9 +855,13 @@ The main difference from `lm()` is that we specify prior distributions for the p
 ## Specifying the Model Mathematically
 
 $$y_i | \mu_i, \sigma \sim \text{Normal}(\mu_i, \sigma)$$
+
 $$\mu_i = \beta_0 + \beta_1 x_i$$
+
 $$\beta_0 \sim \text{Normal}(0, 2.5)$$
+
 $$\beta_1 \sim \text{Normal}(0, 2.5)$$
+
 $$\sigma \sim \text{Exponential}(1)$$
 
 . . .
@@ -893,7 +880,7 @@ Before running the model, simulate from the priors to check if they produce sens
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 draws <- 1000
 priors <- tibble(
   sigma = rexp(n = draws, rate = 1),
@@ -906,7 +893,11 @@ priors <- tibble(
 
 ## Checking Prior Implications
 
-![Prior predictive check showing implied predictions](images/prior_predictive.png){width=70%}
+```{r}
+#| echo: false
+kable(priors[1:8,])
+```
+
 
 . . .
 
@@ -916,7 +907,7 @@ If priors imply impossible values (e.g., negative marathon times), **refine your
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 model <- stan_glm(
   marathon_time ~ five_km_time + was_raining,
   data = sim_run_data,
@@ -928,17 +919,23 @@ model <- stan_glm(
 )
 ```
 
-. . .
+---
 
 The `autoscale = TRUE` option adjusts priors based on the data scale.
 
-Check what was used with `prior_summary(model)`.
+Check what was used with:
+
+```{r}
+prior_summary(model)
+```
+
 
 ## Posterior Predictive Checks
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
+#| out.height: 420
 # Compare actual data to model predictions
 pp_check(model) +
   theme_classic() +
@@ -947,45 +944,303 @@ pp_check(model) +
 
 . . .
 
-![Posterior predictive check](images/pp_check.png){width=60%}
-
 If the model fits well, simulated data should look like actual data.
 
 ## MCMC Diagnostics
 
-::: {layout-ncol="2"}
 ### Trace Plot
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 plot(model, "trace")
 ```
 
 Look for: horizontal, overlapping chains
 
+---
+
 ### Rhat Plot
 
 ```{r}
 #| echo: true
-#| eval: false
+#| eval: true
 plot(model, "rhat")
 ```
 
 Look for: all values close to 1.0 (< 1.1)
-:::
 
 ::: notes
 These diagnostics check that the MCMC algorithm has converged and is producing reliable samples from the posterior distribution. If there are problems, simplify the model or adjust priors.
 :::
+
+# Prediction with Regression Models
+
+## Three Types of Predictions
+
+After fitting a regression $y = a + bx + \text{error}$, we can make three types of predictions:
+
+. . .
+
+1. **Point prediction**: $\hat{a} + \hat{b}x_{new}$
+   - Single best estimate (ignores uncertainty)
+   - Available in both frequentist and Bayesian
+
+. . .
+
+2. **Linear predictor with uncertainty**: $a + bx_{new}$
+   - Accounts for uncertainty in coefficients
+   - Different approaches in frequentist vs Bayesian
+
+. . .
+
+3. **Predictive distribution**: $a + bx_{new} + \epsilon$
+   - Accounts for coefficient uncertainty AND residual variation
+   - Natural in Bayesian framework
+
+::: footer
+ROS Chapter 9
+:::
+
+## Point Prediction with `predict()`
+
+Works the **same way** for both `lm()` and `stan_glm()`:
+
+::: columns
+::: {.column width="50%"}
+### Frequentist (`lm`)
+
+```{r}
+#| echo: true
+#| eval: true
+# Fit model
+fit <- lm(kid_score ~ mom_iq,
+          data = kidiq)
+
+# Create new data point
+new <- data.frame(mom_iq = 100)
+
+# Get point prediction
+predict(fit, newdata = new)
+```
+:::
+
+::: {.column width="50%"}
+### Bayesian (`stan_glm`)
+
+```{r}
+#| echo: true
+#| eval: false
+# Fit model
+fit <- stan_glm(kid_score ~ mom_iq,
+                data = kidiq)
+
+# Create new data point
+new <- data.frame(mom_iq = 100)
+
+```
+
+
+```{r}
+#| echo: false
+#| include: false
+#| eval: true
+# Fit model
+fit <- stan_glm(kid_score ~ mom_iq,
+                data = kidiq)
+
+# Create new data point
+new <- data.frame(mom_iq = 100)
+```
+
+```{r}
+# Get point prediction
+predict(fit, newdata = new)
+```
+
+
+:::
+:::
+
+. . .
+
+Both give a **single number** — the best guess for the outcome.
+
+## Prediction with Uncertainty in Coefficients
+
+::: columns
+::: {.column width="50%"}
+### Frequentist: Confidence Intervals
+
+```{r}
+#| echo: false
+fit <- lm(kid_score ~ mom_iq,
+          data = kidiq)
+```
+
+
+```{r}
+#| echo: true
+#| eval: true
+# Get confidence interval for
+# the expected value
+predict(fit, newdata = new,
+        interval = "confidence",
+        level = 0.95)
+```
+
+Returns: point estimate + lower/upper bounds
+
+- Based on standard error of coefficients
+- 95% interval: "If we repeated this many times, 95% of intervals would contain the true mean"
+:::
+
+::: {.column width="50%"}
+### Bayesian: Posterior Distribution
+
+```{r}
+#| echo: false
+#| include: false
+fit <- stan_glm(kid_score ~ mom_iq,
+                data = kidiq)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+# Get posterior distribution of
+# the expected value
+y_linpred <- posterior_linpred(
+  fit, newdata = new)
+
+# Summarize
+median(y_linpred)
+quantile(y_linpred, c(0.025, 0.975))
+```
+
+Returns: full distribution (4000 draws)
+
+- Based on posterior uncertainty in coefficients
+- 95% interval: "There's 95% probability the true mean is in this range"
+:::
+:::
+
+::: notes
+Both approaches account for uncertainty in the coefficients. The Bayesian approach gives you the full distribution, while the frequentist approach gives you interval bounds.
+:::
+
+## Prediction Including Residual Uncertainty
+
+::: columns
+::: {.column width="50%"}
+### Frequentist: Prediction Intervals
+
+```{r}
+#| echo: false
+fit <- lm(kid_score ~ mom_iq,
+          data = kidiq)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+# Get prediction interval for
+# new individual observation
+predict(fit, newdata = new,
+        interval = "prediction",
+        level = 0.95)
+```
+
+Returns: point estimate + wider bounds
+
+- Includes coefficient uncertainty **AND** $\sigma$
+- Interval: "95% of future observations will fall in this range"
+:::
+
+::: {.column width="50%"}
+### Bayesian: Predictive Distribution
+
+```{r}
+#| echo: false
+#| include: false
+fit <- stan_glm(kid_score ~ mom_iq,
+                data = kidiq)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+# Get full predictive distribution
+y_pred <- posterior_predict(
+  fit, newdata = new)
+
+# Summarize
+median(y_pred)
+quantile(y_pred, c(0.025, 0.975))
+```
+
+Returns: full distribution (4000 draws)
+
+- Includes coefficient uncertainty **AND** $\sigma$
+- Can compute any probability: `mean(y_pred > 90)`
+:::
+:::
+
+---
+
+::: callout-important
+### Key Difference from Confidence Intervals
+**Prediction intervals** are always **wider** than confidence intervals because they include residual variation $\sigma$, even with infinite data.
+:::
+
+## Comparing the Three Prediction Types
+
+| Type | Frequentist | Bayesian | Includes |
+|------|-------------|----------|----------|
+| **Point** | `predict(fit, new)` | `predict(fit, new)` | Nothing |
+| **Confidence/Expected** | `predict(fit, new, interval="confidence")` | `posterior_linpred(fit, new)` | Coefficient uncertainty |
+| **Prediction/Full** | `predict(fit, new, interval="prediction")` | `posterior_predict(fit, new)` | Coefficients + $\sigma$ |
+
+. . .
+
+**Key difference in output:**
+
+- Frequentist: Returns point + lower/upper bounds (3 numbers)
+- Bayesian: Returns full distribution (4000 draws)
+
+---
+
+**Advantage of Bayesian distributions:**
+
+You can compute **any function** of the predictions:
+```{r}
+#| echo: true
+#| eval: true
+mean(y_pred > 90)  # Probability kid_score exceeds 90
+quantile(y_pred, 0.9)  # 90th percentile of predictions
+```
 
 # Model Comparison and Building
 
 ## Using `modelsummary()` for Comparison
 
 ```{r}
+model_1 <- lm(marathon_time ~ 
+                five_km_time, 
+              data = sim_run_data)
+model_2 <- lm(marathon_time ~ 
+                five_km_time + was_raining, 
+              data = sim_run_data)
+model_3 <- lm(marathon_time ~ five_km_time + was_raining + humidity,
+              data = sim_run_data)
+```
+
+---
+
+```{r}
 #| echo: true
 #| eval: false
+library(modelsummary)
 modelsummary(
   list(
     "Five km only" = model_1,
@@ -999,6 +1254,25 @@ modelsummary(
 . . .
 
 This creates a **publication-quality table** comparing multiple models side by side.
+
+---
+
+```{r}
+#| echo: false
+#| eval: true
+library(kableExtra)
+modelsummary(
+  list(
+    "Five km only" = model_1,
+    "Add rain" = model_2,
+    "Add humidity" = model_3
+  ),
+  fmt = 2, output = 'kableExtra',
+) %>%
+  kable_styling(font_size = 22)
+```
+
+---
 
 ## Model Comparison Metrics
 
@@ -1032,6 +1306,27 @@ When using an unfamiliar dataset, check for:
 Is the model **directly relevant** to your research question?
 :::
 
+---
+
+## 2. Homoscedasticity (how to quickly check)
+
+**The Goal**: The spread of your residuals should be constant across all levels of your predicted values. If the spread fans out (like a cone), you have heteroscedasticity, which can make your p-values and confidence intervals unreliable.
+
+For example ... 
+
+```{r}
+# 1. Create data with Heteroscedasticity (error increases with x)
+set.seed(123)
+x <- 1:100
+y <- 2 * x + rnorm(100, sd = x) # Standard deviation grows as x grows
+
+model_homo <- lm(y ~ x)
+
+# 2. The Check: Residuals vs Fitted Plot
+plot(model_homo, which = 1)
+```
+
+
 # Confounding and Control Variables
 
 ## What is Confounding?
@@ -1048,7 +1343,8 @@ Including confounders in the model can **change** the estimated effect of your p
 
 ## Example: Education and Income
 
-::: {layout-ncol="2"}
+::: columns
+::: {.column width="50%"}
 ### Simple regression
 ```{r}
 #| echo: true
@@ -1056,7 +1352,9 @@ Including confounders in the model can **change** the estimated effect of your p
 lm(income ~ education)
 # education: +5000
 ```
+:::
 
+::: {.column width="50%"}
 ### With confounder
 ```{r}
 #| echo: true
@@ -1064,6 +1362,7 @@ lm(income ~ education)
 lm(income ~ education + parents_income)
 # education: +3000
 ```
+:::
 :::
 
 . . .
@@ -1124,29 +1423,16 @@ This is why multiple regression is so important for social science research. We 
 lm(y ~ x1 + x2 + x3, data = df)
 lm(y ~ x1 * x2, data = df)  # With interaction
 
-# Bayesian
-stan_glm(y ~ x1 + x2, data = df, 
-         prior = normal(0, 2.5))
+# produce model summary table
+modelsummary(fit)
+# Check https://modelsummary.com/ to learn about how to use it!
 
 # Predictions
 predict(fit, newdata = new)
-posterior_linpred(fit, newdata = new)
-posterior_predict(fit, newdata = new)
 
-# Diagnostics
-pp_check(fit)
-prior_summary(fit)
+# Diagnostics for heteroscedasticity
+plot(fit, which = 1)
 ```
-
-## Formula Syntax Reference
-
-| Formula | Meaning |
-|---------|---------|
-| `y ~ x1 + x2` | Main effects only |
-| `y ~ x1:x2` | Interaction only |
-| `y ~ x1 * x2` | Main effects + interaction |
-| `y ~ factor(x)` | Categorical with dummies |
-| `y ~ x1 + I(x1^2)` | Polynomial term |
 
 ## Next Week
 
