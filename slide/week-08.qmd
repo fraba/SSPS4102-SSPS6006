@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+    html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
@@ -42,6 +43,12 @@ library(rstanarm)
 library(broom)
 library(knitr)
 library(modelsummary)
+# Optional packages for maps (install if needed)
+# install.packages(c("ggmap", "maps", "mapproj", "tidygeocoder"))
+# library(ggmap)
+# library(maps)
+# library(mapproj)
+# library(tidygeocoder)
 ```
 
 ## Learning Objectives
@@ -51,12 +58,13 @@ By the end of this lecture, you will be able to:
 1. Check regression assumptions systematically
 2. Create and interpret residual plots
 3. Transform variables appropriately (log, sqrt)
-4. Create publication-quality tables
-5. Communicate statistical results effectively
-6. Diagnose and address common model problems
+4. Create publication-quality tables and maps
+5. Prepare spatial visualizations using ggplot2 and ggmap
+6. Communicate statistical results effectively
+7. Diagnose and address common model problems
 
 ::: notes
-This week brings together model diagnostics and effective communication. We'll learn how to check if our models are appropriate and how to present our findings professionally.
+This week brings together model diagnostics and effective communication. We'll learn how to check if our models are appropriate and how to present our findings professionally using tables, maps, and clear writing.
 :::
 
 ## Readings for This Week
@@ -90,6 +98,11 @@ This week brings together model diagnostics and effective communication. We'll l
 5. **Equal variance of errors** - Homoscedasticity
 6. **Normality of errors** - For prediction intervals
 :::
+
+::: footnotes
+ROS, Ch. 11
+:::
+
 
 ::: notes
 We list these in decreasing order of importance. Validity is most important but often overlooked. Normality is least important for estimating coefficients.
@@ -188,6 +201,7 @@ When errors are correlated, standard errors can be underestimated, leading to fa
 The normality assumption is typically barely important at all for estimating the regression line.
 
 It is relevant when:
+
 - Predicting individual data points
 - Constructing prediction intervals
 :::
@@ -268,6 +282,27 @@ ggplot(df, aes(x = mom_iq, y = kid_score)) +
 The grey lines show different plausible regression lines from the posterior distribution of parameters.
 :::
 
+## From "One Truth" to "Many Truths"
+Last week, we discussed **Bayesian Thinking**, where we treat parameters (like our slope $\beta_1$) as **probability distributions** rather than fixed numbers.
+
+* **Frequentist View:** There is one "true" slope, and our 10 lines represent the error in our estimate.
+* **Bayesian View:** All 10 lines are **equally plausible** given our prior beliefs and the data we've seen.
+* **The Posterior:** These 10 lines are essentially random draws from the **Posterior Distribution**.
+
+
+
+---
+
+## Why this visual feels "Bayesian"
+Showing multiple lines is a simplified version of a **Posterior Predictive Check (PPC)**.
+
+1. **Uncertainty is Explicit:** In Bayesian stats, we don't just say "the slope is 0.6." We say, "here are 1,000 slopes that could explain this data."
+2. **Beyond the p-value:** Instead of asking "is the slope zero?", we look at the *density* of these lines. If most lines tilt upward, we are confident in the positive relationship.
+3. **Generative Logic:** Just like we used `rnorm()` to "draw" these lines, Bayesian models use MCMC (Markov Chain Monte Carlo) to "draw" plausible versions of the world.
+
+> **Key Takeaway:** The 10 lines change the conversation from "What is the answer?" to "What range of answers is supported by our evidence?"
+
+
 # Residual Plots
 
 ## What Are Residuals?
@@ -309,6 +344,75 @@ ggplot(df, aes(x = fitted, y = residuals)) +
        title = "Residual Plot") +
   theme_minimal(base_size = 14)
 ```
+
+## The "Standard" Error: What is Sigma?
+While our 10 grey lines showed uncertainty in our **aim**, $\sigma$ (the Residual Standard Error) shows the spread of our **misses**.
+
+* **The Ruler of Residuals:** $\sigma$ is essentially the "standard deviation" of the residuals. It tells us the typical distance a data point falls from the regression line.
+* **The 68% Rule:** In a well-behaved model, we expect about **68% of our observations** to fall within the dotted lines ($\pm 1\sigma$).
+* **The "Noise" Floor:** $\sigma$ represents the inherent randomness (or unmeasured factors) that our model cannot explain. 
+
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: "100%"
+#| fig-align: "center"
+
+library(ggplot2)
+
+# 1. Data Prep
+x <- seq(-4, 4, length.out = 1000)
+y <- dnorm(x, mean = 0, sd = 1)
+df2 <- data.frame(x = x, y = y)
+
+get_poly <- function(range) {
+  poly_x <- seq(range[1], range[2], length.out = 100)
+  poly_y <- dnorm(poly_x, mean = 0, sd = 1)
+  data.frame(x = c(poly_x, rev(poly_x)), y = c(poly_y, rep(0, length(poly_y))))
+}
+
+# 2. Build the Plot
+ggplot(df2, aes(x = x, y = y)) +
+  # Use linewidth instead of size for lines
+  geom_line(linewidth = 1, color = "black") +
+  
+  # Shaded Regions
+  geom_polygon(data = get_poly(c(-3, 3)), fill = "#dbeeff", alpha = 0.6) +
+  geom_polygon(data = get_poly(c(-2, 2)), fill = "#b3d9ff", alpha = 0.7) +
+  geom_polygon(data = get_poly(c(-1, 1)), fill = "#80c1ff", alpha = 0.8) +
+  
+  # FIX: Use annotate() for segments to avoid the "1000 rows" warning
+  annotate("segment", x = c(-1, 1, -2, 2, -3, 3), xend = c(-1, 1, -2, 2, -3, 3),
+           y = 0, yend = dnorm(c(-1, 1, -2, 2, -3, 3)), 
+           linetype = "dashed", color = "grey40") +
+  
+  # FIX: Use 'fontface' for annotate()
+  annotate("text", x = 0, y = -0.05, label = "68.3%", size = 5, fontface = "bold") +
+  annotate("text", x = 0, y = -0.13, label = "95.4%", size = 5, fontface = "bold") +
+  annotate("text", x = 0, y = -0.21, label = "99.7%", size = 5, fontface = "bold") +
+  
+  # Brackets (as segments)
+  annotate("segment", x = -1, xend = 1, y = -0.02, yend = -0.02, linewidth = 1) +
+  annotate("segment", x = -2, xend = 2, y = -0.1, yend = -0.1, linewidth = 1) +
+  annotate("segment", x = -3, xend = 3, y = -0.18, yend = -0.18, linewidth = 1) +
+  
+  scale_x_continuous(breaks = -3:3, 
+                     labels = c("-3\u03c3", "-2\u03c3", "-1\u03c3", "0\u03c3", "1\u03c3", "2\u03c3", "3\u03c3")) +
+  
+  theme_minimal(base_size = 14) +
+  labs(title = "The 68-95-99.7 Rule", x = "Standard Deviations (\u03c3)", y = "Density") +
+  theme(
+    # FIX: Use 'face' (NOT fontface) inside element_text()
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    panel.grid.minor = element_blank(),
+    plot.margin = unit(c(1, 1, 3, 1), "cm")
+  )
+```
+
+
+> **Intuition:** If the blue line is our "Best Guess," the area between the dotted lines is our **"Typical Error Zone."** If a point is outside these lines, it's an unusually large "miss" for this model.
 
 ## Interpreting Residual Plots
 
@@ -501,6 +605,22 @@ $$z = \frac{x - \bar{x}}{s_x}$$
 Dividing by **2 standard deviations** makes continuous variable coefficients comparable to binary (0/1) variable coefficients.
 :::
 
+## Why Standardize by 2 SD?
+
+When we include both **Binary** (0/1) and **Continuous** variables in a model, their coefficients are on different scales. Dividing by $2\sigma$ levels the playing field.
+
+* **The Binary Baseline:** A balanced binary variable (like "Treatment" vs "Control") has a standard deviation of approximately **0.5**.
+* **The Continuous Problem:** Standardising a variable by $1\sigma$ gives it an SD of **1.0**, making its coefficient half as "sensitive" as a binary one.
+* **The $2\sigma$ Solution:** By dividing a continuous variable by $2$ standard deviations, we give it an SD of **0.5**.
+
+
+
+### The Result
+A coefficient for a continuous variable now represents a move from **"Low" to "High"** (roughly the 16th to 84th percentile), making it directly comparable to the move from **0 to 1** in a binary variable.
+
+> **Key takeaway:** We scale by $2\sigma$ so we can compare "apples to apples" when looking at which variable has a stronger effect.
+
+
 ## Example: Centering for Interpretability
 
 ```{r}
@@ -539,6 +659,8 @@ data.frame(
 )
 ```
 
+
+
 # Data Adjustment: A Case Study
 
 ## The Mortality Rate Example
@@ -560,6 +682,25 @@ In 2015, Case and Deaton published that mortality rates for middle-aged white no
 This is a famous example of how aggregation bias can lead to misleading conclusions. The changing demographics within an age bracket affected the results.
 :::
 
+::: footnotes
+From ROS, Ch. 2
+:::
+
+---
+
+![](https://www.pnas.org/cms/10.1073/pnas.1523465113/asset/e14ce236-e1fc-4df8-ae5a-792a47a6512d/assets/graphic/pnas.1523465113fig01.jpeg)
+[(A) Observed increase in raw mortality rate among 45- to 54-y-old non-Hispanic whites, unadjusted for age. (B) Increase in average age of this group as the baby boom generation moves through. (C) Raw death rate, along with trend in death rate attributable by change in age distribution alone, had age-specific mortality rates been at the 2013 level throughout.]{style="font-size: 0.5em;"}
+
+![](https://www.pnas.org/cms/10.1073/pnas.1523465113/asset/a7f80214-c813-48c2-bdf6-098b6126c071/assets/graphic/pnas.1523465113fig02.jpeg)
+[(A) Age adjusted death rates among 45- to 54-y-old non-Hispanic whites, showing an increase from 1999 to 2005 and a steady pattern since 2005. (B) Comparison of three different age adjustments. (C) Trends in age-adjusted death rates broken down by sex.]{style="font-size: 0.5em;"}
+
+
+
+::: footnotes
+A. Gelman, & J. Auerbach,  Age-aggregation bias in mortality trends, *Proc. Natl. Acad. Sci. U.S.A.* 113 (7) E816-E817, https://doi.org/10.1073/pnas.1523465113 (2016).
+:::
+
+
 ## Aggregation Bias Explained
 
 During 1999-2013:
@@ -573,6 +714,8 @@ During 1999-2013:
 **Result**: Even if age-specific mortality rates were constant, the group mortality rate would increase due to compositional change.
 
 ## What Proper Adjustment Revealed
+
+> That is, we calculate the mortality rate each year by dividing the number of deaths for each age between 45 and 54 by the population of that age and then taking the average. ROS, Ch. 2, p.32
 
 After adjusting for age composition:
 
@@ -605,6 +748,7 @@ Tables convey less information than graphs but do so with higher precision. Use 
 
 ```{r}
 #| echo: true
+library(knitr) 
 # Basic table with kable
 df |>
   head(5) |>
@@ -629,7 +773,13 @@ df |>
   )
 ```
 
-## Regression Tables with `modelsummary`
+
+::: callout-tip
+## modelsummary webpage
+modelsummary has many different options and a suite of functions to help you visualise your data and results with table. Have a look at the package webpage here: [modelsummary.com](https://modelsummary.com/)
+:::
+
+## Regression Tables with `modelsummary` {style="font-size: 0.65em;"}
 
 ```{r}
 #| echo: true
@@ -640,8 +790,28 @@ model2 <- lm(kid_score ~ mom_iq + I(mom_iq^2), data = df)
 # Display comparison
 modelsummary(
   list("Linear" = model1, "Quadratic" = model2),
-  fmt = 2,
+  fmt = 2, # round number to 2 digits
   title = "Comparing linear and quadratic models"
+)
+```
+
+## Renaming Variables for Publication {style="font-size: 0.6em;"}
+
+By default, `modelsummary` uses the raw variable names from your R code. We can use the `coef_rename` argument to create professional labels.
+
+```{r}
+#| echo: true
+modelsummary(
+  list("Linear" = model1, "Quadratic" = model2),
+  title = "Table 1: Refined Model Comparison",
+  fmt = 2,
+  # Rename rows: "Old Name" = "New Name"
+  coef_rename = c(
+    "(Intercept)" = "Constant",
+    "mom_iq" = "Mother's IQ",
+    "I(mom_iq^2)" = "Mother's IQ (Squared)"
+  ),
+  stars = TRUE # Add significance stars for clarity
 )
 ```
 
@@ -655,6 +825,356 @@ modelsummary(
 3. **Informative captions** - Self-contained descriptions
 4. **Consistent formatting** - Align numbers properly
 5. **Source notes** - Credit data origins
+:::
+
+# Communicating Results: Maps
+
+## Why Maps?
+
+Maps are a special type of visualisation where:
+
+- **x-axis** represents longitude
+- **y-axis** represents latitude
+- Background shows geographic context
+
+::: notes
+Maps may be the oldest and best understood type of chart. They're powerful for showing spatial patterns in data.
+:::
+
+. . .
+
+::: callout-important
+### Two Essential Components
+
+1. **Border or background** (tile) - Geographic context
+2. **Data overlay** - Your data of interest
+:::
+
+## Maps with ggplot2
+
+You can create basic maps using just `ggplot2` with `map_data()`:
+
+```{r}
+#| echo: true
+#| eval: false
+
+# Get map data
+france <- map_data(map = "france")
+
+# Create map
+ggplot() +
+  geom_polygon(
+    data = france,
+    aes(x = long, y = lat, group = group),
+    fill = "white",
+    colour = "grey"
+  ) +
+  coord_map() +
+  theme_minimal()
+```
+
+---
+
+```{r}
+#| echo: false
+#| eval: true
+
+# Get map data
+france <- map_data(map = "france")
+
+# Create map
+ggplot() +
+  geom_polygon(
+    data = france,
+    aes(x = long, y = lat, group = group),
+    fill = "white",
+    colour = "grey"
+  ) +
+  coord_map() +
+  theme_minimal()
+```
+
+## Getting geographic (shapefile) data for your maps
+
+- [ACT Roads](https://actmapi-actgov.opendata.arcgis.com/datasets/ACTGOV::actgov-road-centrelines/about)
+- [ACT Water bodies](https://actmapi-actgov.opendata.arcgis.com/datasets/actgov-water-body-poly/about)
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(sf)
+library(tidyverse)
+
+# Load local shapefiles
+# Path should be where the .shp file is located
+roads <- 
+  st_read("../data/ACTGOV_ROAD_CENTRELINES/ACTGOV_Road_Centrelines.shp") |>
+  st_transform(crs = 4326)
+water <- 
+  st_read("../data/ACTGOV_WATER_BODY_POLY/ACTGOV_Water_Body_Poly.shp") |>
+  st_transform(crs = 4326)
+
+## Define your boundaries using bboxfinder.com
+
+ggplot() +
+  geom_sf(data = water, fill = "lightblue", color = NA) +
+  geom_sf(data = roads, color = "grey40", size = 0.2) +
+  coord_sf(xlim = c(149.10, 149.15),
+           ylim = c(-35.32, -35.27)) +
+  theme_void()
+```
+
+---
+
+```{r}
+#| echo: false
+#| eval: true
+
+library(sf)
+library(tidyverse)
+
+# Load local shapefiles
+# Path should be where the .shp file is located
+roads <- 
+  st_read("../data/ACTGOV_ROAD_CENTRELINES/ACTGOV_Road_Centrelines.shp", quiet = TRUE) |>
+  st_transform(crs = 4326)
+water <- 
+  st_read("../data/ACTGOV_WATER_BODY_POLY/ACTGOV_Water_Body_Poly.shp", quiet = TRUE) |>
+  st_transform(crs = 4326)
+
+## Define your boundaries using bboxfinder.com
+
+ggplot() +
+  geom_sf(data = water, fill = "lightblue", color = NA) +
+  geom_sf(data = roads, color = "grey40", size = 0.2) +
+  coord_sf(xlim = c(149.10, 149.15),
+           ylim = c(-35.32, -35.27)) +
+  theme_void()
+```
+
+
+## Example: Australian Polling Places
+
+Real-world example from the 2019 Australian federal election:
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Read polling booth data from Australian Electoral Commission
+booths <- read_csv(
+  "https://results.aec.gov.au/24310/Website/Downloads/GeneralPollingPlacesDownload-24310.csv",
+  skip = 1
+)
+
+# Filter to Australian Capital Territory
+booths_act <- booths |>
+  filter(State == "ACT") |>
+  select(PollingPlaceID, DivisionNm, Latitude, Longitude) |>
+  filter(!is.na(Longitude))
+```
+
+## Mapping Polling Places
+
+```{r}
+#| echo: true
+#| eval: false
+
+ggplot() +
+  geom_sf(data = water, fill = "lightblue", color = NA) +
+  geom_sf(data = roads, color = "grey40", size = 0.2) +
+  coord_sf(xlim = c(148.984222, 149.294930),
+           ylim = c(-35.416195, -35.247582)) +
+  geom_point(
+    data = booths_act,
+    aes(x = Longitude, y = Latitude, colour = DivisionNm),
+    alpha = 0.7
+  ) +
+  scale_color_brewer(name = "Electoral Division",
+                     palette = "Set1") +
+  labs(x = "Longitude", y = "Latitude") +
+  theme_void()
+```
+
+---
+
+```{r}
+#| echo: false
+#| eval: true
+
+ggplot() +
+  geom_sf(data = water, fill = "lightblue", color = NA) +
+  geom_sf(data = roads, color = "grey40", size = 0.2) +
+  coord_sf(xlim = c(148.984222, 149.294930),
+           ylim = c(-35.416195, -35.247582)) +
+  geom_point(
+    data = booths_act,
+    aes(x = Longitude, y = Latitude, colour = DivisionNm),
+    alpha = 0.7
+  ) +
+  scale_color_brewer(name = "Electoral Division",
+                     palette = "Set1") +
+  labs(x = "Longitude", y = "Latitude") +
+  theme_void()
+```
+
+## Mapping Australia
+
+```{r}
+#| echo: true
+#| eval: false
+#| cache: false
+library(sf)
+library(tidyverse)
+
+# 1. Load the shapefile
+aus_map <- st_read("../data/STE_2021_AUST_SHP_GDA2020/STE_2021_AUST_GDA2020.shp") %>% 
+  st_transform(4326) |> # Transform to Long/Lat immediately 
+  filter(!STE_NAME21 %in%
+           c("Other Territories", "Outside Australia"))
+
+# 2. Create some values to map
+# Note: Check your shapefile's attribute table (head(aus_map)) 
+# to see if the column is 'STE_NAME21' or similar.
+my_values <- data.frame(
+  STE_NAME21 = c("New South Wales", "Victoria", "Queensland", "South Australia", 
+                 "Western Australia", "Tasmania", "Northern Territory", 
+                 "Australian Capital Territory"),
+  score = c(10, 25, 40, 55, 70, 85, 30, 95)
+)
+
+# 3. Join the data
+aus_joined <- aus_map |>
+  left_join(my_values, by = "STE_NAME21")
+
+# 4. Plot
+ggplot(data = aus_joined) +
+  geom_sf(aes(fill = score), color = "white", linewidth = 0.3) +
+  scale_fill_viridis_c(option = "mako", name = "Value Indicator") +
+  theme_void() +
+  labs(
+    title = "Regional Value Distribution",
+    subtitle = "Source: ABS STE 2021 Boundaries",
+    caption = "Coordinate System: GDA2020 transformed to WGS84"
+  )
+```
+
+---
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| cache: true
+library(sf)
+library(tidyverse)
+
+# 1. Load the shapefile
+aus_map <- st_read("../data/STE_2021_AUST_SHP_GDA2020/STE_2021_AUST_GDA2020.shp", quiet = TRUE) %>% 
+  st_transform(4326) |> # Transform to Long/Lat immediately 
+  filter(!STE_NAME21 %in%
+           c("Other Territories", "Outside Australia"))
+
+# 2. Create some values to map
+# Note: Check your shapefile's attribute table (head(aus_map)) 
+# to see if the column is 'STE_NAME21' or similar.
+my_values <- data.frame(
+  STE_NAME21 = c("New South Wales", "Victoria", "Queensland", "South Australia", 
+                 "Western Australia", "Tasmania", "Northern Territory", 
+                 "Australian Capital Territory"),
+  score = c(10, 25, 40, 55, 70, 85, 30, 95)
+)
+
+# 3. Join the data
+aus_joined <- aus_map |>
+  left_join(my_values, by = "STE_NAME21")
+
+# 4. Plot
+ggplot(data = aus_joined) +
+  geom_sf(aes(fill = score), color = "white", linewidth = 0.3) +
+  scale_fill_viridis_c(option = "mako", name = "Value Indicator") +
+  theme_void() +
+  labs(
+    title = "Regional Value Distribution",
+    subtitle = "Source: ABS STE 2021 Boundaries",
+    caption = "Coordinate System: GDA2020 transformed to WGS84"
+  )
+```
+
+## Geocoding Place Names
+
+Sometimes you only have place names, not coordinates. **Geocoding** converts names to coordinates:
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(tidygeocoder)
+
+# Create data with place names
+places <- tibble(
+  city = c("Sydney", "Melbourne", "Brisbane"),
+  country = c("Australia", "Australia", "Australia")
+)
+
+# Geocode to get coordinates
+places_coded <- geo(
+  city = places$city,
+  country = places$country,
+  method = "osm"  # OpenStreetMap
+)
+```
+
+## Geocoding Results
+
+```{r}
+#| echo: true
+#| eval: false
+
+places_coded
+#   city      country      lat   long
+#   Sydney    Australia  -33.9  151.2
+#   Melbourne Australia  -37.8  144.9
+#   Brisbane  Australia  -27.5  153.0
+```
+
+. . .
+
+Now you can plot these locations on a map!
+
+::: callout-warning
+### Data Quality Issues
+Geographic boundaries can be surprisingly difficult to define precisely. Different levels of government may use different definitions for the same place name.
+:::
+
+## Map Best Practices
+
+::: callout-tip
+### Keys to Good Maps
+
+1. **Choose appropriate zoom** - Not too zoomed in/out
+2. **Use meaningful colors** - Match colors to categories or values
+3. **Include scale/labels** - Help readers interpret geography
+4. **Consider projections** - Each geographic data is necessarily projected, remember that the Earth is NOT flat!
+5. **Simplify when possible** - Remove unnecessary detail
+6. **Cite data sources** - Credit geographic and overlay data
+:::
+
+## When to Use Maps
+
+Maps are particularly effective for:
+
+- **Spatial patterns** - Distribution across geography
+- **Regional comparisons** - Differences between areas
+- **Infrastructure locations** - Points of service/interest
+- **Movement patterns** - Migration, travel, diffusion
+
+. . .
+
+::: callout-warning
+### When NOT to Use Maps
+If geography isn't central to your story, consider alternatives like bar charts or tables that may communicate more clearly.
 :::
 
 # Writing Research
@@ -693,6 +1213,8 @@ A quantitative paper typically includes:
 - Every variable should appear in at least one figure or table
 :::
 
+With the exclusion of the abstract, this maps well your A4 task.
+
 ## Writing Effective Abstracts
 
 An abstract should cover (in ~4-5 sentences):
@@ -702,6 +1224,11 @@ An abstract should cover (in ~4-5 sentences):
 3. **Approach** - Data and methods
 4. **Findings** - The headline result
 5. **Implications** - Why it matters
+
+::: callout-important
+### An abstract is not (strictly) required in your A4 but...
+... still try to see if you can produce one. It's a good exercise to understand if you can report all the essentials aspects of your project.
+:::
 
 ## The Data Section
 
@@ -767,22 +1294,12 @@ summary(fit)$r.squared
 $R^2$ always increases when you add more predictors, even if they're just noise!
 :::
 
-## Cross-Validation
+## Adjusted R-squared ($Adj. R^2$)
 
 **Problem**: Using the same data to fit and evaluate leads to **optimism**.
-
 . . .
 
-**Solution**: **Leave-one-out (LOO) cross-validation**
-
-1. Remove one observation
-2. Fit model to remaining data
-3. Predict the held-out observation
-4. Repeat for all observations
-
-. . .
-
-**LOO $R^2$** gives a more honest assessment of predictive performance.
+**Adjusted $R^2$** gives a more honest assessment of predictive performance because it penalises additional predictors.
 
 ## Comparing Models
 
@@ -802,7 +1319,17 @@ c(simple = summary(model_simple)$r.squared,
 
 . . .
 
-$R^2$ increased, but is the model actually better? Cross-validation would reveal the truth.
+$R^2$ increased, but is the model actually better? Adj. $R^2$ would reveal the truth.
+
+. . . 
+
+### Compare R-squared adjusted (which penalised additional predictors)
+
+```{r}
+c(simple = summary(model_simple)$adj.r.squared,
+  with_noise = summary(model_noise)$adj.r.squared)
+```
+
 
 # Practical Workflow
 
@@ -855,7 +1382,9 @@ digraph workflow {
 6. **Validate models** - Use cross-validation for honest assessment
 :::
 
-## Next Week
+## Next Week no seminar because of public holiday.
+
+### Still complete A1 and A2, please! 
 
 **Week 9: Logistic Regression**
 

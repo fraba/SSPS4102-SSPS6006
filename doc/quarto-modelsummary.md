@@ -17,7 +17,6 @@ format:
 First, we load the necessary libraries. We'll use the built-in `mtcars` dataset for our examples.
 
 ```{r}
-#| label: setup
 library(modelsummary)
 library(dplyr)
 
@@ -39,11 +38,12 @@ The modelsummary() function automatically detects whether you are rendering to H
 
 ```{r}
 modelsummary(models)
-Customizing the Output
+```
+
+## Customizing the Output
 To make the table "nice," we usually want to rename coefficients, add a title, and perhaps change the goodness-of-fit statistics.
 
-Code snippet
-#| label: customized-table
+```
 modelsummary(
   models,
   title = "Table 1: The Impact of Horsepower on MPG",

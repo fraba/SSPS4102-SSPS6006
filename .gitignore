@@ -4,3 +4,7 @@
 .Ruserdata
 slide/.DS_Store
 .DS_Store
+/data/ACTGOV_ROAD_CENTRELINES
+/data/ACTGOV_WATER_BODY_POLY
+/data/STE_2021_AUST_SHP_GDA2020
+/slide/week-08_cache
