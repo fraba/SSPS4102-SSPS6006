@@ -26,6 +26,8 @@ execute:
 
 I would like to acknowledge the Traditional Owners of Australia and recognise their continuing connection to land, water and culture. The University of Sydney is located on the land of the Gadigal people of the Eora Nation. I pay my respects to their Elders, past and present.
 
+## Qualitative Anonymous Feedback (from Canvas)
+
 ## Note
 
 These slides are developed based on:
@@ -488,6 +490,27 @@ ggplot(patterns, aes(x = fitted, y = residual)) +
   theme_minimal(base_size = 12)
 ```
 
+---
+
+### 📋 Head to Canvas and complete A1 (Section 1: Checking Regression Assumptions)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 # Variable Transformations
 
 ## Why Transform Variables?
@@ -729,6 +752,28 @@ After adjusting for age composition:
 ### Lesson Learned
 Data adjustment is not merely academic. It can fundamentally change the interpretation of data and conclusions.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 2: Transforming Variables)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Communicating Results: Tables
 
@@ -1357,6 +1402,29 @@ digraph workflow {
 ")
 ```
 
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Comparing Model Fit)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 ## Key R Functions
 
 | Task | Function |
@@ -1392,13 +1460,12 @@ digraph workflow {
 - Odds ratios and log-odds
 - Making probabilistic predictions
 
+## Attendance
+
+## Problem Set
+
 ::: callout-tip
 ### Readings
 - TSwD Ch 13.1-13.2
 - ROS Ch 13-14
-:::
-
-## References
-
-::: {#refs}
 :::
