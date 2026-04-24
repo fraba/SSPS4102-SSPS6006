@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+    html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
