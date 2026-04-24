@@ -711,10 +711,10 @@ From ROS, Ch. 2
 
 ---
 
-![](https://www.pnas.org/cms/10.1073/pnas.1523465113/asset/e14ce236-e1fc-4df8-ae5a-792a47a6512d/assets/graphic/pnas.1523465113fig01.jpeg)
+![](../img/pnas.1523465113fig01.jpeg)
 [(A) Observed increase in raw mortality rate among 45- to 54-y-old non-Hispanic whites, unadjusted for age. (B) Increase in average age of this group as the baby boom generation moves through. (C) Raw death rate, along with trend in death rate attributable by change in age distribution alone, had age-specific mortality rates been at the 2013 level throughout.]{style="font-size: 0.5em;"}
 
-![](https://www.pnas.org/cms/10.1073/pnas.1523465113/asset/a7f80214-c813-48c2-bdf6-098b6126c071/assets/graphic/pnas.1523465113fig02.jpeg)
+![](../img/pnas.1523465113fig02.jpeg)
 [(A) Age adjusted death rates among 45- to 54-y-old non-Hispanic whites, showing an increase from 1999 to 2005 and a steady pattern since 2005. (B) Comparison of three different age adjustments. (C) Trends in age-adjusted death rates broken down by sex.]{style="font-size: 0.5em;"}
 
 
