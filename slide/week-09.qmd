@@ -952,5 +952,3 @@ Without centering, the income coefficient represents the effect when female=0, a
 
 -   TSwD Ch 13.3-13.5
 -   ROS Ch 15
-
-## References
