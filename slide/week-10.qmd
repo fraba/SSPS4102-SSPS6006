@@ -943,18 +943,20 @@ alberta_cod |>
 
 ```{r}
 alberta_cod |>
+  group_by(cause) |>
   summarise(
     Min = min(total_deaths),
     Mean = mean(total_deaths),
     Max = max(total_deaths),
     SD = sd(total_deaths),
-    Var = var(total_deaths),
-    .by = cause
-  ) |>
+    Var = var(total_deaths)
+) |>
   arrange(desc(Mean)) |>
   head(5) |>
   knitr::kable(digits = 1)
 ```
+
+---
 
 ::: callout-important
 ### Notice the Variance!
@@ -970,12 +972,7 @@ For most causes, **variance > mean**, suggesting overdispersion. This is a hint 
 $$\text{Dispersion ratio} = \frac{\text{Variance}}{\text{Mean}}$$
 
 ```{r}
-alberta_cod |>
-  summarise(
-    Mean = mean(total_deaths),
-    Variance = var(total_deaths),
-    Dispersion_ratio = Variance / Mean
-  )
+var(alberta_cod$total_deaths) / mean(alberta_cod$total_deaths)
 ```
 
 . . .
@@ -1178,11 +1175,16 @@ From ROS Chapter 15: A study of pest management in apartments.
 - Predictors: Pre-treatment roach level, treatment indicator, building type
 
 ```{r}
-#| eval: false
+#| eval: true
+library(rstanarm)
+data(roaches)
+
+roaches$roach100 <- roaches$roach1/100
+
 fit_roaches <- stan_glm(
   y ~ roach100 + treatment + senior,
   family = neg_binomial_2(link = "log"),
-  offset = log(exposure),
+  offset = log(exposure2),
   data = roaches
 )
 ```
@@ -1190,6 +1192,23 @@ fit_roaches <- stan_glm(
 ::: notes
 The offset allows us to model the rate of roaches caught per trap-day, rather than the total count, which would be misleading when trap-days vary.
 :::
+
+---
+
+```{r}
+summary(fit_roaches)
+```
+
+---
+
+## How does the NB fit the data? 
+
+```{r}
+pp_check(fit_roaches) +
+  scale_x_log10()
+```
+
+(Note the log transformation of the x-axis to better visualise the data, which is highgly skewed)
 
 # Introduction to Multilevel Modelling
 
@@ -1284,9 +1303,7 @@ voter_model <- stan_glmer(
 
 The `(1 | state)` term specifies varying intercepts by state.
 
-::: notes
 This model allows each state to have its own baseline level of support, while still estimating a common effect of gender.
-:::
 
 ## Understanding the Output
 
@@ -1421,320 +1438,9 @@ stan_glmer(y ~ x + (1 | group), family = poisson, data = df)
 - TSwD Ch 8: Hunt data (8.2-8.4)
 - ROS Ch 16-17: Design and poststratification
 
-# In-Class Activity: How Similar Are You to Your Friends?
+## Attenande
 
-## Activity Overview
-
-**Research Question:** To what extent are you similar to your friends? Do you accurately perceive your friends' attitudes?
-
-. . .
-
-**What we'll do:**
-
-1. Create 10 binary questions (political attitudes + personal preferences)
-2. Form pairs and get unique ID numbers
-3. Answer questions about yourself and guess your partner's answers
-4. Analyze the data using binomial logistic regression
-
-. . .
-
-::: callout-note
-### Why This Matters
-Research shows friends are more similar than strangers, **but by less than they expect**. We'll test this in our class!
-:::
-
-::: footer
-Activity from Gelman & Vehtari (2024), *Active Statistics*, Section 4.17
-:::
-
-## Step 1: Choose Questions
-
-**We need 10 binary (yes/no) questions:**
-
-. . .
-
-::: columns
-::: {.column width="50%"}
-### Political Attitudes
-- Support for death penalty?
-- Support public funding for charter schools?
-- Support stricter gun control?
-- Support increased minimum wage?
-- Support action on climate change?
-:::
-
-::: {.column width="50%"}
-### Personal Preferences
-- Prefer cats or dogs?
-- Prefer coffee or tea?
-- Morning person or night person?
-- Prefer city or countryside?
-- Prefer reading or watching TV?
-:::
-:::
-
-. . .
-
-**Class discussion:** Let's agree on our 10 questions and write them on the board.
-
-## Step 2: Form Pairs and Get ID Numbers
-
-**Instructions:**
-
-1. **Find a partner** (if odd number, one student observes)
-
-2. **Generate a unique pair ID** together:
-   ```{r}
-   #| eval: false
-   round(runif(1, 0, 1e6))
-   ```
-   This creates a random 6-digit number for confidentiality.
-
-3. **Both partners use the same ID** when filling out the form
-
-::: callout-important
-### Confidentiality
-The ID allows us to match pairs without identifying individuals. All responses are anonymous!
-:::
-
-## Step 3: Complete the Google Form
-
-**Each student fills out individually (22 items total):**
-
-. . .
-
-1. **Pair ID number** (the number you generated with your partner)
-
-2. **Your own responses** to the 10 questions (honest answers!)
-
-3. **Your guesses** of your partner's responses to the 10 questions
-
-4. **How well you know your partner:**
-   - 1 = Don't know the person at all
-   - 2 = Seen each other around
-   - 3 = Acquaintance
-   - 4 = Friend
-   - 5 = Close friend
-
-. . .
-
-::: callout-tip
-### Be Honest!
-Answer truthfully about yourself and do your best to guess your partner's views.
-:::
-
-## Step 4: Data Processing in R
-
-After collecting responses, we process the data:
-
-```{r}
-#| eval: false
-#| echo: true
-# Read and organize data
-responses <- read.csv("Similarity of friends.csv")
-pair_id <- responses[,"Pair.ID.number"]
-responses <- responses[order(pair_id),]  # Sort by pair ID
-
-# Extract questions and guesses
-J <- 10  # Number of questions
-n <- nrow(responses)
-alter_index <- 1:n + rep(c(1, -1), n/2)  # Match pairs
-
-ego <- as.matrix(responses[,paste("Q",1:J,sep="")])
-guess_for_alter <-
-  as.matrix(responses[,paste("Guess.of.partner.s.response.to.Q",1:J,sep="")])
-alter <- ego[alter_index,]  # Partner's actual responses
-```
-
-## Step 5: Create Outcome Variables
-
-**Two key outcomes for each student:**
-
-```{r}
-#| eval: false
-#| echo: true
-# 1. Actual agreement: How many questions you and your partner answered the same
-n_agree <- rowSums(ego == alter)
-
-# 2. Perceived agreement: How many questions where you thought
-#    your partner would agree with you
-n_perceived <- rowSums(ego == guess_for_alter)
-```
-
-. . .
-
-**And one predictor:**
-
-```{r}
-#| eval: false
-#| echo: true
-# Friendship closeness: average of both partners' ratings (1-5)
-library("dplyr")
-close_to_alter <- recode(responses[,"How.well.do.you.know.your.partner."],
-  "Not at all" = 1, "Seen each other around" = 2, "Acquaintance" = 3,
-  "Friend" = 4, "Close friend" = 5)
-close <- (close_to_alter + close_to_alter[alter_index])/2
-```
-
-## Step 6: Fit Binomial Logistic Regression
-
-**Model 1: Predicting actual agreement**
-
-```{r}
-#| eval: false
-#| echo: true
-friends_data <- data.frame(n_agree, n_perceived, close)
-
-fit_agree <- stan_glm(
-  cbind(n_agree, J - n_agree) ~ close,
-  family = binomial(link = "logit"),
-  data = friends_data,
-  subset = seq(2, n, 2),  # Every 2nd person to avoid double-counting
-  refresh = 0
-)
-```
-
-. . .
-
-**Model 2: Predicting perceived agreement**
-
-```{r}
-#| eval: false
-#| echo: true
-fit_perceived <- stan_glm(
-  cbind(n_perceived, J - n_perceived) ~ close,
-  family = binomial(link = "logit"),
-  data = friends_data,
-  refresh = 0
-)
-```
-
-## Step 7: Visualize the Results
-
-```{r}
-#| eval: false
-#| echo: true
-# Plot 1: Actual agreement
-x_jitt <- runif(n, -0.2, 0.2)
-plot((close + x_jitt)[seq(2,n,2)], n_agree[seq(2,n,2)]/J,
-     xlim = c(1,5), ylim = c(0,1),
-     xlab = "Friendship measure", ylab = "Proportion agreed")
-curve(invlogit(coef(fit_agree)[1] + coef(fit_agree)[2]*x),
-      add = TRUE, col = "red")
-
-# Plot 2: Perceived agreement
-plot(close + x_jitt, n_perceived/J,
-     xlim = c(1, 5), ylim = c(0, 1),
-     xlab = "Friendship measure", ylab = "Perceived agreement")
-curve(invlogit(coef(fit_perceived)[1] + coef(fit_perceived)[2]*x),
-      add = TRUE, col = "red")
-```
-
-## What Do We Expect to Find?
-
-**Before we look at the results, let's discuss:**
-
-. . .
-
-1. **Will closer friends agree more than acquaintances?**
-   - Hypothesis: Agreement increases with friendship closeness
-
-. . .
-
-2. **Will perceived agreement be higher than actual agreement?**
-   - Hypothesis: We overestimate how similar our friends are to us
-
-. . .
-
-3. **Why might we overestimate agreement?**
-   - We see our views as reasonable → attribute them to friends
-   - Friendship colors our judgment
-   - We avoid discussing contentious topics with friends
-
-::: notes
-Give students time to make predictions before showing the actual results.
-:::
-
-## What Research Has Found
-
-::: callout-important
-### Key Findings from Social Science Research
-Friends are more similar than strangers, **but by less than people expect**.
-:::
-
-. . .
-
-**Why do people overestimate similarity?**
-
-1. **False consensus effect:** We see our views as reasonable and project them onto others
-
-2. **Motivated perception:** Friendship biases our judgment about agreement
-
-3. **Selective disclosure:** Friends avoid contentious topics in conversation
-   - Result: Networks have attitude heterogeneity but individuals experience homogeneity
-   - We don't know our friends disagree because we never discuss those topics!
-
-::: footer
-McPherson et al. (2001), *Annual Review of Sociology*; Goel et al. (2010), *J. Personality and Social Psychology*
-:::
-
-## Interpreting Our Results
-
-**Even if patterns aren't clear, that's OK!**
-
-. . .
-
-::: columns
-::: {.column width="50%"}
-### This Activity Demonstrates
-
-- **Data collection** in social networks
-- **Binomial logistic regression** with count data
-- **Real-world ambiguity** in results
-- **Difference** between perception and reality
-:::
-
-::: {.column width="50%"}
-### Key Statistical Concepts
-
-- Binary outcomes (agree/disagree)
-- Number of successes out of known trials
-- Using `cbind(success, failure)` syntax
-- Avoiding double-counting paired data
-- Visualizing fitted logistic curves
-:::
-:::
-
-. . .
-
-::: callout-tip
-### Takeaway
-Not all analyses produce clear results. Ambiguity is part of real research!
-:::
-
-## Extension: Alternative Models for Count Data
-
-**We could model this data in different ways:**
-
-. . .
-
-| Model | When to Use | Strengths | Weaknesses |
-|-------|-------------|-----------|------------|
-| **Binomial logistic** | Known # of trials | Accounts for denominator | Requires trial count |
-| **Poisson** | Count outcome, no upper limit | Simple, interpretable | Assumes mean = variance |
-| **Negative binomial** | Overdispersed counts | Handles extra variation | More complex |
-| **Linear regression** | Quick approximation | Fast, familiar | Can predict outside [0,1] |
-
-. . .
-
-::: callout-note
-### Discussion Question
-What if we asked "How many close friends do you have?" What model would be appropriate?
-:::
-
-::: footer
-Gelman & Vehtari (2024), Section 4.17
-:::
+## Problem set
 
 ## References
 
