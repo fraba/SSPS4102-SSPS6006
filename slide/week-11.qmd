@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
@@ -255,6 +256,12 @@ Led to establishment of Institutional Review Boards (IRBs) in the US
 These principles now guide all human subjects research through ethics review processes.
 :::
 
+## In Australia, Human Research is regulated by the National Statement on Ethical Conduct in Human Research
+
+- You can access the guidelines [here](https://www.nhmrc.gov.au/about-us/publications/national-statement-ethical-conduct-human-research-2023#block-views-block-file-attachments-content-block-1)
+
+- You have guidelines also for animal research. 
+
 ## ECMO Case Study: When Equipoise Breaks Down
 
 The ECMO (Extracorporeal Membrane Oxygenation) experiment raised important questions:
@@ -356,7 +363,7 @@ Every survey needs:
 ::: callout-warning
 ### Critical
 
-Never skip ethics review! All university research involving human participants requires approval.
+Never skip ethics review! All university research involving human participants requires approval. Moreover, academic journals are often requiring you to provide evidence of approval of your ethics application. 
 :::
 
 ## Asking About Sensitive Topics
