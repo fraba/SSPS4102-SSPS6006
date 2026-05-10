@@ -76,6 +76,12 @@ This week bridges experimental design with survey methodology - two fundamental 
 - Ch 17: Poststratification and missing-data imputation
 :::
 
+## Mentimeter: Checking on your A4
+
+![](../img/menti_week_11.png)
+
+
+
 # Randomised Controlled Trials
 
 ## Why Experiments Matter
@@ -225,6 +231,29 @@ Why does blinding matter?
 Double-blinding is the gold standard but not always possible in social science research.
 :::
 
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 1-2: Randomised Controlled Trials Basics)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 8,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 # Ethical Foundations of Experimental Research
 
 ## The Tuskegee Syphilis Study
@@ -250,6 +279,10 @@ Led to establishment of Institutional Review Boards (IRBs) in the US
 1. **Informed Consent**: Participants must understand what they're agreeing to
 
 2. **Equipoise**: Genuine uncertainty about treatment effectiveness must exist
+
+> Research equipoise is the ethical requirement that genuine uncertainty exists within the expert community regarding which treatment is superior in a clinical trial. It justifies randomising participants to different interventions, ensuring that patients are not denied superior care for the sake of research.
+
+This is also relevant when assessing policy interventions
 
 3. **No Unnecessary Harm**: If evidence accumulates, stopping rules should apply
 
@@ -278,6 +311,27 @@ The ECMO (Extracorporeal Membrane Oxygenation) experiment raised important quest
 
 Early success can undermine equipoise and make continued randomisation unethical.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Research Ethics and Validity)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 4,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Survey Design and Analysis
 
@@ -398,6 +452,27 @@ Multi-question approach:
 ::: notes
 Best practices in this area continue to evolve — stay current with guidelines.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 4: Survey Design Principles)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
 
 # Design and Sample Size Decisions
 
