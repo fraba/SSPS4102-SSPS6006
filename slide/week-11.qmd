@@ -58,6 +58,9 @@ By the end of this lecture, you will be able to:
 This week bridges experimental design with survey methodology - two fundamental approaches to data collection in social sciences.
 :::
 
+
+## Week 11 Student feedback survey
+
 ## This Week's Readings
 
 ::: {layout-ncol="2"}
@@ -681,6 +684,8 @@ poststrat$N <- 250e6 * p_sex[poststrat$sex] *
 head(poststrat)
 ```
 
+- Full example [here](https://avehtari.github.io/ROS-Examples/Poststrat/poststrat2.html)
+
 # Missing Data
 
 ## Why Missing Data Matters
@@ -965,7 +970,6 @@ ggplot(honesty_data, aes(x = Rate, y = reorder(Country, Rate), colour = Money)) 
 - Regression discontinuity
 - Instrumental variables
 
-## References
+## Problem Set
 
-::: {#refs}
-:::
+## Attendance
