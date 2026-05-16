@@ -15,6 +15,7 @@ format:
     scrollable: false
     pdf-max-pages-per-slide: 1
     history: false
+    html-math-method: katex
 bibliography: assets/pres_bib.bib
 csl: assets/apa-old-doi-prefix.csl
 execute:
@@ -207,6 +208,7 @@ A **confounder** is a variable that:
 2. Causes the outcome variable
 
 ```{dot}
+//| echo: false
 //| fig-width: 5
 //| fig-height: 3
 digraph D {
@@ -259,6 +261,7 @@ The exposure is what we're interested in (Income), the outcome is what we're try
 A **mediator** is a variable that lies on the causal pathway between treatment and outcome:
 
 ```{dot}
+//| echo: false
 //| fig-width: 5
 //| fig-height: 3
 digraph D {
@@ -290,6 +293,7 @@ If income affects happiness partly through enabling people to have children, con
 A **collider** is a variable caused by both the treatment and the outcome:
 
 ```{dot}
+//| echo: false
 //| fig-width: 5
 //| fig-height: 3
 digraph D {
@@ -458,9 +462,11 @@ $$Y_{it} = \beta_0 + \beta_1 \cdot \text{Time}_t + \beta_2 \cdot \text{Treatment
 The interaction term is what we care about—it captures the additional change in the treatment group beyond what the control group experienced.
 :::
 
-## DiD Results
+## DiD Results {.smaller}
 
 ```{r}
+#| eval: false
+library(modelsummary)
 did_model <- lm(outcome ~ time * treated, data = did_sim)
 modelsummary(did_model, 
              coef_rename = c("time" = "Time", 
@@ -469,9 +475,21 @@ modelsummary(did_model,
              gof_omit = "IC|Log|F|RMSE")
 ```
 
-::: notes
-The coefficient on the interaction term (time:treated) is our estimate of the treatment effect. Here it's approximately 4, which matches our simulated true effect.
-:::
+The coefficient on the interaction term (`time * treated`) is our estimate of the treatment effect. Here it's approximately 4, which matches our simulated true effect.
+
+---
+
+```{r}
+#| echo: false
+library(modelsummary)
+did_model <- lm(outcome ~ time * treated, data = did_sim)
+modelsummary(did_model, 
+             coef_rename = c("time" = "Time", 
+                            "treated" = "Treatment Group",
+                            "time:treated" = "DiD Effect (Time × Treatment)"),
+             gof_omit = "IC|Log|F|RMSE")
+```
+
 
 ## DiD: Key Assumptions and Threats
 
@@ -604,9 +622,10 @@ plot(matched, type = "jitter",
 This plot shows the distribution of propensity scores before and after matching. Good matching produces similar distributions in the treated and control groups.
 :::
 
-## Estimating the Treatment Effect
+## Estimating the Treatment Effect {.smaller}
 
 ```{r}
+#| eval: false
 # Get matched data
 matched_data <- match.data(matched)
 
@@ -618,9 +637,22 @@ modelsummary(psm_model,
              gof_omit = "IC|Log|F|RMSE")
 ```
 
-::: notes
 After matching, the treatment effect estimate should be closer to the true value of 5. We still adjust for age and income to improve precision.
-:::
+
+---
+
+```{r}
+#| echo: false
+# Get matched data
+matched_data <- match.data(matched)
+
+# Estimate treatment effect on matched sample
+psm_model <- lm(outcome ~ treatment + age + income, data = matched_data)
+
+modelsummary(psm_model, 
+             coef_rename = c("treatment" = "Treatment Effect"),
+             gof_omit = "IC|Log|F|RMSE")
+```
 
 ## PSM Limitations
 
@@ -736,6 +768,7 @@ In this simulation, students with marks ≥80 receive a scholarship. The true ef
 ## Estimating the RDD Effect
 
 ```{r}
+#| eval: false
 # Centre the running variable
 rdd_sim <- rdd_sim |>
   mutate(mark_centred = mark - 80)
@@ -750,9 +783,26 @@ modelsummary(rdd_model,
              gof_omit = "IC|Log|F|RMSE")
 ```
 
-::: notes
 The coefficient on got_scholarship is our estimate of the treatment effect—close to the true value of 8.
-:::
+
+---
+
+```{r}
+#| echo: false
+# Centre the running variable
+rdd_sim <- rdd_sim |>
+  mutate(mark_centred = mark - 80)
+
+# RDD regression
+rdd_model <- lm(future_score ~ got_scholarship + mark_centred, 
+                data = rdd_sim)
+
+modelsummary(rdd_model,
+             coef_rename = c("got_scholarship" = "Scholarship Effect",
+                            "mark_centred" = "Mark (centred)"),
+             gof_omit = "IC|Log|F|RMSE")
+```
+
 
 ## RDD Assumptions
 
