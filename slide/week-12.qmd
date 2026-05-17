@@ -153,6 +153,8 @@ This is the core problem with observational data. We need methods to account for
 
 ### 📋 Head to Canvas and complete A1 (Section 1: The Fundamental Problem)
 
+- [Link to A1](http://10.121.89.203:3838/week-12-inclass-causal-dags-01)
+
 <br>
 
 ```{r}
@@ -365,6 +367,8 @@ This is perhaps the most important lesson from DAGs. Students often think that c
 ---
 
 ### 📋 Head to Canvas and complete A1 (Section 2: Directed Acyclic Graphs (DAGs))
+
+- [Link to A1](http://10.121.89.203:3838/week-12-inclass-causal-dags-01)
 
 <br>
 
@@ -768,6 +772,8 @@ These limitations are serious. PSM is not a magic solution—it requires strong 
 ---
 
 ### 📋 Head to Canvas and complete A1 (Section 3: Propensity Score Matching)
+
+- [Link to A1](http://10.121.89.203:3838/week-12-inclass-causal-dags-01)
 
 <br>
 
@@ -1196,6 +1202,11 @@ These are the key packages for implementing the methods we've covered. Each has 
 The main message is that all these methods require assumptions that cannot be fully tested. Being transparent and thoughtful about these assumptions is essential for credible causal inference.
 :::
 
+## Link to A2
+
+(Canvas doesn't allow saving new pages)
+
+- [Link to A2](http://10.121.89.203:3838/week-12-outofclass-practice-01)
 
 ## Attendance
 
