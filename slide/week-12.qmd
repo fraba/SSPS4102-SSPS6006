@@ -149,6 +149,28 @@ When treatment groups differ systematically in ways that also affect the outcome
 This is the core problem with observational data. We need methods to account for these pre-existing differences.
 :::
 
+---
+
+### 📋 Head to Canvas and complete A1 (Section 1: The Fundamental Problem)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 8,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
 # Directed Acyclic Graphs (DAGs)
 
 ## What Are DAGs?
@@ -339,6 +361,77 @@ More controls are not always better! You must think carefully about the causal s
 ::: notes
 This is perhaps the most important lesson from DAGs. Students often think that controlling for more variables is always better, but controlling for mediators and colliders can actually bias your results.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 2: Directed Acyclic Graphs (DAGs))
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
+
+## How to measure significant in difference among groups
+
+Let's read this methods description from a paper (Paper is in Canvas)
+
+> METHODS We performed a randomised controlled trial in the setting of a curricular
+emergency medicine course. Participants were 118 third-year medical students. Participants were randomly allocated into 20 groups, 10 of which had free access to 500 g of chocolate cookies during an emergency medicine course session (cookie group) and 10 of which did not (control group). All groups were taught by the same teachers. Educational content and course material were the same for both groups. After the course, all students were asked to complete a 38-question evaluation form.
+
+Now, let's check how they report the results. 
+
+[LINK to PAPER](https://canvas.sydney.edu.au/courses/71706/files/50012947?module_item_id=3108125)
+
+
+- What is statistically significant? 
+
+- How do we know that? 
+
+---
+
+## How to make your USS feedback count {.smaller}
+
+Your Unit of Study Survey (USS) feedback is **confidential**. It’s a way to share what you enjoyed and found most useful in your learning, and to provide constructive feedback. It’s also a way to ‘pay it forward’ for the students coming behind you, so that their **learning experience** in this class is as good, or even better, than your own. 
+
+When you complete your USS survey [student-surveys.sydney.edu.au/students](https://student-surveys.sydney.edu.au/students/), please:
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+**Be specific**. 
+Which class tasks, assessments or other activities helped you to learn? Why were they helpful? Which one(s) didn’t help you to learn? Why didn’t they work for you? 
+
+**Be constructive**. 
+What practical changes can you suggest to class tasks, assessments or other activities, to help the next class learn better? 
+
+**Be relevant**. 
+Imagine you are the teacher. 
+
+:::
+
+::: {.column width="50%"}
+
+ What sort of feedback would you find most useful to help make your teaching more effective?
+
+<img src = 'https://student-surveys.sydney.edu.au/common/images/student-surveys-QR.png' width = '60%'>
+
+:::
+::::
+
 
 # Difference-in-Differences
 
@@ -671,6 +764,28 @@ modelsummary(psm_model,
 ::: notes
 These limitations are serious. PSM is not a magic solution—it requires strong assumptions that treatment assignment is "ignorable" given observed covariates.
 :::
+
+---
+
+### 📋 Head to Canvas and complete A1 (Section 3: Propensity Score Matching)
+
+<br>
+
+```{r}
+#| echo: false
+library(countdown)
+countdown(
+  minutes = 5,
+  color_background = "#003366",
+  color_text = "#FFD100",
+  color_running_background = "#003366",
+  color_running_text = "#FFD100",
+  color_finished_background = "#FF0000",
+  color_finished_text = "white",
+  font_size = "3em"
+)
+```
+
 
 # Regression Discontinuity Design
 
@@ -1080,6 +1195,12 @@ These are the key packages for implementing the methods we've covered. Each has 
 ::: notes
 The main message is that all these methods require assumptions that cannot be fully tested. Being transparent and thoughtful about these assumptions is essential for credible causal inference.
 :::
+
+
+## Attendance
+
+## Problem Set
+
 
 ## Next Week
 
