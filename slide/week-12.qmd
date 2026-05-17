@@ -388,6 +388,11 @@ countdown(
 ```
 
 
+## Mentimeter: Checking on your A4
+
+![](../img/menti_week_12.png)
+
+
 ## How to measure significant in difference among groups
 
 Let's read this methods description from a paper (Paper is in Canvas)
